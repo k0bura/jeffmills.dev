@@ -1,0 +1,46 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Jeff Mills">
+  <section class="space-y-6">
+    <h1 class="text-3xl font-semibold tracking-tight">Jeff Mills</h1>
+    <p class="text-lg" style="color: var(--jm-color-muted)">
+      Principal-level front-end engineer. Design systems, generative UI,
+      framework-agnostic component architecture.
+    </p>
+  </section>
+
+  <section class="mt-16 grid gap-6 sm:grid-cols-3">
+    <a
+      href="/demo"
+      class="block border p-6 no-underline transition hover:border-current"
+      style="border-color: var(--jm-color-border); border-radius: var(--jm-radius)"
+    >
+      <h2 class="mb-2 font-medium">Gen UI Demo</h2>
+      <p class="text-sm" style="color: var(--jm-color-muted)">
+        Two-stage LLM tool-use pipeline rendering live UI from a prompt.
+      </p>
+    </a>
+    <a
+      href="/blog"
+      class="block border p-6 no-underline transition hover:border-current"
+      style="border-color: var(--jm-color-border); border-radius: var(--jm-radius)"
+    >
+      <h2 class="mb-2 font-medium">Writing</h2>
+      <p class="text-sm" style="color: var(--jm-color-muted)">
+        Adding an MCP server to your design system.
+      </p>
+    </a>
+    <a
+      href="/press"
+      class="block border p-6 no-underline transition hover:border-current"
+      style="border-color: var(--jm-color-border); border-radius: var(--jm-radius)"
+    >
+      <h2 class="mb-2 font-medium">Press</h2>
+      <p class="text-sm" style="color: var(--jm-color-muted)">
+        Coverage of work I&rsquo;ve led at Vanguard FAS.
+      </p>
+    </a>
+  </section>
+</Base>

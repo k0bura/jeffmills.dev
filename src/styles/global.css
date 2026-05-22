@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  --jm-color-bg: #ffffff;
+  --jm-color-fg: #111111;
+  --jm-color-muted: #6b7280;
+  --jm-color-accent: #1a1a1a;
+  --jm-color-border: #e5e7eb;
+
+  --jm-font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --jm-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  --jm-space-1: 0.25rem;
+  --jm-space-2: 0.5rem;
+  --jm-space-3: 0.75rem;
+  --jm-space-4: 1rem;
+  --jm-space-6: 1.5rem;
+  --jm-space-8: 2rem;
+  --jm-space-12: 3rem;
+
+  --jm-radius: 0.375rem;
+  --jm-max-width: 64rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --jm-color-bg: #0a0a0a;
+    --jm-color-fg: #f5f5f5;
+    --jm-color-muted: #9ca3af;
+    --jm-color-accent: #f5f5f5;
+    --jm-color-border: #262626;
+  }
+}
+
+html {
+  background: var(--jm-color-bg);
+  color: var(--jm-color-fg);
+  font-family: var(--jm-font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--jm-color-accent);
+  outline-offset: 3px;
+}
