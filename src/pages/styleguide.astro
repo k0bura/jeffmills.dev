@@ -1,0 +1,128 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Styleguide — Jeff Mills" description="Tiny design system used by the Gen UI demo.">
+  <h1 class="text-3xl font-semibold tracking-tight">Styleguide</h1>
+  <p class="mt-4" style="color: var(--jm-color-muted)">
+    A tiny framework-agnostic web-component library used by the Gen UI demo.
+    Built with Lit. Each component is self-contained and accepts a single
+    <code>payload</code> property.
+  </p>
+
+  <section class="mt-12 space-y-3">
+    <h2 class="text-xl font-semibold">jm-text</h2>
+    <jm-text id="ds-text"></jm-text>
+  </section>
+
+  <section class="mt-12 space-y-3">
+    <h2 class="text-xl font-semibold">jm-list (unordered)</h2>
+    <jm-list id="ds-list-ul"></jm-list>
+    <h2 class="text-xl font-semibold mt-8">jm-list (ordered)</h2>
+    <jm-list id="ds-list-ol"></jm-list>
+  </section>
+
+  <section class="mt-12 space-y-3">
+    <h2 class="text-xl font-semibold">jm-table</h2>
+    <jm-table id="ds-table"></jm-table>
+  </section>
+
+  <section class="mt-12 space-y-3">
+    <h2 class="text-xl font-semibold">jm-accordion</h2>
+    <jm-accordion id="ds-accordion"></jm-accordion>
+  </section>
+
+  <section class="mt-12 space-y-3">
+    <h2 class="text-xl font-semibold">jm-chart (bar)</h2>
+    <jm-chart id="ds-chart-bar"></jm-chart>
+    <h2 class="text-xl font-semibold mt-8">jm-chart (doughnut)</h2>
+    <jm-chart id="ds-chart-doughnut"></jm-chart>
+  </section>
+
+  <section class="mt-12 space-y-3">
+    <h2 class="text-xl font-semibold">jm-spinner</h2>
+    <jm-spinner label="Generating content"></jm-spinner>
+  </section>
+</Base>
+
+<script>
+  import "../lib/ds/index.ts";
+  import type {
+    TextPayload,
+    ListPayload,
+    TablePayload,
+    AccordionPayload,
+    ChartPayload,
+  } from "../lib/ds/types.ts";
+
+  const set = <T,>(id: string, payload: T) => {
+    const el = document.getElementById(id) as (HTMLElement & { payload?: T }) | null;
+    if (el) el.payload = payload;
+  };
+
+  set<TextPayload>("ds-text", {
+    body: "A short paragraph rendered through the jm-text component. Inherits typography tokens from the host page.",
+  });
+
+  set<ListPayload>("ds-list-ul", {
+    variant: "unordered",
+    items: ["Web Components", "Design Tokens", "Framework Agnostic"],
+  });
+
+  set<ListPayload>("ds-list-ol", {
+    variant: "ordered",
+    items: ["Define the schema", "Generate components", "Render the layout"],
+  });
+
+  set<TablePayload>("ds-table", {
+    headers: ["Asset Class", "Allocation", "Rationale"],
+    rows: [
+      ["US Stocks", "60%", "Long-horizon growth"],
+      ["Intl Stocks", "20%", "Geographic diversification"],
+      ["Bonds", "15%", "Volatility dampening"],
+      ["Cash", "5%", "Near-term liquidity"],
+    ],
+  });
+
+  set<AccordionPayload>("ds-accordion", {
+    items: [
+      {
+        title: "Why a tiny design system?",
+        content:
+          "The Gen UI demo only needs five render targets. A focused six-component library keeps the LLM tool schema small and the bundle slim.",
+      },
+      {
+        title: "Why Lit?",
+        content:
+          "Lit lets the same web components render inside Astro pages, Svelte islands, or any other host without framework lock-in.",
+      },
+      {
+        title: "Why CSS custom properties for tokens?",
+        content:
+          "Custom properties pierce shadow DOM, so the host page controls theming and the components stay self-contained.",
+      },
+    ],
+  });
+
+  set<ChartPayload>("ds-chart-bar", {
+    kind: "bar",
+    label: "Latency by route (ms)",
+    data: [
+      { label: "/", value: 38 },
+      { label: "/demo", value: 112 },
+      { label: "/blog", value: 41 },
+      { label: "/press", value: 36 },
+    ],
+  });
+
+  set<ChartPayload>("ds-chart-doughnut", {
+    kind: "doughnut",
+    label: "Portfolio allocation",
+    data: [
+      { label: "US Stocks", value: 60 },
+      { label: "Intl Stocks", value: 20 },
+      { label: "Bonds", value: 15 },
+      { label: "Cash", value: 5 },
+    ],
+  });
+</script>
