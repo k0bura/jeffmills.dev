@@ -1,10 +1,55 @@
 ---
 import Base from "../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
+);
+
+const dateFmt = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
 ---
 
 <Base title="Writing — Jeff Mills">
   <h1 class="text-3xl font-semibold tracking-tight">Writing</h1>
-  <p class="mt-4" style="color: var(--jm-color-muted)">
-    Coming next: <em>Adding an MCP server to your design system</em>.
+  <p class="mt-4 mb-12" style="color: var(--jm-color-muted)">
+    Production notes on design systems, generative UI, and front-end
+    architecture.
   </p>
+
+  <ul class="space-y-10 list-none p-0">
+    {
+      posts.map((post) => (
+        <li>
+          <article>
+            <header class="flex items-baseline justify-between gap-4 flex-wrap">
+              <h2 class="text-xl font-semibold m-0">
+                <a href={`/blog/${post.id}`} class="no-underline hover:underline">
+                  {post.data.title}
+                </a>
+              </h2>
+              <time
+                datetime={post.data.publishDate.toISOString()}
+                class="text-sm shrink-0"
+                style="color: var(--jm-color-muted)"
+              >
+                {dateFmt.format(post.data.publishDate)}
+              </time>
+            </header>
+            <p class="mt-2" style="color: var(--jm-color-muted)">
+              {post.data.description}
+            </p>
+            {post.data.status === "abstract" && (
+              <p class="mt-2 text-xs uppercase tracking-wide" style="color: var(--jm-color-muted)">
+                Abstract — full post in progress
+              </p>
+            )}
+          </article>
+        </li>
+      ))
+    }
+  </ul>
 </Base>

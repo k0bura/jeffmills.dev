@@ -1,0 +1,33 @@
+---
+title: "Building a Gen UI demo with Claude tool use"
+description: "How a two-stage tool-use pipeline turns a free-form prompt into rendered UI, and why the design system's component schemas are the most important piece."
+publishDate: 2025-02-25
+status: abstract
+---
+
+> This is an abstract. The full post is in progress.
+
+The [Gen UI demo](/demo) on this site takes a prompt, makes two Claude calls
+in series, and renders the result through a tiny framework-agnostic
+component library. There is no UI templating, no string concatenation,
+and no JSX coming back from the model — just structured tool calls that
+the browser maps to real components.
+
+The full post will cover:
+
+- **The two-stage split.** Why "pick components" and "compose layout" are
+  two different reasoning problems, and what goes wrong when you fuse
+  them into one call.
+- **The data contract is the design contract.** Each component's tool
+  schema *is* its public API. The model can't render anything the
+  components can't accept, and the components can't render anything the
+  model can't describe. This is the most important property of the
+  whole system.
+- **Mock-first development.** How an `AsyncGenerator` shaped like the
+  real pipeline let me build the entire UI before spending a dollar on
+  API calls.
+- **Cost mitigations.** Prompt caching on the system messages and tool
+  defs, using a smaller model for the layout stage, and per-IP rate
+  limiting at the edge.
+
+Until then, the [demo](/demo) is live and the [source is on GitHub](https://github.com/k0bura/jeffmills.dev).
