@@ -1,0 +1,299 @@
+---
+import Base from "../../layouts/Base.astro";
+import GenUI from "../../demo/GenUI.svelte";
+---
+
+<Base
+  title="Gen UI Demo — Jeff Mills"
+  description="A two-stage Claude tool-use pipeline that composes UI from a tiny web-component library, without generating any code."
+>
+  <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
+  <h1 class="page-title">gen ui demo</h1>
+  <p class="project-meta">
+    <span class="project-year">2026</span>
+    <span class="meta-sep">&middot;</span>
+    <span class="project-status">live</span>
+    <span class="meta-sep">&middot;</span>
+    <span>2-day prototype</span>
+    <span class="meta-sep">&middot;</span>
+    <span>solo</span>
+  </p>
+
+  <p class="page-lede">
+    Two Claude tool-use calls in series. Stage 1 picks components from a tiny
+    web-component library and fills them with content. Stage 2 arranges them
+    into a layout. The renderer is plain Svelte. The LLM never writes code.
+  </p>
+
+  <aside class="callout">
+    <span class="callout-label">The constraint</span>
+    <p>
+      When I built the original at Vanguard, AI-generated code was off the
+      table for production. So the question became: can an LLM compose a UI
+      from a known set of trusted components, without writing the code that
+      renders them? If yes, the LLM stays in its safe lane (content
+      generation, structured selection) and the application code keeps its
+      deterministic guarantees.
+    </p>
+  </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">try it</h2>
+  <p class="section-lede">
+    Pick a starter prompt or write your own. Currently running on mocks &mdash;
+    full Anthropic wiring lands next.
+  </p>
+
+  <GenUI client:load />
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">how it works</h2>
+
+  <div
+    class="diagram"
+    role="img"
+    aria-label="Pipeline: user prompt feeds Stage 1 LLM which picks components and fills content; output is a JSON component list; this feeds Stage 2 LLM which decides layout; output is layout JSON; a Svelte renderer turns both into the final UI."
+  >
+    <div class="diagram-node">user prompt</div>
+    <div class="diagram-arrow">&#9660;</div>
+    <div class="diagram-node is-stage">
+      <div class="diagram-node-title">stage 1 LLM</div>
+      <div class="diagram-node-body">pick components<br />+ fill content</div>
+    </div>
+    <div class="diagram-arrow">
+      &#9660;<br /><span class="diagram-payload">json component list</span>
+    </div>
+    <div class="diagram-node is-stage">
+      <div class="diagram-node-title">stage 2 LLM</div>
+      <div class="diagram-node-body">decide layout</div>
+    </div>
+    <div class="diagram-arrow">
+      &#9660;<br /><span class="diagram-payload">layout json</span>
+    </div>
+    <div class="diagram-node">
+      <div class="diagram-node-title">svelte renderer</div>
+      <div class="diagram-node-body">deterministic</div>
+    </div>
+    <div class="diagram-arrow">&#9660;</div>
+    <div class="diagram-node">final UI</div>
+  </div>
+
+  <dl class="stage-list">
+    <dt>Stage 1 &mdash; content + component selection</dt>
+    <dd>
+      Anthropic Messages API call with a tool schema describing each
+      component (name, description, prop types). The model returns its choices
+      as <code>tool_use</code> blocks. The app parses them into a flat array
+      of <code>{`{ component, props }`}</code> pairs. The model never returns
+      JSX, HTML, or CSS.
+    </dd>
+
+    <dt>Stage 2 &mdash; layout decision</dt>
+    <dd>
+      Second Messages API call. The component array from Stage 1 is the
+      input. The tool schema defines a recursive grid layout
+      (<code>type</code>, <code>columns</code>, <code>children</code>,
+      <code>span</code>). Output is a single layout object referencing
+      components by index.
+    </dd>
+
+    <dt>Stage 3 &mdash; deterministic render</dt>
+    <dd>
+      A recursive Svelte component walks the layout JSON and renders each
+      web component with its filled props. Plain application code. No LLM
+      involvement. Predictable, testable, debuggable.
+    </dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">what this proved</h2>
+  <ul class="proof-list">
+    <li>
+      <strong>The composition / rendering split holds.</strong> The LLM
+      reasons about which components and what content; the application code
+      draws. Each side is good at its job.
+    </li>
+    <li>
+      <strong>Tool schemas are the contract.</strong> Constraining all model
+      output to typed JSON eliminates the code-correctness and injection
+      risks that block production use of free-form LLM output.
+    </li>
+    <li>
+      <strong>A well-designed design system is the substrate.</strong>
+      Framework-agnostic web components with constrained props were the
+      right shape for this years before generative UI was a real category.
+      The original prototype validated AXS&rsquo;s architecture as durable
+      against the GenAI paradigm shift.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">stack</h2>
+  <dl class="stack-list">
+    <dt>Frontend</dt>
+    <dd>Astro, Svelte 5, Lit web components</dd>
+    <dt>Pipeline</dt>
+    <dd>Anthropic Messages API, two-stage tool use, async generator stream</dd>
+    <dt>Hosting</dt>
+    <dd>Cloudflare Pages + Pages Functions</dd>
+    <dt>Original prototype</dt>
+    <dd>Svelte, Node.js, AWS Bedrock with Claude tool use</dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <p class="project-foot">
+    Full write-up: <a href="/blog/gen-ui-with-claude-tool-use">Generating UI Without Generating Code</a>
+    &middot; <a href="https://github.com/k0bura/jeffmills.dev">source on github</a>
+  </p>
+</Base>
+
+<style>
+  .project-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0.4rem;
+  }
+
+  .project-meta {
+    margin: 0 0 1rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+
+  .project-meta .project-year {
+    color: var(--jm-color-fg);
+  }
+
+  .project-meta .project-status {
+    color: var(--jm-color-ok);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .page-lede {
+    margin: 0 0 1rem;
+    color: var(--jm-color-fg);
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 2rem 0 0.5rem;
+  }
+
+  .section-lede {
+    margin: 0 0 1rem;
+    color: var(--jm-color-muted);
+    font-size: 0.95em;
+  }
+
+  .stage-list,
+  .stack-list {
+    margin: 0.5rem 0 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1.25rem;
+    line-height: 1.6;
+  }
+
+  .stage-list dt {
+    color: var(--jm-color-accent);
+    font-weight: 700;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 0.4rem;
+    grid-column: 1 / -1;
+  }
+
+  .stage-list dd {
+    margin: 0 0 0.5rem;
+    color: var(--jm-color-fg);
+    grid-column: 1 / -1;
+    font-size: 0.95em;
+  }
+
+  .stack-list dt {
+    color: var(--jm-color-accent);
+    font-weight: 700;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 0.15rem;
+  }
+
+  .stack-list dd {
+    margin: 0;
+    color: var(--jm-color-fg);
+    font-size: 0.95em;
+  }
+
+  @media (max-width: 540px) {
+    .stack-list {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+    .stack-list dd {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .proof-list {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .proof-list li {
+    position: relative;
+    margin: 0.6rem 0;
+  }
+
+  .proof-list li::before {
+    content: ">";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.25rem;
+  }
+
+  .proof-list strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+
+  .project-foot {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+
+  code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+</style>

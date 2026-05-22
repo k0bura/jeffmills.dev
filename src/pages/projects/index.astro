@@ -1,0 +1,119 @@
+---
+import Base from "../../layouts/Base.astro";
+import { PROJECTS } from "../../content/projects.ts";
+
+const projects = [...PROJECTS].sort((a, b) => b.year - a.year);
+---
+
+<Base
+  title="Projects — Jeff Mills"
+  description="Side projects and demos."
+>
+  <h1 class="page-title">projects</h1>
+  <p class="page-lede">
+    Side projects and demos. Most are open source on
+    <a href="https://github.com/k0bura">github.com/k0bura</a>.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <ul class="project-list">
+    {
+      projects.map((p) => (
+        <li>
+          <article>
+            <header class="project-head">
+              <span class="project-year">{p.year}</span>
+              <span class="project-status">{p.status}</span>
+            </header>
+            <h2 class="project-title">
+              <a href={`/projects/${p.slug}`}>{p.title}</a>
+            </h2>
+            <p class="project-summary">{p.summary}</p>
+            <p class="project-tags">
+              {p.tags.map((t, i) => (
+                <>
+                  <span class="tag">{t}</span>
+                  {i < p.tags.length - 1 && <span class="tag-sep"> &middot; </span>}
+                </>
+              ))}
+            </p>
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+</Base>
+
+<style>
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.5rem 0 0.5rem;
+  }
+
+  .page-lede {
+    margin: 0 0 0.5rem;
+    color: var(--jm-color-muted);
+  }
+
+  .project-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .project-list > li {
+    padding: 1rem 0;
+    border-bottom: 1px dashed var(--jm-color-border);
+  }
+
+  .project-list > li:last-child {
+    border-bottom: none;
+  }
+
+  .project-head {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    font-size: 0.85em;
+  }
+
+  .project-year {
+    color: var(--jm-color-muted);
+  }
+
+  .project-status {
+    color: var(--jm-color-ok);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .project-title {
+    font-size: 1rem;
+    font-weight: 400;
+    margin: 0.35rem 0 0.35rem;
+    color: var(--jm-color-fg);
+  }
+
+  .project-title a {
+    color: inherit;
+  }
+
+  .project-summary {
+    margin: 0 0 0.4rem;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+
+  .project-tags {
+    margin: 0;
+    font-size: 0.8em;
+    color: var(--jm-color-dim);
+  }
+
+  .tag-sep {
+    color: var(--jm-color-border);
+  }
+</style>

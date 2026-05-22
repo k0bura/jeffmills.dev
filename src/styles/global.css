@@ -1,16 +1,34 @@
 @import "tailwindcss";
 
-:root {
-  --jm-color-bg: #ffffff;
-  --jm-color-fg: #111111;
-  --jm-color-muted: #6b7280;
-  --jm-color-accent: #1a1a1a;
-  --jm-color-border: #e5e7eb;
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-mono-regular.woff2") format("woff2");
+}
 
-  --jm-font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
-  --jm-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
-    "Liberation Mono", monospace;
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-mono-bold.woff2") format("woff2");
+}
+
+:root {
+  --jm-color-bg: #0e0e0e;
+  --jm-color-fg: #e4e4e4;
+  --jm-color-muted: #a89466;
+  --jm-color-dim: #665200;
+  --jm-color-accent: #ffcc00;
+  --jm-color-border: #332b00;
+  --jm-color-ok: #88cc88;
+  --jm-color-link: #d4d4d4;
+
+  --jm-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+    Consolas, "Liberation Mono", monospace;
+  --jm-font-sans: var(--jm-font-mono);
 
   --jm-space-1: 0.25rem;
   --jm-space-2: 0.5rem;
@@ -20,44 +38,204 @@
   --jm-space-8: 2rem;
   --jm-space-12: 3rem;
 
-  --jm-radius: 0.375rem;
-  --jm-max-width: 64rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --jm-color-bg: #0a0a0a;
-    --jm-color-fg: #f5f5f5;
-    --jm-color-muted: #9ca3af;
-    --jm-color-accent: #f5f5f5;
-    --jm-color-border: #262626;
-  }
+  --jm-radius: 0;
+  --jm-max-width: 80ch;
 }
 
 html {
   background: var(--jm-color-bg);
   color: var(--jm-color-fg);
-  font-family: var(--jm-font-sans);
+  font-family: var(--jm-font-mono);
   -webkit-font-smoothing: antialiased;
+  scroll-padding-top: 4.5rem;
 }
 
 body {
   margin: 0;
   line-height: 1.6;
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--jm-color-accent);
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 a {
-  color: inherit;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
+  color: var(--jm-color-link);
+  text-decoration: none;
 }
 
 a:hover {
-  text-decoration-thickness: 2px;
+  color: var(--jm-color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+a:focus-visible {
+  outline: 1px dashed var(--jm-color-accent);
+  outline-offset: 3px;
 }
 
 :focus-visible {
-  outline: 2px solid var(--jm-color-accent);
+  outline: 1px dashed var(--jm-color-accent);
   outline-offset: 3px;
+}
+
+hr {
+  border: none;
+  border-top: 1px dashed var(--jm-color-border);
+  margin: 1.5rem 0;
+}
+
+code,
+pre {
+  font-family: var(--jm-font-mono);
+}
+
+code {
+  background: #1a1a1a;
+  padding: 0.1em 0.35em;
+  font-size: 0.95em;
+}
+
+pre {
+  background: #1a1a1a;
+  padding: 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--jm-color-border);
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+::selection {
+  background: var(--jm-color-accent);
+  color: var(--jm-color-bg);
+}
+
+.jm-shell {
+  max-width: var(--jm-max-width);
+  margin: 0 auto;
+  padding: 4.5rem 1rem 2rem;
+}
+
+.jm-rule {
+  border: none;
+  border-top: 1px dashed var(--jm-color-border);
+  margin: 1.25rem 0;
+}
+
+.jm-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.jm-list > li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin: 0.4rem 0;
+}
+
+.jm-list > li::before {
+  content: ">";
+  color: var(--jm-color-muted);
+  position: absolute;
+  left: 0;
+}
+
+.jm-tag {
+  color: var(--jm-color-ok);
+}
+
+.jm-muted {
+  color: var(--jm-color-muted);
+}
+
+.jm-accent {
+  color: var(--jm-color-accent);
+}
+
+.jm-badge {
+  color: var(--jm-color-muted);
+  margin-right: 0.4rem;
+}
+
+/* Callout — used in blog posts and project pages for TL;DR / asides */
+.callout {
+  border: 1px dashed var(--jm-color-accent);
+  background: rgba(255, 204, 0, 0.04);
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+}
+.callout > *:first-child {
+  margin-top: 0;
+}
+.callout > *:last-child {
+  margin-bottom: 0;
+}
+.callout p {
+  margin: 0;
+}
+.callout-label {
+  display: block;
+  color: var(--jm-color-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.5rem;
+}
+
+/* Pipeline diagram — reused by blog and project pages */
+.diagram {
+  margin: 2rem auto;
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+  text-align: center;
+  border: 1px dashed var(--jm-color-border);
+  padding: 1.5rem 1rem;
+}
+.diagram-node {
+  min-width: 16rem;
+  max-width: 22rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--jm-color-border);
+  background: #141414;
+}
+.diagram-node.is-stage {
+  border-color: var(--jm-color-accent);
+}
+.diagram-node-title {
+  color: var(--jm-color-accent);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.2rem;
+}
+.diagram-node-body {
+  color: var(--jm-color-fg);
+  font-size: 0.9em;
+  line-height: 1.35;
+}
+.diagram-arrow {
+  color: var(--jm-color-dim);
+  font-size: 0.8em;
+  line-height: 1.2;
+}
+.diagram-payload {
+  color: var(--jm-color-muted);
+  font-size: 0.95em;
+  letter-spacing: 0.02em;
 }

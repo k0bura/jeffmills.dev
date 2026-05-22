@@ -14,50 +14,106 @@ const dateFmt = new Intl.DateTimeFormat("en-US", {
 ---
 
 <Base title="Press — Jeff Mills" description="Coverage of work led at Vanguard FAS.">
-  <h1 class="text-3xl font-semibold tracking-tight">Press</h1>
-  <p class="mt-4 mb-12" style="color: var(--jm-color-muted)">
+  <h1 class="page-title">press</h1>
+  <p class="page-lede">
     Coverage of work I&rsquo;ve led at Vanguard FAS &mdash; including
-    <strong style="color: var(--jm-color-fg); font-weight: 500">Expert Insights</strong>,
-    Vanguard&rsquo;s AI-powered portfolio analysis tool for advisors, which
-    launched on April 9, 2026.
+    <span class="accent">Expert Insights</span>, Vanguard&rsquo;s AI-powered
+    portfolio analysis tool for advisors, launched April 9, 2026.
   </p>
 
-  <ul class="space-y-10 list-none p-0">
+  <hr class="jm-rule" />
+
+  <ul class="press-list">
     {
       items.map((item) => (
         <li>
           <article>
-            <header class="flex items-baseline justify-between gap-4 flex-wrap">
-              <p class="text-xs uppercase tracking-wide m-0" style="color: var(--jm-color-muted)">
-                {item.outlet}
-              </p>
-              <time
-                datetime={item.publishDate}
-                class="text-sm shrink-0"
-                style="color: var(--jm-color-muted)"
-              >
+            <header class="press-head">
+              <span class="press-outlet">{item.outlet}</span>
+              <time datetime={item.publishDate} class="press-date">
                 {dateFmt.format(new Date(item.publishDate))}
               </time>
             </header>
-            <h2 class="text-lg font-semibold mt-1 mb-2">
-              <a
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="no-underline hover:underline"
-              >
+            <h2 class="press-title">
+              <a href={item.url} target="_blank" rel="noopener noreferrer">
                 {item.title}
                 <span class="sr-only"> (opens in a new tab)</span>
               </a>
             </h2>
-            {item.excerpt && (
-              <p class="m-0" style="color: var(--jm-color-muted)">
-                {item.excerpt}
-              </p>
-            )}
+            {item.excerpt && <p class="press-excerpt">{item.excerpt}</p>}
           </article>
         </li>
       ))
     }
   </ul>
 </Base>
+
+<style>
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.5rem 0 0.5rem;
+  }
+
+  .page-lede {
+    margin: 0 0 0.5rem;
+    color: var(--jm-color-muted);
+  }
+
+  .accent {
+    color: var(--jm-color-accent);
+  }
+
+  .press-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .press-list > li {
+    padding: 1rem 0;
+    border-bottom: 1px dashed var(--jm-color-border);
+  }
+
+  .press-list > li:last-child {
+    border-bottom: none;
+  }
+
+  .press-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: baseline;
+  }
+
+  .press-outlet {
+    color: var(--jm-color-accent);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .press-date {
+    color: var(--jm-color-muted);
+    font-size: 0.85em;
+  }
+
+  .press-title {
+    font-size: 1rem;
+    font-weight: 400;
+    margin: 0.4rem 0 0.4rem;
+    color: var(--jm-color-fg);
+  }
+
+  .press-title a {
+    color: inherit;
+  }
+
+  .press-excerpt {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>

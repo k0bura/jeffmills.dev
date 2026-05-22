@@ -14,42 +14,100 @@ const dateFmt = new Intl.DateTimeFormat("en-US", {
 ---
 
 <Base title="Writing — Jeff Mills">
-  <h1 class="text-3xl font-semibold tracking-tight">Writing</h1>
-  <p class="mt-4 mb-12" style="color: var(--jm-color-muted)">
+  <h1 class="page-title">writing</h1>
+  <p class="page-lede">
     Production notes on design systems, generative UI, and front-end
     architecture.
   </p>
 
-  <ul class="space-y-10 list-none p-0">
+  <hr class="jm-rule" />
+
+  <ul class="post-list">
     {
       posts.map((post) => (
         <li>
           <article>
-            <header class="flex items-baseline justify-between gap-4 flex-wrap">
-              <h2 class="text-xl font-semibold m-0">
-                <a href={`/blog/${post.id}`} class="no-underline hover:underline">
-                  {post.data.title}
-                </a>
-              </h2>
+            <header class="post-head">
               <time
                 datetime={post.data.publishDate.toISOString()}
-                class="text-sm shrink-0"
-                style="color: var(--jm-color-muted)"
+                class="post-date"
               >
                 {dateFmt.format(post.data.publishDate)}
               </time>
+              {post.data.status !== "published" && (
+                <span class="post-status">{post.data.status}</span>
+              )}
             </header>
-            <p class="mt-2" style="color: var(--jm-color-muted)">
-              {post.data.description}
-            </p>
-            {post.data.status === "abstract" && (
-              <p class="mt-2 text-xs uppercase tracking-wide" style="color: var(--jm-color-muted)">
-                Abstract — full post in progress
-              </p>
-            )}
+            <h2 class="post-title">
+              <a href={`/blog/${post.id}`}>{post.data.title}</a>
+            </h2>
+            <p class="post-desc">{post.data.description}</p>
           </article>
         </li>
       ))
     }
   </ul>
 </Base>
+
+<style>
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.5rem 0 0.5rem;
+  }
+
+  .page-lede {
+    margin: 0 0 0.5rem;
+    color: var(--jm-color-muted);
+  }
+
+  .post-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .post-list > li {
+    padding: 1rem 0;
+    border-bottom: 1px dashed var(--jm-color-border);
+  }
+
+  .post-list > li:last-child {
+    border-bottom: none;
+  }
+
+  .post-head {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    font-size: 0.85em;
+  }
+
+  .post-date {
+    color: var(--jm-color-muted);
+  }
+
+  .post-status {
+    color: var(--jm-color-ok);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .post-title {
+    font-size: 1rem;
+    font-weight: 400;
+    margin: 0.35rem 0 0.35rem;
+    color: var(--jm-color-fg);
+  }
+
+  .post-title a {
+    color: inherit;
+  }
+
+  .post-desc {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>

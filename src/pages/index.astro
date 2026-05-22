@@ -1,46 +1,140 @@
 ---
 import Base from "../layouts/Base.astro";
+
+const items = [
+  {
+    href: "/about",
+    label: "About",
+    note: "read more",
+    summary:
+      "20+ years across paradigm shifts. Player-coach. Currently architecting Vanguard's framework-agnostic design system.",
+  },
+  {
+    href: "/projects",
+    label: "Projects",
+    note: "1 live",
+    summary:
+      "Side projects and demos — currently the Gen UI two-stage Claude tool-use pipeline.",
+  },
+  {
+    href: "/blog",
+    label: "Writing",
+    note: "2 posts",
+    summary:
+      "Production notes on design systems, generative UI, and front-end architecture.",
+  },
+  {
+    href: "/press",
+    label: "Press",
+    note: "8 outlets",
+    summary:
+      "Coverage of work led at Vanguard FAS — Expert Insights launch, April 2026.",
+  },
+  {
+    href: "mailto:jeffy9@gmail.com",
+    label: "Contact",
+    note: "email",
+    summary: "Reach out about principal front-end work.",
+  },
+];
 ---
 
-<Base title="Jeff Mills">
-  <section class="space-y-6">
-    <h1 class="text-3xl font-semibold tracking-tight">Jeff Mills</h1>
-    <p class="text-lg" style="color: var(--jm-color-muted)">
-      Principal-level front-end engineer. Design systems, generative UI,
-      framework-agnostic component architecture.
+<Base title="Jeff Mills — Principal Front-End Engineer">
+  <section class="hero">
+    <h1>jeff mills</h1>
+    <p class="role">Principal front-end engineer.</p>
+    <p class="bio">
+      I'm Jeff Mills, a Principal-level Front-End Engineer with 20+ years across Philadelphia agencies and Vanguard. The agency years taught me speed; Vanguard taught me scale. The instincts compose. I architected Vanguard's framework-agnostic design system (AXS) and work hands-on at the intersection of design systems and generative AI. Based in the Philadelphia area.
     </p>
   </section>
 
-  <section class="mt-16 grid gap-6 sm:grid-cols-3">
-    <a
-      href="/demo"
-      class="block border p-6 no-underline transition hover:border-current"
-      style="border-color: var(--jm-color-border); border-radius: var(--jm-radius)"
-    >
-      <h2 class="mb-2 font-medium">Gen UI Demo</h2>
-      <p class="text-sm" style="color: var(--jm-color-muted)">
-        Two-stage LLM tool-use pipeline rendering live UI from a prompt.
-      </p>
-    </a>
-    <a
-      href="/blog"
-      class="block border p-6 no-underline transition hover:border-current"
-      style="border-color: var(--jm-color-border); border-radius: var(--jm-radius)"
-    >
-      <h2 class="mb-2 font-medium">Writing</h2>
-      <p class="text-sm" style="color: var(--jm-color-muted)">
-        Adding an MCP server to your design system.
-      </p>
-    </a>
-    <a
-      href="/press"
-      class="block border p-6 no-underline transition hover:border-current"
-      style="border-color: var(--jm-color-border); border-radius: var(--jm-radius)"
-    >
-      <h2 class="mb-2 font-medium">Press</h2>
-      <p class="text-sm" style="color: var(--jm-color-muted)">
-        Coverage of work I&rsquo;ve led at Vanguard FAS.
-      </p>
-    </a>
-  </section>
+  <hr class="jm-rule" />
+
+  <ul class="nav-list">
+    {
+      items.map(({ href, label, note, summary }) => (
+        <li>
+          <a href={href} class="row">
+            <span class="row-label">{label}</span>
+            <span class="row-dots" aria-hidden="true" />
+            <span class="row-note">{note}</span>
+          </a>
+          <p class="row-summary">{summary}</p>
+        </li>
+      ))
+    }
+  </ul>
 </Base>
+
+<style>
+  .hero h1 {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.5rem 0 0.75rem;
+  }
+
+  .role {
+    margin: 0;
+    color: var(--jm-color-fg);
+  }
+
+  .bio {
+    margin: 0.5rem 0 0;
+    color: var(--jm-color-muted);
+  }
+
+  .bio :global(strong) {
+    color: var(--jm-color-fg);
+    font-weight: 400;
+  }
+
+  .nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .nav-list > li {
+    margin: 1.25rem 0;
+  }
+
+  .row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    color: var(--jm-color-link);
+  }
+
+  .row::before {
+    content: ">";
+    color: var(--jm-color-muted);
+  }
+
+  .row-label {
+    color: var(--jm-color-fg);
+  }
+
+  .row:hover .row-label,
+  .row:hover .row-note {
+    color: var(--jm-color-accent);
+  }
+
+  .row-dots {
+    flex: 1;
+    border-bottom: 1px dotted var(--jm-color-border);
+    transform: translateY(-0.3em);
+    min-width: 1.5rem;
+  }
+
+  .row-note {
+    color: var(--jm-color-ok);
+    font-size: 0.9em;
+  }
+
+  .row-summary {
+    margin: 0.25rem 0 0 1rem;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>

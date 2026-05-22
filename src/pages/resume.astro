@@ -1,0 +1,89 @@
+---
+import Base from "../layouts/Base.astro";
+
+const docUrl = "https://jeffmills.dev/jeff-mills-resume.docx";
+const embedUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(docUrl)}`;
+---
+
+<Base
+  title="Resume — Jeff Mills"
+  description="Resume: Principal-level Front-End Engineer with 20+ years building enterprise platforms, design systems, and AI-integrated product experiences."
+>
+  <h1 class="page-title">resume</h1>
+  <p class="page-lede">
+    Last updated May 2026. <a href="/jeff-mills-resume.docx" download>download .docx</a>
+    &middot; <a href={docUrl} target="_blank" rel="noopener">open in new tab</a>
+  </p>
+
+  <hr class="jm-rule" />
+
+  <div class="resume-embed">
+    <iframe
+      src={embedUrl}
+      title="Jeff Mills resume"
+      loading="lazy"
+      allowfullscreen
+      sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+    ></iframe>
+    <noscript>
+      <p class="resume-fallback">
+        JavaScript is disabled. <a href="/jeff-mills-resume.docx" download>Download the resume</a>.
+      </p>
+    </noscript>
+  </div>
+
+  <p class="resume-foot">
+    Trouble viewing? <a href="/jeff-mills-resume.docx" download>download .docx</a>
+    &middot; <a href="mailto:jeffy9@gmail.com">email jeff</a>
+  </p>
+</Base>
+
+<style>
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.5rem 0 0.5rem;
+  }
+
+  .page-lede {
+    margin: 0 0 0.5rem;
+    color: var(--jm-color-muted);
+  }
+
+  .resume-embed {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 8.5 / 11;
+    border: 1px solid var(--jm-color-border);
+    background: #1a1a1a;
+    margin: 0 0 1rem;
+  }
+
+  .resume-embed iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .resume-fallback {
+    padding: 1rem;
+    color: var(--jm-color-muted);
+  }
+
+  .resume-foot {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+
+  @media (min-width: 720px) {
+    .resume-embed {
+      aspect-ratio: auto;
+      height: 90vh;
+      min-height: 800px;
+    }
+  }
+</style>

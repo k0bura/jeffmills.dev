@@ -1,33 +1,152 @@
 ---
-title: "Building a Gen UI demo with Claude tool use"
-description: "How a two-stage tool-use pipeline turns a free-form prompt into rendered UI, and why the design system's component schemas are the most important piece."
+title: "Generating UI Without Generating Code"
+description: "A two-day prototype exploring generative UI patterns on AXS, Vanguard's framework-agnostic design system, without ever asking an LLM to write production code."
 publishDate: 2025-02-25
-status: abstract
+status: published
 ---
 
-> This is an abstract. The full post is in progress.
+<aside class="callout">
+  <span class="callout-label">TL;DR</span>
 
-The [Gen UI demo](/demo) on this site takes a prompt, makes two Claude calls
-in series, and renders the result through a tiny framework-agnostic
-component library. There is no UI templating, no string concatenation,
-and no JSX coming back from the model — just structured tool calls that
-the browser maps to real components.
+  The goal: show what AXS could do as a substrate for generative UI. The constraint: at the time, AI-generated code was too risky for our production environments. The solution was a two-stage LLM pipeline where every model output was constrained, structured JSON — never code. A Svelte app rendered the result deterministically. The LLM composes; the application code executes.
+</aside>
 
-The full post will cover:
+## The Problem
 
-- **The two-stage split.** Why "pick components" and "compose layout" are
-  two different reasoning problems, and what goes wrong when you fuse
-  them into one call.
-- **The data contract is the design contract.** Each component's tool
-  schema *is* its public API. The model can't render anything the
-  components can't accept, and the components can't render anything the
-  model can't describe. This is the most important property of the
-  whole system.
-- **Mock-first development.** How an `AsyncGenerator` shaped like the
-  real pipeline let me build the entire UI before spending a dollar on
-  API calls.
-- **Cost mitigations.** Prompt caching on the system messages and tool
-  defs, using a smaller model for the layout stage, and per-IP rate
-  limiting at the edge.
+When I built this, AI-generated code was off the table for our production environments. So the interesting question wasn't "can an LLM write a UI component?" That path led straight to maintenance and correctness nightmares. The interesting question was: can an LLM compose a UI from a known set of trusted components, without writing the code that renders them?
 
-Until then, the [demo](/demo) is live and the [source is on GitHub](https://github.com/k0bura/jeffmills.dev).
+If yes, the LLM stays in its safe lane (content generation, structured selection) while the application code keeps the deterministic guarantees that production needs. AXS, built as framework-agnostic Web Components with well-defined props, was the right substrate. Each component is a known entity with a constrained interface; the LLM just needed to pick which ones to use and what to fill them with.
+
+## The Architecture
+
+App → LLM → App → LLM → App. Two LLM round-trips, each constrained by a tool schema, each returning structured JSON.
+
+<div
+  class="diagram"
+  role="img"
+  aria-label="Pipeline: user prompt feeds Stage 1 LLM which picks components and fills content; output is a JSON component list; this feeds Stage 2 LLM which decides layout; output is layout JSON; a Svelte renderer turns both into the final UI."
+>
+  <div class="diagram-node">user prompt</div>
+  <div class="diagram-arrow">▼</div>
+  <div class="diagram-node is-stage">
+    <div class="diagram-node-title">stage 1 LLM</div>
+    <div class="diagram-node-body">pick components<br />+ fill content</div>
+  </div>
+  <div class="diagram-arrow">
+    ▼<br /><span class="diagram-payload">json component list</span>
+  </div>
+  <div class="diagram-node is-stage">
+    <div class="diagram-node-title">stage 2 LLM</div>
+    <div class="diagram-node-body">decide layout</div>
+  </div>
+  <div class="diagram-arrow">
+    ▼<br /><span class="diagram-payload">layout json</span>
+  </div>
+  <div class="diagram-node">
+    <div class="diagram-node-title">svelte renderer</div>
+    <div class="diagram-node-body">deterministic</div>
+  </div>
+  <div class="diagram-arrow">▼</div>
+  <div class="diagram-node">final UI</div>
+</div>
+
+### Stage 1: Content + component selection
+
+**Input:** a user prompt (e.g., "Build a dashboard summarizing my Q3 portfolio").
+
+The LLM was given a tool schema describing AXS components and their props. Its job: generate the content that answers the prompt, AND choose the AXS components best suited to display that content. The output was a JSON array of component definitions, each filled with the right property values.
+
+What it never returned: code. Never JSX, never HTML, never CSS. The LLM didn't need to know how AXS components were implemented; it just needed to know what they did and what props they took. The tool schema enforced this.
+
+```typescript
+const componentTools = [
+  {
+    name: "stat_card",
+    description: "Display a single labeled metric, optional trend arrow",
+    input_schema: {
+      type: "object",
+      properties: {
+        title: { type: "string" },
+        value: { type: "string" },
+        trend: { type: "string", enum: ["up", "down", "flat"] },
+      },
+      required: ["title", "value"],
+    },
+  },
+  // ...one tool per AXS component (chart, table, list, text, accordion, ...)
+];
+```
+
+The model returns its choices as `tool_use` blocks. The app parses them into a flat array:
+
+```json
+[
+  { "component": "stat_card", "props": { "title": "Q3 Return", "value": "+7.2%", "trend": "up" } },
+  { "component": "chart",     "props": { "kind": "doughnut", "label": "Allocation", "data": [/* ... */] } },
+  { "component": "table",     "props": { "headers": ["Asset", "%"], "rows": [/* ... */] } }
+]
+```
+
+### Stage 2: Layout decision
+
+**Input:** the component array from Stage 1, sent back to the LLM.
+
+The LLM's job here was to decide how to arrange these components on the page. Group similar content. Choose rows, columns, grid arrangements. Output: a layout object defining placement, again structured JSON constrained by a schema.
+
+```json
+{
+  "type": "grid",
+  "columns": 2,
+  "children": [
+    { "ref": 0, "span": 2 },
+    { "ref": 1 },
+    { "ref": 2 }
+  ]
+}
+```
+
+`ref` indexes into the component array from Stage 1. `span` lets a component claim multiple columns. The schema enforces that every `ref` resolves to a real component the renderer can draw.
+
+### Stage 3: Deterministic rendering
+
+**Input:** the layout object and component list.
+
+A Svelte template walked the layout JSON, rendered each AXS component with its filled props, and placed them in the specified grid structure. This step was regular application code. No LLM involvement. Predictable, testable, debuggable.
+
+## Why this approach works
+
+The architecture rests on a single insight: separation of composition from rendering.
+
+- The LLM's role is **composition**: which components, what content, what arrangement. All open-ended, all benefiting from intelligent reasoning.
+- The application's role is **rendering**: taking the composed structure and drawing it. Closed-form, deterministic, the kind of thing traditional app code is great at.
+
+By forcing all LLM output through tool schemas, the prototype got:
+
+- **No code-correctness risk.** The LLM never writes code that runs.
+- **No injection risk.** Output is constrained JSON, not freeform text.
+- **Predictable rendering.** Deterministic Svelte templates do the drawing.
+- **Easy debugging.** LLM responses are inspectable as data.
+- **Provable design system conformance.** Only AXS components can be chosen.
+
+## What this validated
+
+The exercise proved something I'd been betting on for years: AXS's framework-agnostic primitive design is durable against paradigm shifts. The library was designed before generative AI was mainstream, but it was designed right — components as standalone primitives with constrained interfaces, not framework-coupled abstractions. That made it the perfect substrate for Gen UI work: the LLM could reason about components without knowing anything about how they were built.
+
+If AXS had been a typical framework-bound component library, this prototype would have required more glue, more compromise, more code generation. Instead, it worked because the design system was already AI-friendly. The MCP server I later added to AXS extends the same idea: expose component metadata so AI agents can compose with AXS without needing to learn AXS's internals.
+
+## Limits and open questions
+
+This was a two-day prototype, not a production system. The honest limits:
+
+- **No evaluation harness.** I knew it worked from manual inspection but didn't measure component selection quality or layout coherence systematically.
+- **No streaming.** The two LLM round-trips ran sequentially; the user waited for both before seeing anything.
+- **Limited component coverage.** The tool schema described a subset of AXS; a full system would need automated schema generation from the library.
+- **No interaction model.** Generated UIs were static. Adding event handlers or component-level state would be the next architectural decision.
+
+The prototype's job was to show that the architectural pattern works, not to ship it. That goal it accomplished, in two days, solo.
+
+## What's next
+
+The same pattern generalizes beyond AXS. Any design system with structured component metadata and constrained props can be a Gen UI substrate. The MCP server work makes this practical: an AI coding agent can read the component schema directly, then either generate static UIs (this prototype's pattern) or scaffold component-based application code.
+
+The bigger question Gen UI raises: as the cost of generating UIs drops, what does it mean to design one? I don't think the answer is "no more designers." I think it's "designers who define the substrate that generators compose against." Which is exactly what design system designers have been doing all along, with the audience now shifting from human engineers to AI agents.

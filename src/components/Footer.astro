@@ -1,19 +1,49 @@
 ---
 const year = new Date().getFullYear();
+const buildMonth = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+}).format(new Date());
 ---
 
-<footer
-  class="mt-24 border-t"
-  style="border-color: var(--jm-color-border)"
->
-  <div
-    class="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 px-6 py-6 text-sm"
-    style="color: var(--jm-color-muted)"
-  >
-    <span>&copy; {year} Jeff Mills</span>
-    <ul class="flex gap-4">
-      <li><a href="https://github.com/k0bura">GitHub</a></li>
-      <li><a href="mailto:jeffy9@gmail.com">Email</a></li>
+<footer class="jm-footer">
+  <hr class="jm-rule" />
+  <div class="jm-footer-row">
+    <span>&copy; {year} jeff mills</span>
+    <ul>
+      <li><a href="https://github.com/k0bura">github</a></li>
+      <li><a href="mailto:jeffy9@gmail.com">email</a></li>
     </ul>
   </div>
+  <p class="jm-footer-meta">
+    built {buildMonth.toLowerCase()} &middot; no analytics &middot; no trackers
+  </p>
 </footer>
+
+<style>
+  .jm-footer {
+    margin-top: 4rem;
+    color: var(--jm-color-muted);
+    font-size: 0.85em;
+  }
+
+  .jm-footer-row {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .jm-footer ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 1rem;
+  }
+
+  .jm-footer-meta {
+    margin: 0.5rem 0 0;
+    font-size: 0.95em;
+  }
+</style>

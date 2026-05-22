@@ -18,17 +18,24 @@ const { title, description = "Jeff Mills — Principal Front-End Engineer" } = A
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#0e0e0e" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
   </head>
   <body>
-    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:bg-white focus:p-2">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:p-2"
+      style="background: var(--jm-color-accent); color: var(--jm-color-bg)"
+    >
       Skip to content
     </a>
-    <Header />
-    <main id="main" class="mx-auto max-w-3xl px-6 py-12">
-      <slot />
-    </main>
-    <Footer />
+    <div class="jm-shell">
+      <Header />
+      <main id="main">
+        <slot />
+      </main>
+      <Footer />
+    </div>
   </body>
 </html>

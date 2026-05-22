@@ -1,0 +1,86 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="About — Jeff Mills"
+  description="Principal-level front-end engineer with 20+ years building enterprise web platforms, design systems, and AI-integrated product experiences."
+>
+  <h1 class="page-title">about</h1>
+
+  <hr class="jm-rule" />
+
+  <div class="about-prose">
+    <p>
+      I&rsquo;m Jeff, a Principal-level Front-End Engineer with 20+ years
+      across fast-moving Philadelphia agencies and Vanguard, where I
+      architected the framework-agnostic design system (AXS) that powers 11
+      product teams and the firm&rsquo;s main advisor portal.
+    </p>
+
+    <p>
+      The agency years taught me speed; Vanguard taught me scale. The
+      instincts compose. What I&rsquo;m drawn to: durable abstractions, the
+      design decisions that age well across platform shifts you didn&rsquo;t
+      see coming. The Vue-to-Web-Components approach I built years ago quietly
+      became the foundation for generative-UI work nobody had imagined yet.
+      Not luck.
+    </p>
+
+    <p>
+      I work player-coach style: I write code alongside the engineers I lead,
+      pair-program through the hard parts, and stay close to the production
+      codebase. Lately that means a lot of AI-assisted coding with Claude,
+      including a two-month team refactor from Vue to Lit and a Gen UI
+      prototype I built solo in two days.
+    </p>
+
+    <p class="about-locale">
+      <span class="jm-badge">&gt;</span>Based in the Philadelphia area.
+    </p>
+  </div>
+
+  <hr class="jm-rule" />
+
+  <p class="about-cta">
+    Open to Principal Front-End roles. <a href="mailto:jeffy9@gmail.com">say hello</a>
+    &middot; <a href="/resume">read resume</a>
+    &middot; <a href="https://github.com/k0bura">github.com/k0bura</a>
+  </p>
+</Base>
+
+<style>
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.5rem 0 0.5rem;
+  }
+
+  .about-prose p {
+    margin: 0 0 1.1rem;
+    line-height: 1.75;
+  }
+
+  .about-prose p:last-child {
+    margin-bottom: 0;
+  }
+
+  .about-prose code {
+    font-size: 0.9em;
+  }
+
+  .about-locale {
+    color: var(--jm-color-muted);
+  }
+
+  .about-locale .jm-badge {
+    color: var(--jm-color-muted);
+  }
+
+  .about-cta {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.95em;
+  }
+</style>
