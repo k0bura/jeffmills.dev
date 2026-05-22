@@ -1,11 +1,63 @@
 ---
 import Base from "../layouts/Base.astro";
+import { PRESS } from "../content/press.ts";
+
+const items = [...PRESS].sort(
+  (a, b) => new Date(b.publishDate).valueOf() - new Date(a.publishDate).valueOf()
+);
+
+const dateFmt = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
 ---
 
 <Base title="Press — Jeff Mills" description="Coverage of work led at Vanguard FAS.">
   <h1 class="text-3xl font-semibold tracking-tight">Press</h1>
-  <p class="mt-4" style="color: var(--jm-color-muted)">
-    Coming next: links to Barron&rsquo;s, Wealth Management, and InvestmentNews
-    coverage of Vanguard&rsquo;s Expert Insights and GenAI advisor tool.
+  <p class="mt-4 mb-12" style="color: var(--jm-color-muted)">
+    Coverage of work I&rsquo;ve led at Vanguard FAS &mdash; including
+    <strong style="color: var(--jm-color-fg); font-weight: 500">Expert Insights</strong>,
+    Vanguard&rsquo;s AI-powered portfolio analysis tool for advisors, which
+    launched on April 9, 2026.
   </p>
+
+  <ul class="space-y-10 list-none p-0">
+    {
+      items.map((item) => (
+        <li>
+          <article>
+            <header class="flex items-baseline justify-between gap-4 flex-wrap">
+              <p class="text-xs uppercase tracking-wide m-0" style="color: var(--jm-color-muted)">
+                {item.outlet}
+              </p>
+              <time
+                datetime={item.publishDate}
+                class="text-sm shrink-0"
+                style="color: var(--jm-color-muted)"
+              >
+                {dateFmt.format(new Date(item.publishDate))}
+              </time>
+            </header>
+            <h2 class="text-lg font-semibold mt-1 mb-2">
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="no-underline hover:underline"
+              >
+                {item.title}
+                <span class="sr-only"> (opens in a new tab)</span>
+              </a>
+            </h2>
+            {item.excerpt && (
+              <p class="m-0" style="color: var(--jm-color-muted)">
+                {item.excerpt}
+              </p>
+            )}
+          </article>
+        </li>
+      ))
+    }
+  </ul>
 </Base>
