@@ -30,6 +30,7 @@ const { title, description = "Jeff Mills — Principal Front-End Engineer" } = A
     >
       Skip to content
     </a>
+    <div class="crt-overlay" aria-hidden="true"></div>
     <div class="jm-shell">
       <Header />
       <main id="main">
@@ -37,5 +38,38 @@ const { title, description = "Jeff Mills — Principal Front-End Engineer" } = A
       </main>
       <Footer />
     </div>
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        let mx = 0,
+          my = 0,
+          queued = false;
+        window.addEventListener(
+          "pointermove",
+          (e) => {
+            if (e.pointerType !== "mouse") return;
+            mx = e.clientX;
+            my = e.clientY;
+            if (!queued) {
+              queued = true;
+              requestAnimationFrame(() => {
+                root.style.setProperty("--mx", mx + "px");
+                root.style.setProperty("--my", my + "px");
+                queued = false;
+              });
+            }
+          },
+          { passive: true }
+        );
+        window.addEventListener(
+          "pointerleave",
+          () => {
+            root.style.setProperty("--mx", "-1000px");
+            root.style.setProperty("--my", "-1000px");
+          },
+          { passive: true }
+        );
+      })();
+    </script>
   </body>
 </html>
