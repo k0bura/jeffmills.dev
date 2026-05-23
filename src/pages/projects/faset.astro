@@ -200,13 +200,13 @@ const handleScroll = (el) => {
 ---
 
 <Base
-  title="FASET — Jeff Mills"
+  title="FASET, Jeff Mills"
   description="The enterprise design system I helped build before AXS. 86 Vue 2 components compiled to custom elements; the codebase where framework-agnostic ideas were incubated under enterprise constraints."
 >
   <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
   <h1 class="page-title">faset</h1>
   <p class="project-meta">
-    <span class="project-year">2018 — 2022</span>
+    <span class="project-year">2018-2022</span>
     <span class="meta-sep">&middot;</span>
     <span class="project-status">proprietary</span>
     <span class="meta-sep">&middot;</span>
@@ -217,8 +217,8 @@ const handleScroll = (el) => {
 
   <p class="page-lede">
     FASET was the design system that came before AXS. Three internal
-    packages &mdash; <code>faset</code>, <code>faset-core</code>,
-    <code>faset-ui</code> &mdash; with 86 Vue 2 components compiled to
+    packages, <code>faset</code>, <code>faset-core</code>,
+    <code>faset-ui</code>, with 86 Vue 2 components compiled to
     native custom elements via <code>vue-custom-element</code>, lazy-mounted
     by a document-wide MutationObserver, and styled with a Sass-driven
     token system. The codebase where the framework-agnostic ideas were
@@ -230,7 +230,7 @@ const handleScroll = (el) => {
   </p>
 
   <aside class="callout">
-    <span class="callout-label">Proprietary &mdash; code samples only</span>
+    <span class="callout-label">Proprietary, code samples only</span>
     <p>
       FASET is internal to a regulated-finance enterprise. The full
       repositories can&rsquo;t be shared publicly. What&rsquo;s on this
@@ -281,7 +281,7 @@ const handleScroll = (el) => {
     <code>Faset</code> class. The pattern: install a couple of small
     plugins (viewport, key-code aliases, focus management), register a
     single shared event bus, expose filters, and quietly print a version
-    banner. Same idea I would later port forward to AXS &mdash; same
+    banner. Same idea I would later port forward to AXS, same
     architectural posture, different framework era.
   </p>
 
@@ -322,15 +322,15 @@ const handleScroll = (el) => {
 
   <h2 class="section-title">the directives</h2>
   <p>
-    Some of the most-reused primitives in FASET weren&rsquo;t components &mdash;
+    Some of the most-reused primitives in FASET weren&rsquo;t components,
     they were custom Vue directives. Two examples:
   </p>
 
   <p>
-    <strong><code>v-intersect</code></strong> &mdash; an
+    <strong><code>v-intersect</code></strong>, an
     <code>IntersectionObserver</code> wrapper using a single shared observer
     and a <code>WeakMap</code> for per-element callbacks. Lazy-load images,
-    animation triggers, infinite-scroll feeds &mdash; all built on this one
+    animation triggers, infinite-scroll feeds, all built on this one
     primitive.
   </p>
 
@@ -341,7 +341,7 @@ const handleScroll = (el) => {
   </p>
 
   <p>
-    <strong><code>v-bounds</code></strong> &mdash; toggles class names based on
+    <strong><code>v-bounds</code></strong>, toggles class names based on
     which viewport edges the element is currently touching. Used by
     sticky-state components, sidebar positioning, in-page navigation
     indicators. Cheaper and more declarative than per-component scroll
@@ -400,7 +400,7 @@ const handleScroll = (el) => {
   <ul class="proof-list">
     <li>
       The <strong>Vue-source-to-Web-Component compilation</strong> approach
-      &mdash; FASET used <code>vue-custom-element</code> on Vue 2; AXS
+, FASET used <code>vue-custom-element</code> on Vue 2; AXS
       replaced it with Vue 3&rsquo;s native <code>defineCustomElement</code>.
       Same architectural premise; framework-agnostic distribution from a
       single source.
@@ -411,7 +411,7 @@ const handleScroll = (el) => {
       survived almost verbatim into AXS&rsquo;s composables.
     </li>
     <li>
-      The <strong>monorepo / multiple packages</strong> shape &mdash; FASET
+      The <strong>monorepo / multiple packages</strong> shape, FASET
       used Yarn workspaces; AXS uses Nx, but the partitioning logic is the
       same: a core runtime, a component library, framework-specific
       adapters.
@@ -421,8 +421,8 @@ const handleScroll = (el) => {
       playgrounds that go beyond standard story isolation.
     </li>
     <li>
-      The <strong>token system</strong> shape &mdash; spacing, typography,
-      color, breakpoints &mdash; structured the same way, just promoted
+      The <strong>token system</strong> shape, spacing, typography,
+      color, breakpoints, structured the same way, just promoted
       from Sass to CSS custom properties when the browser support landed.
     </li>
   </ul>

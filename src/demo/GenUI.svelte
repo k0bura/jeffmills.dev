@@ -45,7 +45,7 @@
 
 {#if USE_MOCKS}
   <div class="banner" role="status">
-    Mock mode — every prompt returns the same demo response. Real Anthropic
+    Mock mode, every prompt returns the same demo response. Real Anthropic
     backend is wired up in a later step.
   </div>
 {/if}
@@ -77,9 +77,9 @@
 
   <details class="json-viewer">
     <summary>Show the pipeline JSON</summary>
-    <h3>Stage 1 — selected components</h3>
+    <h3>Stage 1, selected components</h3>
     <pre>{JSON.stringify(components, null, 2)}</pre>
-    <h3>Stage 2 — layout</h3>
+    <h3>Stage 2, layout</h3>
     <pre>{JSON.stringify(layout, null, 2)}</pre>
   </details>
 

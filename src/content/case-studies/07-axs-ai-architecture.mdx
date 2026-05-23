@@ -2,8 +2,8 @@
 order: 7
 title: "AXS + AI: The Three-Layer Architecture"
 chapter: "Technical Deep Dive"
-period: "2024 — present"
-summary: "How the AXS design system was extended into an AI-ready platform — IDE metadata at build time, an MCP server with 9 tools, and agentic workflows that enforce architecture from inside the IDE."
+period: "2024, present"
+summary: "How the AXS design system was extended into an AI-ready platform, IDE metadata at build time, an MCP server with 9 tools, and agentic workflows that enforce architecture from inside the IDE."
 tags: ["MCP", "design systems", "Claude", "agentic workflows", "architecture"]
 ---
 
@@ -20,9 +20,9 @@ tags: ["MCP", "design systems", "Claude", "agentic workflows", "architecture"]
 
 ## The system
 
-AXS (Advisor Experience System) is Vanguard's front-end design system — a Web Component library (~84 components across two generations) built in Vue 3, compiled to standards-based custom elements, and consumed by internal product teams. It ships design tokens, SCSS, components, and framework adapters from a single Nx monorepo.
+AXS (Advisor Experience System) is Vanguard's front-end design system, a Web Component library (~84 components across two generations) built in Vue 3, compiled to standards-based custom elements, and consumed by internal product teams. It ships design tokens, SCSS, components, and framework adapters from a single Nx monorepo.
 
-What follows is the architecture of how AXS becomes an AI platform — not "AI on top of AXS", but a layered system where each layer enables the next.
+What follows is the architecture of how AXS becomes an AI platform, not "AI on top of AXS", but a layered system where each layer enables the next.
 
 ## The architecture
 
@@ -32,30 +32,30 @@ What follows is the architecture of how AXS becomes an AI platform — not "AI o
   aria-label="Three-layer AXS AI architecture: Layer 1 generates IDE metadata at build time; Layer 2 exposes the design system through an MCP server with 9 tools; Layer 3 runs Claude Code skills that enforce architecture patterns for the AXS team itself."
 >
   <div class="diagram-node is-stage">
-    <div class="diagram-node-title">layer 1 &mdash; IDE metadata</div>
+    <div class="diagram-node-title">layer 1, IDE metadata</div>
     <div class="diagram-node-body">passive intelligence<br />in every editor</div>
   </div>
   <div class="diagram-arrow">&#9660;<br /><span class="diagram-payload">feeds</span></div>
   <div class="diagram-node is-stage">
-    <div class="diagram-node-title">layer 2 &mdash; MCP server</div>
+    <div class="diagram-node-title">layer 2, MCP server</div>
     <div class="diagram-node-body">9 tools<br />any AI assistant becomes AXS-aware</div>
   </div>
   <div class="diagram-arrow">&#9660;<br /><span class="diagram-payload">feeds</span></div>
   <div class="diagram-node is-stage">
-    <div class="diagram-node-title">layer 3 &mdash; Claude Code skills</div>
+    <div class="diagram-node-title">layer 3, Claude Code skills</div>
     <div class="diagram-node-body">agentic workflows<br />for the AXS team itself</div>
   </div>
 </div>
 
-## Layer 1 — Passive IDE intelligence
+## Layer 1, Passive IDE intelligence
 
-Two generated metadata files — `axs.web-types.json` (JetBrains schema) and `axs.html-data.json` (VS Code custom HTML data schema) — are produced at every build by a custom Nx executor (`axs-automation:jweb-types`).
+Two generated metadata files, `axs.web-types.json` (JetBrains schema) and `axs.html-data.json` (VS Code custom HTML data schema), are produced at every build by a custom Nx executor (`axs-automation:jweb-types`).
 
-**How it works.** The executor uses `vue-docgen-api` to parse every `.vue` file, converts camelCase props to kebab-case attributes, respects `@undocumented` JSDoc annotations to hide internal props, and reads optional `ComponentNameDoc.json` sidecar files for supplemental metadata. Both files are declared in `package.json` so any editor that installs the package automatically gets autocompletion for every AXS custom element — tag name, attribute, and slot.
+**How it works.** The executor uses `vue-docgen-api` to parse every `.vue` file, converts camelCase props to kebab-case attributes, respects `@undocumented` JSDoc annotations to hide internal props, and reads optional `ComponentNameDoc.json` sidecar files for supplemental metadata. Both files are declared in `package.json` so any editor that installs the package automatically gets autocompletion for every AXS custom element, tag name, attribute, and slot.
 
 **The point.** Before any AI agent enters the picture, the authoritative component API is already machine-readable and editor-discoverable. This is the foundation every other layer depends on.
 
-## Layer 2 — Active AI tooling via the `axs-mcp` MCP server
+## Layer 2, Active AI tooling via the `axs-mcp` MCP server
 
 A dedicated library (`libs/axs-mcp/`) implements a Model Context Protocol server. It exposes **9 tools** that any MCP-capable AI assistant (Claude, Copilot, Cursor) can call at runtime to query the design system.
 
@@ -72,10 +72,10 @@ A dedicated library (`libs/axs-mcp/`) implements a Model Context Protocol server
 | `get_typography` | Typography subset |
 | `get_layout` | Layout utilities |
 
-**Data pipeline.** The MCP server is entirely data-driven — it doesn't parse source code at runtime. Three build-time scripts run as part of `axs-mcp:build` and produce JSON data files in `dist/libs/axs-mcp/data/`. The `axs.web-types.json` from Layer 1 is copied into the same directory.
+**Data pipeline.** The MCP server is entirely data-driven, it doesn't parse source code at runtime. Three build-time scripts run as part of `axs-mcp:build` and produce JSON data files in `dist/libs/axs-mcp/data/`. The `axs.web-types.json` from Layer 1 is copied into the same directory.
 
 - `generate-style-tokens.ts` directly parses `_axs-config.scss` with regex + balanced-paren extraction, resolving SCSS expressions to concrete values (e.g., `$axs-base-space-size * 4` → `"16px"`).
-- `generate-usage-docs.ts` parses V1 story files (`*.stories.ts`) and extracts `render()` function bodies using lightweight brace-counting parsing — no full AST dependency.
+- `generate-usage-docs.ts` parses V1 story files (`*.stories.ts`) and extracts `render()` function bodies using lightweight brace-counting parsing, no full AST dependency.
 - `generate-recipe-list.ts` scans recipe directories and emits a manifest; live source is fetched on-demand via `gh api` so it's always current.
 
 **Dependency chain:**
@@ -89,36 +89,36 @@ axs-components:do-generations  (jweb-types + vcustom-html)
 
 **What this unlocks.** An AI assistant working in an adopter codebase can, in a single conversation turn, ask for the `axs-button` API, get spacing tokens, retrieve a recipe, and assemble a complete, on-brand UI implementation without ever leaving the chat interface.
 
-## Layer 3 — Agentic workflows via Claude Code skills
+## Layer 3, Agentic workflows via Claude Code skills
 
 Three custom Claude Code skills in `.claude/skills/` define structured, multi-step AI workflows for the AXS team's own component development.
 
-### `/build-v1` — V0→V1 component migration
+### `/build-v1`, V0→V1 component migration
 
-A 5-phase structured skill that orchestrates a full component migration. It mandates reading `docs/project.md`, `docs/internal-api/INDEX.md`, all relevant composable/directive docs, the V0 source, and a V1 reference component — *before* writing a single line of code.
+A 5-phase structured skill that orchestrates a full component migration. It mandates reading `docs/project.md`, `docs/internal-api/INDEX.md`, all relevant composable/directive docs, the V0 source, and a V1 reference component, *before* writing a single line of code.
 
-This enforces the team's architecture patterns — slot-over-props philosophy, composable reuse, shadow DOM a11y patterns — even when the agent hasn't seen them before.
+This enforces the team's architecture patterns, slot-over-props philosophy, composable reuse, shadow DOM a11y patterns, even when the agent hasn't seen them before.
 
-### `/test-docs` — Documentation quality auditing
+### `/test-docs`, Documentation quality auditing
 
 Simulates a fresh agent session following the exact discovery path (`CLAUDE.md` → `INDEX` → detailed docs) and scores coverage against an 8-item universal checklist plus conditional checks per component profile (Simple, Parent-Child, Overlay, etc.).
 
 Produces a Pass/Partial/Fail scorecard with a percentage. The team tracks doc quality as a measurable metric over time.
 
-### `/beta-tag` — Component lifecycle management
+### `/beta-tag`, Component lifecycle management
 
-Handles the mechanics of moving a V1 component through beta — renames files, updates tag-name suffixes, updates story/MDX references, and adds/removes the Storybook beta badge. Encodes process knowledge that would otherwise live only in an engineer's head.
+Handles the mechanics of moving a V1 component through beta, renames files, updates tag-name suffixes, updates story/MDX references, and adds/removes the Storybook beta badge. Encodes process knowledge that would otherwise live only in an engineer's head.
 
 ### Agent-facing documentation
 
-The team invested heavily in writing docs explicitly for AI consumption — not just for humans:
+The team invested heavily in writing docs explicitly for AI consumption, not just for humans:
 
-- `docs/project.md` — authoritative V0/V1/V3 strategy. Mandatory reading before any component work.
-- `docs/internal-api/INDEX.md` — a lookup table mapping "I need to do X" to the exact composable and doc file.
-- `docs/a11y/INDEX.md` — WCAG 2.2 AA patterns, mapping a11y needs to shadow DOM solutions used by the library.
+- `docs/project.md`, authoritative V0/V1/V3 strategy. Mandatory reading before any component work.
+- `docs/internal-api/INDEX.md`, a lookup table mapping "I need to do X" to the exact composable and doc file.
+- `docs/a11y/INDEX.md`, WCAG 2.2 AA patterns, mapping a11y needs to shadow DOM solutions used by the library.
 - Seven detailed internal API docs covering every composable, directive, and utility with import paths and real V1 examples.
 
-**What this unlocks.** `/build-v1` replaced ad-hoc AI-assisted component work with a repeatable, auditable process. `/test-docs` created a feedback loop — the team can now measure whether the docs are actually sufficient to guide an AI agent, and improve them iteratively.
+**What this unlocks.** `/build-v1` replaced ad-hoc AI-assisted component work with a repeatable, auditable process. `/test-docs` created a feedback loop, the team can now measure whether the docs are actually sufficient to guide an AI agent, and improve them iteratively.
 
 ## The through-line
 
@@ -126,7 +126,7 @@ The three layers compose into a coherent system:
 
 - **Layer 1** ensures every developer's editor understands AXS. The prerequisite for correct AI autocompletion in adopter codebases.
 - **Layer 2** turns the design system into a queryable knowledge base. Any AI assistant becomes AXS-aware with no fine-tuning, no RAG over raw source.
-- **Layer 3** turns the AI into a capable contributor *to* the design system itself — not just a consumer of it.
+- **Layer 3** turns the AI into a capable contributor *to* the design system itself, not just a consumer of it.
 
 ## Forward look: AXS V3
 
@@ -138,4 +138,4 @@ The MCP server and agentic workflow infrastructure built for V1 are explicitly t
 
 The strongest angle here is **the closed loop**: the design system generates its own AI-readable documentation at build time, which feeds both external AI assistants (MCP) and internal AI agents (Claude Code skills), and the team measures documentation quality with an automated AI audit. The system continuously improves its own AI-readiness.
 
-This is what "AI-native by design" actually looks like at a system level — not a chat widget, not a copilot bolt-on, but the design system itself behaving as infrastructure for AI tooling.
+This is what "AI-native by design" actually looks like at a system level, not a chat widget, not a copilot bolt-on, but the design system itself behaving as infrastructure for AI tooling.

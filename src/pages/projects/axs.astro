@@ -10,7 +10,7 @@ const defineComponentsSample = `// libs/axs-web-components/src/defineComponents.
 // The Vue-to-Web-Components transpilation entry point. Vue 3's
 // defineCustomElement wraps each .vue file into a standards-based
 // custom element that any framework (or no framework) can render.
-// One source, many targets — the architectural premise FASET proved
+// One source, many targets, the architectural premise FASET proved
 // at smaller scale, scaled here to ~54 web components shipping into
 // 11 product teams.
 
@@ -123,7 +123,7 @@ async function extractInformation(absolutePath: string) {
   };
 }`;
 
-const foundationDiff = `// nx.json — added in the founding commit, April 27 2022.
+const foundationDiff = `// nx.json, added in the founding commit, April 27 2022.
 // The monorepo configuration the next two years of work was built on.
 
 {
@@ -222,13 +222,13 @@ export default createComponentGenerator;`;
 ---
 
 <Base
-  title="AXS — Jeff Mills"
+  title="AXS, Jeff Mills"
   description="The framework-agnostic enterprise design system I architected. Nx monorepo with axs-vue + axs-web-components + axs-automation. Vue source compiles to standards-based custom elements; ships to Vue, Angular, AEM, and any HTML."
 >
   <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
   <h1 class="page-title">axs</h1>
   <p class="project-meta">
-    <span class="project-year">2020 — 2025</span>
+    <span class="project-year">2020-2025</span>
     <span class="meta-sep">&middot;</span>
     <span class="project-status">proprietary</span>
     <span class="meta-sep">&middot;</span>
@@ -252,12 +252,12 @@ export default createComponentGenerator;`;
   </p>
 
   <aside class="callout">
-    <span class="callout-label">Proprietary &mdash; code samples only</span>
+    <span class="callout-label">Proprietary, code samples only</span>
     <p>
       AXS lives in a private internal repository. The full source
       can&rsquo;t be shared publicly. The samples below are scrubbed of
-      corporate identifiers &mdash; package namespaces, internal URLs
-      &mdash; with the architecture untouched. Happy to walk through the
+      corporate identifiers, package namespaces, internal URLs
+, with the architecture untouched. Happy to walk through the
       system in depth under NDA;
       <a href="mailto:jeffy9@gmail.com">reach out</a>.
     </p>
@@ -268,7 +268,7 @@ export default createComponentGenerator;`;
   <h2 class="section-title">verified contribution &middot; the foundation</h2>
   <p>
     <strong>159 commits authored by me</strong> across the AXS repository,
-    April 2022 &mdash; March 2024. The single most foundational one:
+    April 2022, March 2024. The single most foundational one:
   </p>
 
   <div class="commit-card">
@@ -281,8 +281,8 @@ export default createComponentGenerator;`;
       <code>chore</code>: working nx structure with vue/vite/ts
     </p>
     <p class="commit-note">
-      Stood up the entire Nx monorepo &mdash; Vue 3 + Vite + TypeScript +
-      Storybook + ESLint &mdash; that the next nine thousand commits built
+      Stood up the entire Nx monorepo, Vue 3 + Vite + TypeScript +
+      Storybook + ESLint, that the next nine thousand commits built
       on top of. Pre-Vite-everywhere, pre-Nx-default-in-Vue-shops.
       Architectural foundation in one push.
     </p>
@@ -312,14 +312,14 @@ export default createComponentGenerator;`;
   <dl class="stack-list">
     <dt>axs-vue</dt>
     <dd>
-      <strong>~104 Vue 3 components</strong> &mdash; the canonical source.
+      <strong>~104 Vue 3 components</strong>, the canonical source.
       Forms, charts, modals, navigation, layouts, the lot. Built as Vue
       single-file components so designers and engineers share one mental
       model.
     </dd>
     <dt>axs-web-components</dt>
     <dd>
-      <strong>~54 custom elements</strong> &mdash; the standards-based output.
+      <strong>~54 custom elements</strong>, the standards-based output.
       Each one wraps a Vue SFC via <code>defineCustomElement</code> and
       registers it with the global registry. Framework-agnostic consumers
       use these directly.
@@ -338,12 +338,12 @@ export default createComponentGenerator;`;
     <dt>axs-styles</dt>
     <dd>
       Design tokens as CSS custom properties. Spacing, typography, color,
-      breakpoints &mdash; everything that pierces shadow DOM via the
+      breakpoints, everything that pierces shadow DOM via the
       cascade.
     </dd>
     <dt>axs-vue-recipes</dt>
     <dd>
-      Pre-composed multi-component patterns &mdash; the &ldquo;here&rsquo;s
+      Pre-composed multi-component patterns, the &ldquo;here&rsquo;s
       how to build a labeled-input-with-validation&rdquo; layer.
       Discoverable via Storybook and the MCP server (see
       <a href="/case-studies/07-axs-ai-architecture">AXS + AI deep dive</a>).
@@ -366,7 +366,7 @@ export default createComponentGenerator;`;
     The architectural premise. One Vue 3 single-file component, exposed as
     a standards-based custom element. Any Vue app, Angular app, AEM
     template, or plain HTML page renders the same tag and gets the same
-    behavior &mdash; same styles, same events, same accessibility tree.
+    behavior, same styles, same events, same accessibility tree.
   </p>
 
   <Code code={defineComponentsSample} lang="typescript" theme={theme} />
@@ -405,7 +405,7 @@ export default createComponentGenerator;`;
   <p>
     This is Layer 1 of the
     <a href="/case-studies/07-axs-ai-architecture">three-layer AI
-    architecture</a> &mdash; the metadata an MCP server can serve, an IDE
+    architecture</a>, the metadata an MCP server can serve, an IDE
     can autocomplete, and an agent can reason over. The other two layers
     (the MCP server itself, and Claude Code skills) sit on top of this.
   </p>
@@ -438,7 +438,7 @@ export default createComponentGenerator;`;
   <ul class="proof-list">
     <li>
       <strong>The MCP server</strong> that exposes the design system to
-      AI assistants (Claude, Copilot, Cursor) &mdash; built on top of the
+      AI assistants (Claude, Copilot, Cursor), built on top of the
       <code>jweb-types</code> output shown above. Full breakdown in the
       <a href="/case-studies/07-axs-ai-architecture">AXS + AI deep dive</a>.
     </li>

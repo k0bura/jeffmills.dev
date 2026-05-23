@@ -4,7 +4,7 @@ import GenUI from "../../demo/GenUI.svelte";
 ---
 
 <Base
-  title="Gen UI Demo — Jeff Mills"
+  title="Gen UI Demo, Jeff Mills"
   description="A two-stage Claude tool-use pipeline that composes UI from a tiny web-component library, without generating any code."
 >
   <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
@@ -41,7 +41,7 @@ import GenUI from "../../demo/GenUI.svelte";
 
   <h2 class="section-title">try it</h2>
   <p class="section-lede">
-    Pick a starter prompt or write your own. Currently running on mocks &mdash;
+    Pick a starter prompt or write your own. Currently running on mocks,
     full Anthropic wiring lands next.
   </p>
 
@@ -81,7 +81,7 @@ import GenUI from "../../demo/GenUI.svelte";
   </div>
 
   <dl class="stage-list">
-    <dt>Stage 1 &mdash; content + component selection</dt>
+    <dt>Stage 1, content + component selection</dt>
     <dd>
       Anthropic Messages API call with a tool schema describing each
       component (name, description, prop types). The model returns its choices
@@ -90,7 +90,7 @@ import GenUI from "../../demo/GenUI.svelte";
       JSX, HTML, or CSS.
     </dd>
 
-    <dt>Stage 2 &mdash; layout decision</dt>
+    <dt>Stage 2, layout decision</dt>
     <dd>
       Second Messages API call. The component array from Stage 1 is the
       input. The tool schema defines a recursive grid layout
@@ -99,7 +99,7 @@ import GenUI from "../../demo/GenUI.svelte";
       components by index.
     </dd>
 
-    <dt>Stage 3 &mdash; deterministic render</dt>
+    <dt>Stage 3, deterministic render</dt>
     <dd>
       A recursive Svelte component walks the layout JSON and renders each
       web component with its filled props. Plain application code. No LLM

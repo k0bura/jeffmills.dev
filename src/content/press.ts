@@ -6,7 +6,7 @@ export interface PressItem {
   excerpt?: string;
 }
 
-// Titles are best-guess from URL slugs and the comms summary — verify against
+// Titles are best-guess from URL slugs and the comms summary, verify against
 // the live article and tweak as needed. Order in this array is preserved when
 // dates tie (sort is stable), so the array order is also the render order.
 export const PRESS: PressItem[] = [
@@ -21,7 +21,7 @@ export const PRESS: PressItem[] = [
   {
     outlet: "The Daily Upside",
     title:
-      "Forget AI assistants — Vanguard's new tech helps manage client portfolios",
+      "Forget AI assistants, Vanguard's new tech helps manage client portfolios",
     url: "https://www.thedailyupside.com/advisor/wealthtech/forget-ai-assistants-vanguards-new-tech-helps-manage-client-portfolios/",
     publishDate: "2026-04-09",
     excerpt:

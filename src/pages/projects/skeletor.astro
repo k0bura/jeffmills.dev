@@ -243,13 +243,13 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
 ---
 
 <Base
-  title="Skeletor — Jeff Mills"
+  title="Skeletor, Jeff Mills"
   description="A front-end component framework I built at Delphic Digital (2014–2017) with native Web Components in 2016. The architectural seed that became AXS nine years later."
 >
   <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
   <h1 class="page-title">skeletor</h1>
   <p class="project-meta">
-    <span class="project-year">2013 — 2017</span>
+    <span class="project-year">2013-2017</span>
     <span class="meta-sep">&middot;</span>
     <span class="project-status">archived</span>
     <span class="meta-sep">&middot;</span>
@@ -261,7 +261,7 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
   <p class="page-lede">
     Skeletor was the front-end framework we built at Delphic Digital
     (Philadelphia, 2013&ndash;2017). It started as a Gulp + Sass boilerplate
-    and grew through three distinct experimentation eras &mdash; pre-component
+    and grew through three distinct experimentation eras, pre-component
     utilities, a jQuery-based component framework, and finally native Web
     Components in late 2016. The same architectural instincts are what AXS
     scales today.
@@ -270,8 +270,8 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
   <aside class="callout">
     <span class="callout-label">The throughline</span>
     <p>
-      Skeletor isn&rsquo;t in production anywhere now &mdash; the agency
-      archived the org &mdash; but it&rsquo;s the receipt for a long-running
+      Skeletor isn&rsquo;t in production anywhere now, the agency
+      archived the org, but it&rsquo;s the receipt for a long-running
       claim: I&rsquo;ve been working out framework-agnostic component
       architecture since 2013. The actual code is below, in chronological
       order.
@@ -280,7 +280,7 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
 
   <hr class="jm-rule" />
 
-  <h2 class="section-title">act i &mdash; before components (2013 &mdash; 2014)</h2>
+  <h2 class="section-title">act i, before components (2013-2014)</h2>
   <p>
     The earliest pattern that survived the next decade: <strong>CSS owns the
     breakpoint truth; JavaScript subscribes to it.</strong> Sounds obvious
@@ -290,7 +290,7 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
   </p>
   <p>
     <code>on-media-query</code> threaded the breakpoint names through
-    <code>html &#123; font-family &#125;</code> &mdash; CSS as the source of
+    <code>html &#123; font-family &#125;</code>, CSS as the source of
     truth, JS as the listener. Components could subscribe to layout contexts
     by name (<code>large</code>, <code>xlarge</code>) instead of magic
     numbers.
@@ -304,7 +304,7 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
 
   <hr class="jm-rule" />
 
-  <h2 class="section-title">act ii &mdash; a framework, on jquery (2016)</h2>
+  <h2 class="section-title">act ii, a framework, on jquery (2016)</h2>
   <p>
     By 2016 Delphic was running ~50 client projects on the same component
     runtime. The problem had shifted from &ldquo;how do we write components
@@ -328,7 +328,7 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
     <strong>Skeletor.util.componentLoader</strong> scanned the DOM for
     <code>[data-component]</code> markers, grouped them by media-query
     context, and used <code>on-media-query</code> to lazy-load + initialize
-    the right components at the right breakpoint &mdash; including
+    the right components at the right breakpoint, including
     <code>destroy()</code> on the way out. AMD-based code splitting before
     tree-shaking was a default.
   </p>
@@ -342,7 +342,7 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
 
   <hr class="jm-rule" />
 
-  <h2 class="section-title">act iii &mdash; custom elements (late 2016)</h2>
+  <h2 class="section-title">act iii, custom elements (late 2016)</h2>
   <p>
     The Web Components v1 spec stabilized in 2018. Lit didn&rsquo;t exist
     yet. Stencil was over a year out. Skeletor picked standards anyway. The
@@ -359,7 +359,7 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
   </p>
 
   <p>
-    A real component built on the base &mdash; the accordion plugin. The
+    A real component built on the base, the accordion plugin. The
     <strong>same shape AXS still uses in 2026</strong>: subclass the base,
     declare defaults, call <code>register()</code> to wire the custom
     element into the registry. The jQuery dependency dates it; the
@@ -374,11 +374,11 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
 
   <hr class="jm-rule" />
 
-  <h2 class="section-title">act iv &mdash; accessibility as a baseline (2016)</h2>
+  <h2 class="section-title">act iv, accessibility as a baseline (2016)</h2>
   <p>
     A sister repo, <code>accessible-components</code>, ran in parallel. It
     bound WAI-ARIA Authoring-Practices attributes to the same DOM elements
-    the framework owned &mdash; not as an audit pass after the fact, but as
+    the framework owned, not as an audit pass after the fact, but as
     part of each component&rsquo;s <code>init</code>. Roles, labels, hidden
     state, expanded state, all wired together.
   </p>
@@ -400,22 +400,22 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
   <ul class="proof-list">
     <li>
       <strong>Skeletor.sass.utilities / .helpers / .flexgrid</strong>
-      &mdash; a Sass-driven token system: spacing primitives, button + input
+, a Sass-driven token system: spacing primitives, button + input
       mixins, flexbox grid. Tokens lived in stylesheets because CSS custom
       properties weren&rsquo;t broadly safe yet.
     </li>
     <li>
-      <strong>Skeletor.docs</strong> &mdash; the project&rsquo;s
+      <strong>Skeletor.docs</strong>, the project&rsquo;s
       documentation site. Stories before Storybook was the default.
     </li>
     <li>
-      <strong>dd-pattern-library</strong> &mdash; 2017, the agency&rsquo;s
+      <strong>dd-pattern-library</strong>, 2017, the agency&rsquo;s
       pattern-lab experiment. The first version of &ldquo;design system as
       an organizational artifact&rdquo; rather than a per-project
       boilerplate.
     </li>
     <li>
-      <strong>Skeletor.pluginTemplate</strong> &mdash; the scaffold an
+      <strong>Skeletor.pluginTemplate</strong>, the scaffold an
       engineer ran to start a new component. The <code>/build-v1</code>
       Claude Code skill on AXS today is the same idea, run by an agent.
     </li>
@@ -432,9 +432,9 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
   <ul class="proof-list">
     <li>
       <strong>Framework-agnostic component architecture isn&rsquo;t a 2024
-      trend for me.</strong> The pattern that powers AXS &mdash; standards-
+      trend for me.</strong> The pattern that powers AXS, standards-
       based components, framework-light runtime, design tokens via Sass / CSS
-      properties &mdash; is the same pattern Skeletor was running in 2016.
+      properties, is the same pattern Skeletor was running in 2016.
     </li>
     <li>
       <strong>The instinct to build platforms, not features, is durable.</strong>
@@ -461,7 +461,7 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
     <dt>Design tokens</dt>
     <dd>Sass utilities + helpers + flexgrid</dd>
     <dt>Responsive</dt>
-    <dd>on-media-query &mdash; CSS-defined breakpoints, JS subscribers</dd>
+    <dd>on-media-query, CSS-defined breakpoints, JS subscribers</dd>
     <dt>Accessibility</dt>
     <dd>WAI-ARIA Authoring Practices bound at component init</dd>
     <dt>Distribution</dt>

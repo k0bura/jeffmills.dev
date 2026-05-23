@@ -13,13 +13,13 @@ status: published
 
 ## The mentoring scale problem
 
-If you lead a team and you care about how the code looks, you have a problem. Your team will write code without you watching. They'll make decisions in PRs you don't review. They'll skip steps you'd never skip, not because they're sloppy — because the steps are in your head and not in theirs.
+If you lead a team and you care about how the code looks, you have a problem. Your team will write code without you watching. They'll make decisions in PRs you don't review. They'll skip steps you'd never skip, not because they're sloppy, because the steps are in your head and not in theirs.
 
 You can fix this with more conversations. PR review, pair programming, 1:1s, design review. All of those work. None of them scale. There are only so many of you, and you have other things to do.
 
 The standard scaling answer is *write the docs*. Documentation is necessary and almost never sufficient. Docs that nobody re-reads after onboarding are a way of pretending to have raised the bar.
 
-The better answer is to put the standard in front of the work — not in a doc someone has to remember to read, but in the workflow itself, before the first line of code.
+The better answer is to put the standard in front of the work, not in a doc someone has to remember to read, but in the workflow itself, before the first line of code.
 
 ## What a Claude Code skill is
 
@@ -30,7 +30,7 @@ A skill is a structured, multi-step workflow that an AI agent follows when invok
 - Ask the agent to confirm understanding at checkpoints.
 - Reference patterns and reference implementations the agent should mirror.
 
-Skills are not chat prompts. They're closer to a runbook the agent is required to follow. When an engineer types `/build-v1` in their AI editor, the agent doesn't start writing code — it starts executing the skill.
+Skills are not chat prompts. They're closer to a runbook the agent is required to follow. When an engineer types `/build-v1` in their AI editor, the agent doesn't start writing code, it starts executing the skill.
 
 ## A worked example: `/build-v1`
 
@@ -50,28 +50,28 @@ The skill encodes the discipline:
 ```text
 /build-v1 <component-name>
 
-  phase 1 — discovery (mandatory)
+  phase 1, discovery (mandatory)
     read docs/project.md
     read docs/internal-api/INDEX.md
     read all referenced composable docs
     read docs/a11y/INDEX.md for the component's category
 
-  phase 2 — analysis
+  phase 2, analysis
     read v0 source
     read v1 reference component
     summarize: props, slots, events, deviations
 
-  phase 3 — implementation
+  phase 3, implementation
     propose component shell
     confirm with engineer
     implement following established patterns
 
-  phase 4 — verification
+  phase 4, verification
     storybook story
     a11y check
     visual regression baseline
 
-  phase 5 — handoff
+  phase 5, handoff
     summary of changes
     open questions
 ```
@@ -125,7 +125,7 @@ The skills aren't a substitute for senior judgment. They're an extension of it. 
 
 A few things worth saying explicitly:
 
-**This isn't AI writing your code.** Skills don't replace the engineer's thinking. They put the agent in the same starting position the senior engineer would have started from — informed, oriented, aware of the patterns — before any code gets written.
+**This isn't AI writing your code.** Skills don't replace the engineer's thinking. They put the agent in the same starting position the senior engineer would have started from, informed, oriented, aware of the patterns, before any code gets written.
 
 **This isn't governance by AI.** The architecture decisions still come from humans. The skill just encodes those decisions in a place they can run repeatedly.
 

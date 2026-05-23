@@ -8,7 +8,7 @@ status: published
 <aside class="callout">
   <span class="callout-label">TL;DR</span>
 
-  The goal: show what AXS could do as a substrate for generative UI. The constraint: at the time, AI-generated code was too risky for our production environments. The solution was a two-stage LLM pipeline where every model output was constrained, structured JSON — never code. A Svelte app rendered the result deterministically. The LLM composes; the application code executes.
+  The goal: show what AXS could do as a substrate for generative UI. The constraint: at the time, AI-generated code was too risky for our production environments. The solution was a two-stage LLM pipeline where every model output was constrained, structured JSON, never code. A Svelte app rendered the result deterministically. The LLM composes; the application code executes.
 </aside>
 
 ## The Problem
@@ -130,7 +130,7 @@ By forcing all LLM output through tool schemas, the prototype got:
 
 ## What this validated
 
-The exercise proved something I'd been betting on for years: AXS's framework-agnostic primitive design is durable against paradigm shifts. The library was designed before generative AI was mainstream, but it was designed right — components as standalone primitives with constrained interfaces, not framework-coupled abstractions. That made it the perfect substrate for Gen UI work: the LLM could reason about components without knowing anything about how they were built.
+The exercise proved something I'd been betting on for years: AXS's framework-agnostic primitive design is durable against paradigm shifts. The library was designed before generative AI was mainstream, but it was designed right, components as standalone primitives with constrained interfaces, not framework-coupled abstractions. That made it the perfect substrate for Gen UI work: the LLM could reason about components without knowing anything about how they were built.
 
 If AXS had been a typical framework-bound component library, this prototype would have required more glue, more compromise, more code generation. Instead, it worked because the design system was already AI-friendly. The MCP server I later added to AXS extends the same idea: expose component metadata so AI agents can compose with AXS without needing to learn AXS's internals.
 

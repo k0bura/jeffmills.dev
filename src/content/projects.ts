@@ -21,25 +21,25 @@ export const PROJECTS: Project[] = [
     slug: "sychonet",
     title: "sych0net",
     summary:
-      "A personal Astro site themed as a phosphor-amber BBS — project logs, hardware galleries, ANSI art, and the vintage-computing aesthetic this site grew out of.",
+      "A personal Astro site themed as a phosphor-amber BBS, project logs, hardware galleries, ANSI art, and the vintage-computing aesthetic this site grew out of.",
     status: "live",
     year: 2021,
     tags: ["Astro", "vintage computing", "personal site", "design language"],
   },
   {
     slug: "axs",
-    title: "AXS — Advisor Experience System",
+    title: "AXS, Advisor Experience System",
     summary:
-      "The framework-agnostic enterprise design system I architected: Nx monorepo with axs-vue + axs-web-components + axs-automation tooling. Vue source compiles to standards-based custom elements; ships to Vue, Angular, AEM, and any HTML. Proprietary — code samples only.",
+      "The framework-agnostic enterprise design system I architected: Nx monorepo with axs-vue + axs-web-components + axs-automation tooling. Vue source compiles to standards-based custom elements; ships to Vue, Angular, AEM, and any HTML. Proprietary, code samples only.",
     status: "proprietary",
     year: 2022,
     tags: ["design systems", "Web Components", "Vue 3", "Nx monorepo", "enterprise"],
   },
   {
     slug: "faset",
-    title: "FASET — Enterprise Design System (Vue 2)",
+    title: "FASET, Enterprise Design System (Vue 2)",
     summary:
-      "The precursor to AXS. 86 Vue 2 components compiled to custom elements via vue-custom-element, with MutationObserver-based lazy hydration. Proprietary — code samples only.",
+      "The precursor to AXS. 86 Vue 2 components compiled to custom elements via vue-custom-element, with MutationObserver-based lazy hydration. Proprietary, code samples only.",
     status: "proprietary",
     year: 2019,
     tags: ["Vue 2", "Web Components", "design systems", "enterprise", "precursor"],

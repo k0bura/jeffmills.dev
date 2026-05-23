@@ -172,7 +172,7 @@ pre code {
   margin-right: 0.4rem;
 }
 
-/* Callout — used in blog posts and project pages for TL;DR / asides */
+/* Callout, used in blog posts and project pages for TL;DR / asides */
 .callout {
   border: 1px dashed var(--jm-color-accent);
   background: rgba(255, 204, 0, 0.04);
@@ -198,7 +198,7 @@ pre code {
   margin-bottom: 0.5rem;
 }
 
-/* Pipeline diagram — reused by blog and project pages */
+/* Pipeline diagram, reused by blog and project pages */
 .diagram {
   margin: 2rem auto;
   display: grid;
@@ -280,7 +280,7 @@ pre code {
   margin-top: 0.4rem;
 }
 
-/* CRT phosphor cursor — subtle glow + grid + scrolling log revealed around the pointer */
+/* CRT phosphor cursor, subtle glow + grid + scrolling log revealed around the pointer */
 .crt-overlay {
   position: fixed;
   inset: 0;

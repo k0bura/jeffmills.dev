@@ -1,6 +1,6 @@
 ---
 title: "Why we bet on web components for a 9-year-old design system"
-description: "A framework-agnostic design system was a contrarian choice in 2017. It's the reason the system is still standing in 2026 — and why it could absorb generative UI without a rewrite."
+description: "A framework-agnostic design system was a contrarian choice in 2017. It's the reason the system is still standing in 2026, and why it could absorb generative UI without a rewrite."
 publishDate: 2025-09-30
 status: published
 ---
@@ -17,7 +17,7 @@ When AXS started, framework discourse looked like this: pick Vue *or* React *or*
 
 We had teams on Angular, on AEM (Sightly/Java), and a growing Vue contingent. Picking one framework would have orphaned the others. Building three component libraries would have ensured none of them stayed in sync.
 
-So we made a different bet: components are standards-based web components — custom elements with shadow DOM. The internal implementation could be Vue. The shipped artifact is a custom element that any framework can render.
+So we made a different bet: components are standards-based web components, custom elements with shadow DOM. The internal implementation could be Vue. The shipped artifact is a custom element that any framework can render.
 
 That bet looked weird in 2017. It looks obvious in 2026.
 
@@ -28,7 +28,7 @@ It's not a slogan. It's a set of constraints that compound:
 - **Components compile to custom elements.** Internal Vue/Lit/React is an implementation detail. Consumers get `<axs-button>`, not a framework import.
 - **Public API is the HTML attribute surface.** Props become kebab-case attributes. Events are CustomEvents. Slots are slots. The contract is what HTML supports.
 - **State stays inside the component.** Shadow DOM, scoped CSS, internal stores. Consumers don't reach in; they configure via attributes and listen for events.
-- **Framework adapters wrap, never replace.** `axs-vue` and `axs-angular` are thin convenience layers — typed props, declarative event binding — but the underlying tag is the same custom element. A consumer can use raw HTML and get identical behavior.
+- **Framework adapters wrap, never replace.** `axs-vue` and `axs-angular` are thin convenience layers, typed props, declarative event binding, but the underlying tag is the same custom element. A consumer can use raw HTML and get identical behavior.
 
 The contract that holds across all of this: **the component's public API is what the browser already understands.**
 
@@ -45,11 +45,11 @@ If you only have one framework and you're sure you'll only ever have one framewo
 
 ## The dividend, years later
 
-What we got — without anticipating most of it:
+What we got, without anticipating most of it:
 
 **Vue → Lit refactor in two months.** Because consumers depend on the custom element, not the Vue implementation, we could replace the internal framework without changing a line of consumer code. AI-assisted coding made the *speed* possible; the architecture made the *swap* possible at all.
 
-**AEM integration as a thin client.** AEM templates declare `<axs-button>`. The CMS doesn't import anything. It just declares the custom element and gets the same behavior as a Vue app — same component, same styles, same events. The thin-CMS pattern only works because the component is framework-agnostic.
+**AEM integration as a thin client.** AEM templates declare `<axs-button>`. The CMS doesn't import anything. It just declares the custom element and gets the same behavior as a Vue app, same component, same styles, same events. The thin-CMS pattern only works because the component is framework-agnostic.
 
 **Gen UI without rewriting components.** When we built a two-stage Claude tool-use pipeline that picks components and lays them out, the LLM's job was easy: name a component, fill in attributes. The renderer in Svelte just instantiated the custom elements. Same components, new substrate.
 
@@ -59,7 +59,7 @@ None of this was on the 2017 roadmap. All of it was made possible by the same ar
 
 ## What I'd do differently if starting over
 
-Knowing what I know now, I'd still make the same core bet — and I'd be more aggressive about a few things earlier:
+Knowing what I know now, I'd still make the same core bet, and I'd be more aggressive about a few things earlier:
 
 - **Generate the IDE metadata from day one.** We added it later. It should have been in the original build pipeline. It's the prerequisite for every AI integration that came after.
 - **Establish the token system before the components.** CSS custom properties have to be load-bearing for theming. Retrofitting that into existing components is annoying.
@@ -77,4 +77,4 @@ Worth saying explicitly. Framework-agnostic web components are the right bet whe
 
 It's the wrong bet when you have one framework, a small team, a short horizon, or no appetite for the complexity overhead. Don't build framework-agnostic infrastructure to solve problems you don't have. The architecture only pays off across multiple consumers and multiple years.
 
-If you do have those things — or you're trying to plan for them — web components are still the bet. They've gotten better every year since 2017. They'll keep getting better. And the design system you build on top of them gets to compound while everything else churns.
+If you do have those things, or you're trying to plan for them, web components are still the bet. They've gotten better every year since 2017. They'll keep getting better. And the design system you build on top of them gets to compound while everything else churns.

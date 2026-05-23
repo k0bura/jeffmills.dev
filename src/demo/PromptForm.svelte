@@ -27,7 +27,7 @@
     bind:value
     rows="3"
     {disabled}
-    placeholder="Ask anything — the LLM will pick UI components and arrange them for you."
+    placeholder="Ask anything, the LLM will pick UI components and arrange them for you."
   ></textarea>
   <div class="actions">
     <button type="submit" {disabled} class="primary">

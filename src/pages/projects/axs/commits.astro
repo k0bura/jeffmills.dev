@@ -27,7 +27,7 @@ const breakdownLines = TYPE_BREAKDOWN.map(
 ).join("\n");
 
 // Commit 1: foundation
-const nxJsonDiff = `// nx.json — newly added (April 27, 2022)
+const nxJsonDiff = `// nx.json, newly added (April 27, 2022)
 {
   "npmScope": "axs",
   "affected": { "defaultBase": "master" },
@@ -48,7 +48,7 @@ const nxJsonDiff = `// nx.json — newly added (April 27, 2022)
   }
 }`;
 
-const packageJsonExcerpt = `// package.json — devDependencies (excerpt, scrubbed)
+const packageJsonExcerpt = `// package.json, devDependencies (excerpt, scrubbed)
 {
   "devDependencies": {
     "@nrwl/cli":              "13.9.3",
@@ -69,7 +69,7 @@ const packageJsonExcerpt = `// package.json — devDependencies (excerpt, scrubb
 }`;
 
 // Commit 2: storybook with vite
-const storybookMainDiff = `// .storybook/main.js — added April 29, 2022 (two days after the foundation)
+const storybookMainDiff = `// .storybook/main.js, added April 29, 2022 (two days after the foundation)
 //
 // Storybook with the Vite builder, when the default was still
 // Webpack. The team got HMR-fast Storybook from day one.
@@ -86,7 +86,7 @@ module.exports = {
 };`;
 
 // Commit 3: lint + format hooks
-const huskyPreCommitDiff = `# .husky/pre-commit — added with the lint refactor
+const huskyPreCommitDiff = `# .husky/pre-commit, added with the lint refactor
 npx lint-staged
 
 # .lintstagedrc.json
@@ -106,7 +106,7 @@ npx lint-staged
 }`;
 
 // Commit 4: changelog wiring
-const changelogProjectJson = `// libs/axs-vue/project.json — added in the changelog commit
+const changelogProjectJson = `// libs/axs-vue/project.json, added in the changelog commit
 // Wires @jscutlery/semver into each library so versions and
 // CHANGELOG.md are generated from conventional commits.
 
@@ -128,10 +128,10 @@ const changelogProjectJson = `// libs/axs-vue/project.json — added in the chan
 }`;
 
 // Commit 5: CSS compositions enable
-const cssCompositionsDiff = `// libs/axs-core/src/styles/main.scss — June 27, 2023
+const cssCompositionsDiff = `// libs/axs-core/src/styles/main.scss, June 27, 2023
 //
 // One-line change. Enabled compositions across the entire design
-// system — utility-first style primitives become available to every
+// system, utility-first style primitives become available to every
 // consumer of axs-core. Small diff, foundational consequence.
 
   /// COMPOSITIONS
@@ -140,13 +140,13 @@ const cssCompositionsDiff = `// libs/axs-core/src/styles/main.scss — June 27, 
 ---
 
 <Base
-  title="AXS commits — Jeff Mills"
-  description="Verified commit gallery: 159 commits authored across the AXS monorepo, April 2022 — March 2024. Foundational Nx setup, Storybook + Vite, lint hooks, changelog tooling, design-token plumbing."
+  title="AXS commits, Jeff Mills"
+  description="Verified commit gallery: 159 commits authored across the AXS monorepo, April 2022, March 2024. Foundational Nx setup, Storybook + Vite, lint hooks, changelog tooling, design-token plumbing."
 >
   <p class="project-back"><a href="/projects/axs">&laquo; back to axs</a></p>
   <h1 class="page-title">axs &middot; verified commits</h1>
   <p class="project-meta">
-    <span class="project-year">apr 2022 &mdash; mar 2024</span>
+    <span class="project-year">apr 2022, mar 2024</span>
     <span class="meta-sep">&middot;</span>
     <span class="project-status">159 commits</span>
     <span class="meta-sep">&middot;</span>
@@ -161,12 +161,12 @@ const cssCompositionsDiff = `// libs/axs-core/src/styles/main.scss — June 27, 
   </p>
 
   <aside class="callout">
-    <span class="callout-label">Proprietary &mdash; sample diffs only</span>
+    <span class="callout-label">Proprietary, sample diffs only</span>
     <p>
       Each diff below is a real excerpt from the source repository,
       scrubbed of corporate identifiers. The hashes are unmodified.
       I&rsquo;m happy to walk through the full diffs side-by-side
-      under NDA &mdash;
+      under NDA,
       <a href="mailto:jeffy9@gmail.com">reach out</a>.
     </p>
   </aside>
@@ -184,7 +184,7 @@ const cssCompositionsDiff = `// libs/axs-core/src/styles/main.scss — June 27, 
     The shape tells a story: heavy on <code>feat</code> and
     <code>chore</code> means the work was platform-level, not
     ticket-by-ticket. Storybook integration, monorepo plumbing, release
-    tooling, lint/format hooks &mdash; the infrastructure decisions that
+    tooling, lint/format hooks, the infrastructure decisions that
     let the rest of the team move.
   </p>
 
@@ -203,10 +203,10 @@ const cssCompositionsDiff = `// libs/axs-core/src/styles/main.scss — June 27, 
     </p>
     <p class="commit-note">
       <strong>The foundational commit.</strong> Stood up the entire Nx
-      monorepo with Vue 3, Vite, TypeScript, Storybook, ESLint &mdash; the
+      monorepo with Vue 3, Vite, TypeScript, Storybook, ESLint, the
       structure the next 9,000+ commits in the repo were built on. The
       design system&rsquo;s build pipeline, the project-tagging conventions,
-      the cacheable task runner &mdash; all here.
+      the cacheable task runner, all here.
     </p>
 
     <Code code={nxJsonDiff} lang="javascript" theme={theme} />
@@ -228,7 +228,7 @@ const cssCompositionsDiff = `// libs/axs-core/src/styles/main.scss — June 27, 
       <code>feat(storybook)</code>: add storybook with vite builder
     </p>
     <p class="commit-note">
-      Two days after the foundation, Storybook landed &mdash; configured
+      Two days after the foundation, Storybook landed, configured
       with the Vite builder when the default everywhere else was still
       Webpack. The team got HMR-fast Storybook from day one and never
       had to migrate later.
@@ -252,7 +252,7 @@ const cssCompositionsDiff = `// libs/axs-core/src/styles/main.scss — June 27, 
     <p class="commit-note">
       Husky + lint-staged + Prettier + ESLint, wired into the commit
       lifecycle for the whole monorepo. Code quality enforced at write
-      time, not in review &mdash; the most leveraged thing a platform
+      time, not in review, the most leveraged thing a platform
       engineer can ship in the first month.
     </p>
 
@@ -325,14 +325,14 @@ const cssCompositionsDiff = `// libs/axs-core/src/styles/main.scss — June 27, 
     </p>
     <p class="commit-note">
       One of nine commits I authored on the <code>axs-aem-app</code>
-      surface &mdash; the integration that lets AEM templates consume AXS
+      surface, the integration that lets AEM templates consume AXS
       components as web components (the
       <a href="/case-studies/04-axs-aem-integration">Building the AEM
       bridge</a> case study). Pinning the build runtime so the AEM
       pipeline produced stable artifacts across teammate machines.
     </p>
     <p class="commit-note-secondary">
-      Diff intentionally omitted &mdash; the AEM-side configuration
+      Diff intentionally omitted, the AEM-side configuration
       includes deployment specifics. Happy to walk through under NDA.
     </p>
   </article>

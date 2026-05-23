@@ -1,0 +1,71 @@
+---
+order: 0
+title: "Prologue: The Agency Years"
+chapter: "Prologue"
+period: "2011-2017"
+summary: "Five and a half years at Delphic Digital, Sr. Front End → Lead → Director, and the patterns that came out of that work and became the way I architect platforms today."
+tags: ["agency", "leadership", "Philadelphia", "design systems"]
+---
+
+<aside class="callout">
+  <span class="callout-label">Prologue</span>
+  <p>
+    Before the platform years, there were the agency years. Five and a half
+    years at Delphic Digital in Philadelphia, climbing from Sr. Front End
+    Developer to Lead to Director of Front End Development, building
+    for a stream of enterprise clients across whatever CMS and whichever
+    brand they showed up with. The tech is dated; the instincts it forged
+    aren&rsquo;t. This is what travelled.
+  </p>
+</aside>
+
+## Context
+
+Delphic Digital was a boutique Philadelphia agency. The work was front-end engineering for enterprise clients across CMS platforms most engineers never touch in one place: WordPress, Drupal, Sitecore, custom C#, PHP. The brands rotated, Sunrise Senior Living one quarter, The Borgata the next, Comcast, Wolftrap, others. Each one shipped in six-to-twelve-week windows with its own visual language, its own integration constraints, its own QA bar.
+
+The job wasn&rsquo;t any one of those projects. The job was the *system* underneath all of them, what we reused, what we standardized, what we treated as agency-wide infrastructure versus what we let each project decide. That&rsquo;s the lens I came out of agency life with, and it&rsquo;s the lens I&rsquo;ve been carrying since.
+
+Before Delphic, seven years (2004-2011) at smaller Philadelphia shops: Singularity Design, Whittman-Hart, Vision3 Inc., where I was the first engineering hire. Award-winning interactive work for clients including Centocor and St. Jude. Those years are where I learned to ship; Delphic is where I learned to lead.
+
+## The climb, three roles in five and a half years
+
+**Sr. Front End Developer (Nov 2011, June 2014).** The IC years. Building front-end features for major brands during the mobile-web transition era, the responsive shift, the death of pixel-perfect comps, the rise of JavaScript as more than a polyfill. Two and a half years of shipping under client deadlines while the entire industry rewrote itself.
+
+**Lead Front End Developer (June 2014, Feb 2016).** The shift. Setting front-end architecture for client projects, defining technical standards, contributing deeply to implementation. The work that mattered most wasn&rsquo;t the per-project code, it was the **internal front-end tooling and shared libraries to accelerate delivery across the team**. That posture became my career.
+
+**Director of Front End Development (Feb 2016, April 2017).** Leading the front-end practice. Architecting systems across CMSes for enterprise clients, owning planning from concept through deployment, **establishing front-end development standards across the agency** while staying hands-on in code reviews and complex implementations. Player-coach before it was a buzzword.
+
+Three roles, five and a half years, one continuous arc: from "I write the code" to "I write the system that other engineers write code against."
+
+## What got built, the agency-era platform
+
+The most distinctive thing from those years isn&rsquo;t any single client deliverable. It&rsquo;s the **Skeletor framework**, a multi-repo agency front-end system I helped build out from 2014 to 2017. By 2016 it was a constellation of focused libraries: a runtime, a component loader, Sass token systems, a debug layer, a documentation site. And by late 2016 it had grown into native Web Components, with components extending <code>HTMLElement</code> directly, in 2016, *before the Web Components v1 spec stabilized in 2018, before Lit existed.*
+
+The patterns Skeletor encoded:
+
+- **Components as standards-based primitives**, not framework-bound.
+- **A small shared runtime** with feature detection, debug helpers, a component registry, and Sass-driven design tokens.
+- **Accessibility as a baseline**, a sister `accessible-components` library that wired WAI-ARIA attributes at component init, not in an audit pass after.
+- **Documentation alongside code**, a custom docs site, the precursor to every Storybook setup I&rsquo;ve built since.
+
+The code receipts, including the actual `extends HTMLElement` source from December 2016 and the multi-era arc from a 2013 responsive utility through a 2017 design-system pattern library, live on the [Skeletor project page](/projects/skeletor). The agency archived the org, but the architectural posture is in production today as AXS.
+
+## What the era proved
+
+Three things, in order of how they show up in everything I&rsquo;ve done since:
+
+**Breadth compounds.** Five years across different verticals (healthcare, hospitality, casino, performing arts, telecom), different CMSes, different brand systems, that&rsquo;s a kind of range you can&rsquo;t fake. Every enterprise project I&rsquo;ve led at Vanguard has been faster because I&rsquo;ve already seen the integration shape before, just with different vendors. Agency-trained engineers approach platform problems with a fluency that single-stack engineers take years to build.
+
+**Leadership at agency scale is leadership.** I was Director of Front End Development before Vanguard&rsquo;s lead role, accountable for the practice across all client engagements. The skills, setting standards, mentoring under deadline pressure, deciding what&rsquo;s reusable versus project-specific, hiring, transferred without modification. The Vanguard work scaled up; the leadership shape didn&rsquo;t change.
+
+**Platform thinking has to start before there&rsquo;s a platform.** The Skeletor framework existed because the agency couldn&rsquo;t afford to reinvent the front end on every client engagement. That same instinct, build the substrate, not the moment, is what made the AXS work possible nine years later. AXS isn&rsquo;t a pivot; it&rsquo;s an upgrade of the same posture.
+
+## Why this is in the case study set
+
+Two reasons.
+
+**Non-stagnation, anchored in evidence.** I&rsquo;ve been at Vanguard since 2017. That&rsquo;s long enough that &ldquo;one company&rdquo; could read as &ldquo;narrow career.&rdquo; The agency years are the easiest answer to that question, breadth across verticals, climbing leadership, real code from 2013&ndash;2017 still browseable on the [Skeletor project page](/projects/skeletor).
+
+**The arc isn&rsquo;t Vanguard alone, it&rsquo;s twelve years.** The decisions that made AXS work, the framework-agnostic instincts, the platform-first posture, the discipline around shared tooling, all of those got their first reps at Delphic. Skipping the agency years would skip the first half of the story. This is the prologue.
+
+The next chapter is what happened when I brought those instincts into an enterprise that could let them compound: **[Chapter 1, Early Influence: Driving Modern Front-End Adoption](/case-studies/01-early-influence-vue)**.

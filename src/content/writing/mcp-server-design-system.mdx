@@ -1,6 +1,6 @@
 ---
 title: "Adding an MCP server to your design system"
-description: "A practical look at exposing a design system through the Model Context Protocol — what it adds beyond a docs site, what to ship first, and what falls apart if you skip the prerequisite."
+description: "A practical look at exposing a design system through the Model Context Protocol, what it adds beyond a docs site, what to ship first, and what falls apart if you skip the prerequisite."
 publishDate: 2026-05-22
 status: published
 ---
@@ -8,7 +8,7 @@ status: published
 <aside class="callout">
   <span class="callout-label">TL;DR</span>
 
-  An MCP server lets any AI assistant query your design system at request time — components, props, design tokens, recipes — without fine-tuning or RAG over raw source. But the MCP layer only works if the layer underneath it (build-time component metadata) is already in place. If you skip that, the MCP server has nothing reliable to serve.
+  An MCP server lets any AI assistant query your design system at request time, components, props, design tokens, recipes, without fine-tuning or RAG over raw source. But the MCP layer only works if the layer underneath it (build-time component metadata) is already in place. If you skip that, the MCP server has nothing reliable to serve.
 </aside>
 
 ## The problem MCP solves
@@ -17,7 +17,7 @@ If you've shipped a design system at any real scale, you've watched the same fai
 
 The problem isn't the model. The model just doesn't know about your design system. It can't.
 
-You can paper over this with prompts ("always use AXS components"), instructions, or a custom GPT loaded with screenshots of your Storybook. All of those degrade fast. The model still doesn't *know* what `axs-button` accepts as props — it's guessing from patterns in similar libraries it saw during training.
+You can paper over this with prompts ("always use AXS components"), instructions, or a custom GPT loaded with screenshots of your Storybook. All of those degrade fast. The model still doesn't *know* what `axs-button` accepts as props, it's guessing from patterns in similar libraries it saw during training.
 
 The Model Context Protocol gives you a way to fix this at the architecture level: expose your design system through a server that any MCP-capable AI client (Claude, Copilot, Cursor) can call at runtime to get authoritative answers.
 
@@ -30,7 +30,7 @@ In an MCP-enabled session, the AI assistant can ask your server questions like:
 - "Is there a recipe for a labeled-input pattern in Vue?"
 - "Search for components related to 'notification'."
 
-The answers come back as structured JSON — pulled from your design system's own build output. The model isn't guessing; it's reading documentation written by your build pipeline.
+The answers come back as structured JSON, pulled from your design system's own build output. The model isn't guessing; it's reading documentation written by your build pipeline.
 
 What this means in practice: a generated component implementation that uses real component names, real prop names, and real design tokens. The assistant becomes design-system-aware without anyone running a fine-tuning job or maintaining a vector DB of your docs.
 
@@ -66,7 +66,7 @@ The prerequisite. Generate two files at every build:
 - A **web-types** JSON file (the JetBrains schema for custom-element metadata).
 - An **html-data** JSON file (the VS Code custom-HTML-data schema).
 
-Both files describe every component — tag name, attributes, slots, events, types — in a format editors already understand. Declare them in `package.json` so any editor that installs your package picks them up automatically.
+Both files describe every component, tag name, attributes, slots, events, types, in a format editors already understand. Declare them in `package.json` so any editor that installs your package picks them up automatically.
 
 What this gives you immediately, *before* any MCP work:
 
@@ -80,7 +80,7 @@ If you skip Layer 1, you'll end up parsing source code on every MCP request, or 
 
 ## Layer 2: the MCP server
 
-Once Layer 1 is in place, the MCP server is a small project — a few hundred lines of TypeScript that exposes tools an AI client can call. The tools we settled on:
+Once Layer 1 is in place, the MCP server is a small project, a few hundred lines of TypeScript that exposes tools an AI client can call. The tools we settled on:
 
 ```typescript
 const tools = [
@@ -123,11 +123,11 @@ What you ship: a small npm package or local binary that engineers can configure 
 
 ## Layer 3: agentic workflows for the design system team itself
 
-This is where it gets interesting. Once your design system is queryable by AI, you can write **agentic workflows** — multi-step skills that orchestrate AI agents through repeatable design-system tasks. We use Claude Code skills:
+This is where it gets interesting. Once your design system is queryable by AI, you can write **agentic workflows**, multi-step skills that orchestrate AI agents through repeatable design-system tasks. We use Claude Code skills:
 
-- `/build-v1` — runs a 5-phase component migration. Mandates reading the architecture docs, the a11y index, and a reference component *before* writing any code. The skill enforces the team's slot-over-props philosophy and composable patterns by making them prerequisite reading.
-- `/test-docs` — simulates a fresh agent session, scores docs against an 8-item checklist, and produces a Pass/Partial/Fail percentage. Documentation quality becomes a measurable metric.
-- `/beta-tag` — handles the mechanics of moving a component through beta. Encodes process knowledge that would otherwise live only in an engineer's head.
+- `/build-v1`, runs a 5-phase component migration. Mandates reading the architecture docs, the a11y index, and a reference component *before* writing any code. The skill enforces the team's slot-over-props philosophy and composable patterns by making them prerequisite reading.
+- `/test-docs`, simulates a fresh agent session, scores docs against an 8-item checklist, and produces a Pass/Partial/Fail percentage. Documentation quality becomes a measurable metric.
+- `/beta-tag`, handles the mechanics of moving a component through beta. Encodes process knowledge that would otherwise live only in an engineer's head.
 
 The shift: standards stop being carried in conversations or code review and start running before the first line of code.
 
@@ -146,6 +146,6 @@ The system continuously improves its own AI-readiness. That's the part that's ha
 
 ## What to ship first
 
-If you're starting from zero, the order matters. Ship Layer 1 first and let it deliver IDE value for a while. Then build the MCP server on top of the metadata you already trust. Don't build skills until your docs are good enough that an agent can actually follow them — which is what the `/test-docs` audit is for.
+If you're starting from zero, the order matters. Ship Layer 1 first and let it deliver IDE value for a while. Then build the MCP server on top of the metadata you already trust. Don't build skills until your docs are good enough that an agent can actually follow them, which is what the `/test-docs` audit is for.
 
 The temptation will be to ship Layer 2 first because it's the headline. Resist it. A flashy MCP server reading flaky metadata will burn the team's trust faster than no MCP server at all.

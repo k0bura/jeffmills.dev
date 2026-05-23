@@ -1,6 +1,6 @@
 ---
 title: "The thin-CMS pattern: deploying a design system into AEM"
-description: "How we extended a design system from engineering into Adobe Experience Manager — one architectural rule that turned a developer tool into a business platform."
+description: "How we extended a design system from engineering into Adobe Experience Manager, one architectural rule that turned a developer tool into a business platform."
 publishDate: 2026-01-12
 status: published
 ---
@@ -8,7 +8,7 @@ status: published
 <aside class="callout">
   <span class="callout-label">TL;DR</span>
 
-  A design system that serves only engineers leaves most of its value on the table. The thin-CMS pattern — design system owns the components, CMS templates declare them as web components — lets marketing and content teams ship on-brand experiences without going through engineering. One rule, two consequences: faster delivery, one visual layer across every channel.
+  A design system that serves only engineers leaves most of its value on the table. The thin-CMS pattern, design system owns the components, CMS templates declare them as web components, lets marketing and content teams ship on-brand experiences without going through engineering. One rule, two consequences: faster delivery, one visual layer across every channel.
 </aside>
 
 ## The gap
@@ -34,7 +34,7 @@ In our case the design system is AXS, the CMS is Adobe Experience Manager, and "
 </axs-card>
 ```
 
-That's the whole pattern. AEM dialogues collect authoring data. The template emits a custom element with attributes filled in. The browser instantiates the same component a Vue app would instantiate — same styles, same behavior, same accessibility tree.
+That's the whole pattern. AEM dialogues collect authoring data. The template emits a custom element with attributes filled in. The browser instantiates the same component a Vue app would instantiate, same styles, same behavior, same accessibility tree.
 
 What this rules out:
 
@@ -53,11 +53,11 @@ What it gives you, by construction:
 Three pieces:
 
 ```text
-1. axs-ui            — the design system. Ships custom elements + tokens.
-2. axs-aem-bundle    — an AEM package that vendors axs-ui as a dependency.
+1. axs-ui, the design system. Ships custom elements + tokens.
+2. axs-aem-bundle, an AEM package that vendors axs-ui as a dependency.
                        Provides AEM components whose templates are just thin
                        wrappers around the custom element tags.
-3. axs.css + axs.js  — loaded into AEM-rendered pages via the same delivery
+3. axs.css + axs.js, loaded into AEM-rendered pages via the same delivery
                        infrastructure as any other page asset.
 ```
 
@@ -69,7 +69,7 @@ The AEM component (in HTL) for `axs-card` is one line of structural markup. All 
 </axs-card>
 ```
 
-The component's *behavior* is in the custom element. The CMS is contributing structured attribute data and slot content — nothing else. That's why we call it thin-CMS: AEM templates are the thinnest possible layer between the authoring UI and the custom element.
+The component's *behavior* is in the custom element. The CMS is contributing structured attribute data and slot content, nothing else. That's why we call it thin-CMS: AEM templates are the thinnest possible layer between the authoring UI and the custom element.
 
 ## What this gives you
 
@@ -79,13 +79,13 @@ The component's *behavior* is in the custom element. The CMS is contributing str
 
 **Brand updates that propagate.** Update a token in the design system, ship a new version of `axs-ui`, redeploy. Every AEM page picks it up because the components are vendored, not reimplemented. The CMS doesn't need to know anything changed.
 
-**Reduced AEM-specific engineering.** AEM components become so thin that adding a new one is mostly an authoring concern — define the dialog, point it at an existing custom element. Engineering writes one wrapper per design-system component, not one wrapper per page or feature.
+**Reduced AEM-specific engineering.** AEM components become so thin that adding a new one is mostly an authoring concern, define the dialog, point it at an existing custom element. Engineering writes one wrapper per design-system component, not one wrapper per page or feature.
 
 ## What this requires
 
 The architectural rule is the easy part. The work that actually has to happen:
 
-**Authoring discipline.** The AEM dialog has to map cleanly to component attributes. If a designer wants a card variant that doesn't exist in the design system, you don't fork the CMS template — you add the variant to the design system. That changes a workflow.
+**Authoring discipline.** The AEM dialog has to map cleanly to component attributes. If a designer wants a card variant that doesn't exist in the design system, you don't fork the CMS template, you add the variant to the design system. That changes a workflow.
 
 **A clear ownership boundary.** AXS owns the component. AEM owns the authoring experience and the slot content. Neither side touches the other's surface. Decisions about styling go to AXS; decisions about authoring ergonomics go to AEM. Mixing those produces fragmentation in under a quarter.
 
@@ -95,7 +95,7 @@ The architectural rule is the easy part. The work that actually has to happen:
 
 ## Why it works
 
-A design system is most valuable when the audience widest. The thin-CMS pattern extends the audience from engineers to anyone using the CMS — which is a much larger group at most companies. The same component primitives that supported multi-framework apps now serve marketing and content.
+A design system is most valuable when the audience widest. The thin-CMS pattern extends the audience from engineers to anyone using the CMS, which is a much larger group at most companies. The same component primitives that supported multi-framework apps now serve marketing and content.
 
 The pattern is also forward-compatible. The custom-element substrate is what made Gen UI work for us; the same substrate is what makes AEM thin. Both downstream wins came from the same upstream architectural decision.
 
