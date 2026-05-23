@@ -1,112 +1,152 @@
 ---
+import { Code } from "astro:components";
 import Base from "../../layouts/Base.astro";
----
+import syntaxTheme from "../../styles/jm-syntax.json";
 
-<Base
-  title="Skeletor — Jeff Mills"
-  description="A front-end component framework I built at Delphic Digital (2014–2017) with native Web Components in 2016. The architectural seed that became AXS nine years later."
->
-  <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
-  <h1 class="page-title">skeletor</h1>
-  <p class="project-meta">
-    <span class="project-year">2014 — 2017</span>
-    <span class="meta-sep">&middot;</span>
-    <span class="project-status">archived</span>
-    <span class="meta-sep">&middot;</span>
-    <span>delphic digital</span>
-    <span class="meta-sep">&middot;</span>
-    <span>~12 repos</span>
-  </p>
+const theme = syntaxTheme as unknown as Parameters<typeof Code>[0]["theme"];
 
-  <p class="page-lede">
-    Skeletor was the front-end framework we built at Delphic Digital
-    (Philadelphia, 2014&ndash;2017). It started as a Gulp + Sass boilerplate
-    and grew into a multi-repo component system with native Web Components in
-    2016 &mdash; years before the broader industry caught up. The same
-    architectural instincts are what AXS scales today.
-  </p>
+const onMediaQuerySample = `// onMediaQuery, threaded through Skeletor in 2013
+//
+// CSS owns the breakpoints (in html { font-family }), JS just
+// listens for context changes and fires registered callbacks.
+// A pre-matchMedia way to keep responsive logic synchronized
+// with the stylesheet's source of truth.
 
-  <aside class="callout">
-    <span class="callout-label">The throughline</span>
-    <p>
-      Skeletor isn&rsquo;t in production anywhere now &mdash; the agency
-      archived the org &mdash; but it&rsquo;s the receipt for a long-running
-      claim: I&rsquo;ve been betting on framework-agnostic component
-      architecture since 2016. The actual code is below.
-    </p>
-  </aside>
+mq.addQuery({
+  context: ['large', 'xlarge'],
+  match: function() { console.log('desktop layout'); },
+  unmatch: function() { console.log('leaving desktop'); }
+});
 
-  <hr class="jm-rule" />
+mq.listenForChange = function() {
+  var query_string = window
+    .getComputedStyle(document.documentElement, null)
+    .getPropertyValue('font-family');
 
-  <h2 class="section-title">what it was</h2>
-  <p>
-    Skeletor started in 2014 as a project starter &mdash; directory structure,
-    Gulp pipeline, Sass utilities, a debug layer, a component loader. The
-    initial framing was modest: gather our best practices into a kit so every
-    client project didn&rsquo;t reinvent the front end.
-  </p>
-  <p>
-    By 2016 it had grown into a constellation of focused libraries published
-    independently:
-  </p>
+  // Android browsers append a "," to the family list;
+  // most browsers wrap in quotes. Strip both.
+  query_string = query_string.replace(/['",]/g, '');
 
-  <dl class="stack-list">
-    <dt>core</dt>
-    <dd>
-      <code>Skeletor.framework</code>, <code>Skeletor.core</code>,
-      <code>Skeletor.util.componentLoader</code> &mdash; the runtime,
-      registry, and dynamic component loader
-    </dd>
-    <dt>web components</dt>
-    <dd>
-      <code>skeletor-plugin-base</code> &mdash; a base class extending
-      <code>HTMLElement</code>; <code>skeletor-plugin-accordion</code>,
-      <code>Skeletor.flyouts</code>, <code>Skeletor.accordion</code> &mdash;
-      working components built on top
-    </dd>
-    <dt>tokens + design</dt>
-    <dd>
-      <code>Skeletor.sass.utilities</code>, <code>Skeletor.sass.helpers</code>,
-      <code>Skeletor.sass.flexgrid</code> &mdash; a Sass-driven token system
-      and grid
-    </dd>
-    <dt>devx</dt>
-    <dd>
-      <code>Skeletor.util.debug</code>, <code>Skeletor.docs</code>,
-      <code>Skeletor.pluginTemplate</code> &mdash; debugging, documentation
-      site, scaffold for new plugins
-    </dd>
-    <dt>feature detection</dt>
-    <dd>
-      <code>Skeletor.util.detects.mobile</code>,
-      <code>Skeletor.util.detects.flexbox</code> &mdash; the unglamorous
-      runtime checks that made the system actually ship cross-browser
-    </dd>
-  </dl>
+  if (query_string !== this.context) {
+    this.new_context = query_string;
+    this.triggerCallbacks(this.context, 'unmatch');
+    this.triggerCallbacks(this.new_context, 'match');
+  }
+  this.context = this.new_context;
+};`;
 
-  <hr class="jm-rule" />
+const skeletorCoreSample = `// Skeletor.core, 2016 - the framework runtime.
+//
+// Components register themselves with the global object via
+// Plugin.create(). Each gets a generated UUID, a kebab-case
+// name derived from its class name, and a slot in the
+// shared registry. Pre-custom-elements - this was the
+// pattern we leaned on while waiting for the spec.
 
-  <h2 class="section-title">web components in 2016</h2>
-  <p>
-    The Web Components v1 spec only stabilized in 2018. Lit didn&rsquo;t exist.
-    Stencil was a year out. The frameworks-vs-standards debate was still loud.
-    Skeletor picked standards. Here&rsquo;s the actual base class from
-    <code>skeletor-plugin-base</code> &mdash; December 2016:
-  </p>
+function Plugin(element, options, defaultOptions) {
+  this.options = $.extend(true, {}, defaultOptions, options);
+  this.$element = element || $(document);
 
-  <pre><code>{`import $ from 'jquery';
+  if (typeof this._init !== 'function') {
+    throw this.name + ' needs an _init method';
+  }
+
+  var pluginName = functionName(this.constructor).toLowerCase();
+  this.uuid = GetYoDigits(6, pluginName);
+  Skeletor._uuids.push(this.uuid);
+  if (!this.$element.data('skeletorPlugin')) {
+    this.$element.data('skeletorPlugin', this);
+  }
+
+  this._init(element);
+}
+
+Plugin.create = function(SubConstructor, prototype) {
+  SubConstructor.__super__ = Plugin;
+
+  for (var key in Plugin.prototype) {
+    if (!SubConstructor.prototype[key]) {
+      SubConstructor.prototype[key] = Plugin.prototype[key];
+    }
+  }
+
+  SubConstructor.prototype = $.extend(true, SubConstructor.prototype, prototype);
+  SubConstructor.prototype.constructor = SubConstructor;
+  SubConstructor.prototype.name = functionName(SubConstructor);
+
+  var className = SubConstructor.prototype.name;
+  var attrName  = hyphenate(className);
+
+  Skeletor._plugins[attrName] = Skeletor[className] = SubConstructor;
+};`;
+
+const componentLoaderSample = `// Skeletor.util.componentLoader, 2016 - dynamic loading.
+//
+// Scans the DOM for [data-component] elements, groups them by
+// [data-component-context] (a media-query name), and uses
+// onMediaQuery to load + init the right components at the
+// right breakpoint. AMD-based code splitting before tree-
+// shaking was a thing every bundler had.
+
+_init: function(element) {
+  var _this = this;
+  var components = $.map($('[data-component]'), function(el){
+    return {
+      context: $(el).data('component-context') || null,
+      name: 'components/' + $(el).data('component')
+    };
+  });
+  var contexts = this._mergeByContext(components);
+
+  if (!MQ.callbacks) MQ.init();
+
+  $.each(contexts, function(i, component) {
+    if (component.context != 'null') {
+      _this._addContextQuery(component.context, component.name);
+    } else {
+      _this._loadComponent(component.name);
+    }
+  });
+},
+
+_addContextQuery: function(context, components) {
+  MQ.addQuery({
+    context: context.split(','),
+    call_for_each_context: false,
+    match: function() {
+      require(components.split(','), function() {
+        $.each(arguments, function(i, component) {
+          component.init();
+        });
+      });
+    },
+    unmatch: function() {
+      $.each(components.split(','), function(i, name) {
+        var c = require(name);
+        if (typeof c.destroy === 'function') c.destroy();
+      });
+    }
+  });
+}`;
+
+const skeletorPluginBaseSample = `// skeletor-plugin-base, December 2016 - the moment we
+// stopped emulating components and started writing them.
+// extends HTMLElement, connectedCallback - the v1 spec
+// before v1 stabilized.
+
+import $ from 'jquery';
 import skeletor from 'skeletor-core';
 
 class SkeletorPlugin extends HTMLElement {
 
-  constructor(element, options){
+  constructor(element, options) {
     super();
     this.NAME = this.constructor.ELEMENT_NAME;
     this.UUID = skeletor.getYoDigits(6, this.NAME);
     this.$element = $(this) || $(document);
     this.options = options;
 
-    if(!this.$element.data('skeletorComponent')){
+    if (!this.$element.data('skeletorComponent')) {
       this.$element.data('skeletorComponent', this);
     }
 
@@ -116,57 +156,268 @@ class SkeletorPlugin extends HTMLElement {
   // web component v1 spec: Fired when custom element is added to DOM.
   connectedCallback() {
     this.init();
-  };
+  }
 
-  init(){
+  init() {
     console.log('connected:', this);
   }
 
-  static register(){
+  static register() {
     let elementName = this.ELEMENT_NAME;
-    if(!elementName){
-      throw new TypeError(\`You need to define an element name\`);
+    if (!elementName) {
+      throw new TypeError('You need to define an element name for your component');
     }
     skeletor.registerComponent(this, this.ELEMENT_NAME);
   }
 
-  set defaults(value){
+  set defaults(value) {
     this.options = $.extend(true, {}, value, this.options);
   }
 }
 
-export default SkeletorPlugin;`}</code></pre>
+export default SkeletorPlugin;`;
+
+const accordionPluginSample = `// skeletor-plugin-accordion, 2017 - a real component
+// built on the base. extends SkeletorPlugin (which
+// extends HTMLElement). Registers itself via the
+// static .register() call. The whole pattern AXS
+// rebuilt in TypeScript nine years later, already
+// running in 2017.
+
+import { skeletor, SkeletorPlugin } from 'skeletor';
+
+class Accordion extends SkeletorPlugin {
+  constructor(element, options) {
+    super(element, options);
+    this.VERSION = '0.1.0';
+
+    this.defaults = {
+      optionOne: true,
+      optionTwo: false
+    };
+
+    console.log('created a new accordion');
+  }
+}
+
+Accordion.register();`;
+
+const ariaSample = `// accessible-components/aria.js, 2016 - WAI-ARIA
+// attributes bound to the same DOM elements the
+// accordion component owned. Accessibility wasn't a
+// separate pass; the binding ran as part of init.
+
+bindAccordion: function($accordion, $heading, $tab, $panel) {
+  var _ = this;
+
+  $($accordion).each(function(i) {
+    var $this = $(this);
+    $this.attr('id', 'accordion_' + i);
+    _.setAccordionAttributes($this, $heading, $tab, $panel, i);
+  });
+},
+
+setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
+  $this.find($heading).each(function() {
+    $(this).attr({ 'role': 'heading', 'aria-level': '3' });
+  });
+
+  $this.find($tab).each(function(j) {
+    $(this).attr({
+      'id':            'a' + i + '_tab'   + j,
+      'role':          'button',
+      'aria-expanded': 'false',
+      'aria-controls': 'a' + i + '_panel' + j
+    });
+  });
+
+  $this.find($panel).each(function(j) {
+    $(this).attr({
+      'id':              'a' + i + '_panel' + j,
+      'role':            'region',
+      'aria-hidden':     'true',
+      'aria-labelledby': 'a' + i + '_tab'   + j
+    });
+  });
+}`;
+---
+
+<Base
+  title="Skeletor — Jeff Mills"
+  description="A front-end component framework I built at Delphic Digital (2014–2017) with native Web Components in 2016. The architectural seed that became AXS nine years later."
+>
+  <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
+  <h1 class="page-title">skeletor</h1>
+  <p class="project-meta">
+    <span class="project-year">2013 — 2017</span>
+    <span class="meta-sep">&middot;</span>
+    <span class="project-status">archived</span>
+    <span class="meta-sep">&middot;</span>
+    <span>delphic digital</span>
+    <span class="meta-sep">&middot;</span>
+    <span>~40 repos</span>
+  </p>
+
+  <p class="page-lede">
+    Skeletor was the front-end framework we built at Delphic Digital
+    (Philadelphia, 2013&ndash;2017). It started as a Gulp + Sass boilerplate
+    and grew through three distinct experimentation eras &mdash; pre-component
+    utilities, a jQuery-based component framework, and finally native Web
+    Components in late 2016. The same architectural instincts are what AXS
+    scales today.
+  </p>
+
+  <aside class="callout">
+    <span class="callout-label">The throughline</span>
+    <p>
+      Skeletor isn&rsquo;t in production anywhere now &mdash; the agency
+      archived the org &mdash; but it&rsquo;s the receipt for a long-running
+      claim: I&rsquo;ve been working out framework-agnostic component
+      architecture since 2013. The actual code is below, in chronological
+      order.
+    </p>
+  </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">act i &mdash; before components (2013 &mdash; 2014)</h2>
+  <p>
+    The earliest pattern that survived the next decade: <strong>CSS owns the
+    breakpoint truth; JavaScript subscribes to it.</strong> Sounds obvious
+    now; in 2013 the web hadn&rsquo;t settled. <code>matchMedia</code> was
+    inconsistent. Most responsive JS was running its own arithmetic on
+    <code>window.innerWidth</code> and drifting from the stylesheet.
+  </p>
+  <p>
+    <code>on-media-query</code> threaded the breakpoint names through
+    <code>html &#123; font-family &#125;</code> &mdash; CSS as the source of
+    truth, JS as the listener. Components could subscribe to layout contexts
+    by name (<code>large</code>, <code>xlarge</code>) instead of magic
+    numbers.
+  </p>
+
+  <Code code={onMediaQuerySample} lang="javascript" theme={theme} />
+
+  <p class="caption">
+    <code>on-media-query/js/onmediaquery.js</code> &middot; 2013
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">act ii &mdash; a framework, on jquery (2016)</h2>
+  <p>
+    By 2016 Delphic was running ~50 client projects on the same component
+    runtime. The problem had shifted from &ldquo;how do we write components
+    consistently&rdquo; to &ldquo;how do we register, load, and tear them
+    down across many pages, breakpoints, and contexts.&rdquo;
+  </p>
+  <p>
+    <strong>Skeletor.core</strong> defined the <code>Plugin.create()</code>
+    pattern. Every component subclassed a shared base, got a UUID, registered
+    itself with the global, and surfaced via a kebab-case name derived from
+    its class. The shape AXS would later codify, here in proto form.
+  </p>
+
+  <Code code={skeletorCoreSample} lang="javascript" theme={theme} />
+
+  <p class="caption">
+    <code>Skeletor.core/skeletor.core.js</code> &middot; 2016
+  </p>
 
   <p>
-    <code>extends HTMLElement</code>. <code>connectedCallback</code>.
-    Component registry. A self-naming custom element. The same instincts that
-    show up in AXS today. The jQuery dependency dates it; the architectural
-    choice doesn&rsquo;t.
+    <strong>Skeletor.util.componentLoader</strong> scanned the DOM for
+    <code>[data-component]</code> markers, grouped them by media-query
+    context, and used <code>on-media-query</code> to lazy-load + initialize
+    the right components at the right breakpoint &mdash; including
+    <code>destroy()</code> on the way out. AMD-based code splitting before
+    tree-shaking was a default.
+  </p>
+
+  <Code code={componentLoaderSample} lang="javascript" theme={theme} />
+
+  <p class="caption">
+    <code>Skeletor.util.componentLoader/skeletor.util.componentLoader.js</code>
+    &middot; 2016
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">act iii &mdash; custom elements (late 2016)</h2>
+  <p>
+    The Web Components v1 spec stabilized in 2018. Lit didn&rsquo;t exist
+    yet. Stencil was over a year out. Skeletor picked standards anyway. The
+    base class was rewritten to <strong>extend <code>HTMLElement</code>
+    directly</strong>, with a <code>connectedCallback</code> instead of an
+    init pattern. From here on, components were custom elements.
+  </p>
+
+  <Code code={skeletorPluginBaseSample} lang="javascript" theme={theme} />
+
+  <p class="caption">
+    <code>skeletor-plugin-base/src/skeletor-plugin-base.js</code> &middot;
+    December 2016
+  </p>
+
+  <p>
+    A real component built on the base &mdash; the accordion plugin. The
+    <strong>same shape AXS still uses in 2026</strong>: subclass the base,
+    declare defaults, call <code>register()</code> to wire the custom
+    element into the registry. The jQuery dependency dates it; the
+    architectural choice doesn&rsquo;t.
+  </p>
+
+  <Code code={accordionPluginSample} lang="javascript" theme={theme} />
+
+  <p class="caption">
+    <code>skeletor-plugin-accordion/src/accordion.js</code> &middot; 2017
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">act iv &mdash; accessibility as a baseline (2016)</h2>
+  <p>
+    A sister repo, <code>accessible-components</code>, ran in parallel. It
+    bound WAI-ARIA Authoring-Practices attributes to the same DOM elements
+    the framework owned &mdash; not as an audit pass after the fact, but as
+    part of each component&rsquo;s <code>init</code>. Roles, labels, hidden
+    state, expanded state, all wired together.
+  </p>
+
+  <Code code={ariaSample} lang="javascript" theme={theme} />
+
+  <p class="caption">
+    <code>accessible-components/Static/src/js/components/common/aria.js</code>
+    &middot; 2016
   </p>
 
   <hr class="jm-rule" />
 
   <h2 class="section-title">companion artifacts</h2>
   <p>
-    A few sister repos rounded out the story:
+    A few more sister repos rounded out the story:
   </p>
 
   <ul class="proof-list">
     <li>
-      <strong>accessible-components (2016)</strong> &mdash; a library of WAI-ARIA
-      Authoring-Practices-compliant components built on Skeletor. Accessibility
-      treated as a baseline, not a feature.
+      <strong>Skeletor.sass.utilities / .helpers / .flexgrid</strong>
+      &mdash; a Sass-driven token system: spacing primitives, button + input
+      mixins, flexbox grid. Tokens lived in stylesheets because CSS custom
+      properties weren&rsquo;t broadly safe yet.
     </li>
     <li>
-      <strong>dd-pattern-library (2017)</strong> &mdash; the agency&rsquo;s pattern
-      library, started as a Pattern Lab experiment. The first version of
-      &ldquo;design system as an organizational artifact&rdquo; rather than a
-      per-project boilerplate.
+      <strong>Skeletor.docs</strong> &mdash; the project&rsquo;s
+      documentation site. Stories before Storybook was the default.
     </li>
     <li>
-      <strong>on-media-query (2013)</strong> &mdash; an earlier utility for
-      triggering JS callbacks on media query state changes. The kind of small
-      library that solved a real responsive-design pain point at the time.
+      <strong>dd-pattern-library</strong> &mdash; 2017, the agency&rsquo;s
+      pattern-lab experiment. The first version of &ldquo;design system as
+      an organizational artifact&rdquo; rather than a per-project
+      boilerplate.
+    </li>
+    <li>
+      <strong>Skeletor.pluginTemplate</strong> &mdash; the scaffold an
+      engineer ran to start a new component. The <code>/build-v1</code>
+      Claude Code skill on AXS today is the same idea, run by an agent.
     </li>
   </ul>
 
@@ -174,15 +425,15 @@ export default SkeletorPlugin;`}</code></pre>
 
   <h2 class="section-title">what this proved (and what came next)</h2>
   <p>
-    Skeletor never had to be a public open-source brand. It was infrastructure
-    for one agency&rsquo;s client work, and it did its job well for a few
-    years. What matters now is what it shows:
+    Skeletor never needed to be a public open-source brand. It was
+    infrastructure for one agency&rsquo;s client work and did its job well
+    for a few years. What matters now is what it shows:
   </p>
   <ul class="proof-list">
     <li>
       <strong>Framework-agnostic component architecture isn&rsquo;t a 2024
-      trend for me.</strong> The pattern that powers AXS &mdash; standards-based
-      components, framework-light runtime, design tokens via Sass/CSS
+      trend for me.</strong> The pattern that powers AXS &mdash; standards-
+      based components, framework-light runtime, design tokens via Sass / CSS
       properties &mdash; is the same pattern Skeletor was running in 2016.
     </li>
     <li>
@@ -194,8 +445,8 @@ export default SkeletorPlugin;`}</code></pre>
     <li>
       <strong>Agency speed compounds.</strong> Building on a shared component
       runtime across ~50 client engagements is what taught me what does and
-      doesn&rsquo;t survive contact with real delivery pressure. AXS inherited
-      those instincts.
+      doesn&rsquo;t survive contact with real delivery pressure. AXS
+      inherited those instincts.
     </li>
   </ul>
 
@@ -204,11 +455,15 @@ export default SkeletorPlugin;`}</code></pre>
   <h2 class="section-title">stack</h2>
   <dl class="stack-list">
     <dt>Components</dt>
-    <dd>Native Web Components (v1 spec), custom elements, shadow DOM-adjacent encapsulation</dd>
+    <dd>Native Web Components (v1 spec), custom elements, jQuery-augmented base class</dd>
     <dt>Build</dt>
-    <dd>Gulp 3, JSPM, Bower (yes, Bower), Babel, Sass</dd>
+    <dd>Gulp 3, JSPM, Bower (yes, Bower), Babel, Sass, AMD modules</dd>
     <dt>Design tokens</dt>
     <dd>Sass utilities + helpers + flexgrid</dd>
+    <dt>Responsive</dt>
+    <dd>on-media-query &mdash; CSS-defined breakpoints, JS subscribers</dd>
+    <dt>Accessibility</dt>
+    <dd>WAI-ARIA Authoring Practices bound at component init</dd>
     <dt>Distribution</dt>
     <dd>npm + Delphic&rsquo;s internal Bower registry</dd>
     <dt>Documentation</dt>
@@ -219,7 +474,7 @@ export default SkeletorPlugin;`}</code></pre>
 
   <p class="project-foot">
     Archived org: <a href="https://github.com/delphic-digital" target="_blank" rel="noopener">github.com/delphic-digital</a>
-    &middot; Related work: <a href="/case-studies/02-building-axs">Building AXS</a>
+    &middot; Related: <a href="/case-studies/02-building-axs">Building AXS</a>
     &middot; <a href="/case-studies/03-framework-agnostic">Framework-Agnostic Architecture</a>
   </p>
 </Base>
@@ -273,7 +528,19 @@ export default SkeletorPlugin;`}</code></pre>
     color: var(--jm-color-accent);
     text-transform: lowercase;
     letter-spacing: 0.05em;
-    margin: 2rem 0 0.5rem;
+    margin: 2.25rem 0 0.5rem;
+  }
+
+  .caption {
+    margin: 0.35rem 0 0;
+    color: var(--jm-color-dim);
+    font-size: 0.8em;
+  }
+
+  .caption code {
+    background: transparent;
+    color: var(--jm-color-muted);
+    padding: 0;
   }
 
   .stack-list {
@@ -332,26 +599,28 @@ export default SkeletorPlugin;`}</code></pre>
     font-weight: 700;
   }
 
-  pre {
-    background: #1a1a1a;
-    padding: 1rem;
-    overflow-x: auto;
-    font-family: var(--jm-font-mono);
-    font-size: 0.85rem;
-    border: 1px solid var(--jm-color-border);
-    line-height: 1.5;
-  }
-
-  pre code {
-    background: transparent;
-    padding: 0;
-  }
-
   code {
     font-family: var(--jm-font-mono);
     font-size: 0.9em;
     background: #1a1a1a;
     padding: 0.1em 0.35em;
+  }
+
+  /* Shiki-rendered <Code> output */
+  :global(.astro-code) {
+    border: 1px solid var(--jm-color-border) !important;
+    padding: 1rem !important;
+    font-family: var(--jm-font-mono) !important;
+    font-size: 0.78rem !important;
+    line-height: 1.55 !important;
+    overflow-x: auto;
+    margin: 0.5rem 0 0;
+  }
+
+  :global(.astro-code code) {
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: inherit !important;
   }
 
   .project-foot {
