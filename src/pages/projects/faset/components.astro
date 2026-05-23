@@ -1,0 +1,522 @@
+---
+import { Code } from "astro:components";
+import Base from "../../../layouts/Base.astro";
+import syntaxTheme from "../../../styles/jm-syntax.json";
+
+const theme = syntaxTheme as unknown as Parameters<typeof Code>[0]["theme"];
+
+// Combined unique component list from @faset/faset and @faset/faset-ui
+const fasetComponents = [
+  "Accordion", "AdvisorCertificationLayer", "AlertModal", "ArticleAudio",
+  "ArticleDisclaimersFootnotes", "ArticleImage", "ArticleInset",
+  "ArticlePullquote", "ArticleStat", "ArticleVideo", "AudioPlayer",
+  "BackToTop", "BarChart", "BioModal", "BlockGrid", "Breadcrumbs", "Button",
+  "CTA", "ChartLine", "ChartDescriptionLink", "ColorPicker", "Contact",
+  "ContactModal", "ContentBox", "CustomDatePicker", "CustomSelect",
+  "DatePicker", "DateRangePicker", "DoughnutChart", "DownloadButton",
+  "DownloadMultiselect", "DownloadTool", "Drawer", "DropDownNav",
+  "EmailSignup", "ErrorPage", "ErrorState", "FeaturedVideo", "Footer",
+  "FreeContent", "HTMLVideo", "HTMLVideoModal", "HTMLVideoPlayer", "Header",
+  "Hero", "Icon", "InPageNavigation", "InPageNavigationSectionAnchor",
+  "InfographicBarChart", "Input", "InputCheckbox", "InputFloatedLabel",
+  "InputRadio", "InputRadioGroup", "InputSearch", "InputSearchSelect",
+  "InputTextarea", "InputTooltip", "LineChart", "LineChartStats",
+  "Literature", "LiteratureArchive", "LoadingIndicator", "Login",
+  "LoginModal", "MediaPlayer", "Modal", "ModalFixed", "ModalStickyHeader",
+  "NavigationMenu", "Pagination", "Pill", "PrintButton", "SecondaryLink",
+  "SecondaryLinks", "SelectBase", "SelectBaseButton", "SelectBaseList",
+  "SelectBaseOption", "SelectBasic", "SelectPrimary", "SelectSecondary",
+  "SelectTooltip", "SingleFeature", "Slider", "SliderModal",
+  "SlidesFadeUpDown", "SocialShare", "SpinnerSVG", "StackedChartHorizontal",
+  "SubheadLockup", "SyncedBarChart", "Table", "TableOfContents",
+  "TableSorter", "TableStickyHeader", "Tabs", "Terms", "TextOverlay",
+  "Toast", "Toggle", "ToggleBase", "ToggleButton", "ToggleCheckbox",
+  "ToggleV2", "ToggleView", "Tooltip", "TopicHero", "Transcript",
+  "Transitions", "TransitionExpand", "ValidationErrors", "Video",
+  "VideoPlayer", "ViewToggle",
+];
+
+const featured = new Set(["Button", "Tooltip", "Accordion"]);
+
+const renderTreeLine = (name: string): string => {
+  const featuredMark = featured.has(name)
+    ? '  <span class="featured-marker">[&dagger;]</span>'
+    : "";
+  const classAttr = featured.has(name) ? ' class="featured"' : "";
+  return `<span${classAttr}>├── ${name}</span>${featuredMark}`;
+};
+
+const fasetTreeHtml =
+  "faset/src/components/\n" +
+  fasetComponents.map(renderTreeLine).join("\n");
+
+const buttonVueSample = `<!-- faset/src/components/Button/Button.vue -->
+<template>
+  <component
+    :is="link ? 'a' : 'button'"
+    :href="link"
+    :class="[
+      \`button button--\${bgColor}\`,
+      {
+        'button--small': isSmall,
+        'no-icon': !iconSwitch
+      }
+    ]"
+    :target="linkCondition === true ? '_blank' : null"
+    :rel="link ? 'noopener noreferrer' : null"
+    :aria-label="elementAriaLabel"
+    :disabled="isDisabled"
+    v-bind="$attrs"
+    @click="$emit('button-click', $event)"
+  >
+    {{ text }}
+    <span
+      v-if="iconSwitch"
+      :class="iconClass"
+      :aria-label="iconAriaLabel"
+      :aria-hidden="!iconAriaLabel ? 'true' : null"
+    />
+  </component>
+</template>
+
+<script>
+const nativeTypes = ['button', 'submit', 'reset'];
+const availableThemes = [
+  'red', 'black', 'black-outline',
+  'tertiary', 'compact', 'inverted', 'basic', 'unstyled'
+];
+
+/**
+ * The button component supports different types and themes.
+ * For Angular and Vue.js usage code snippets, click \`Show code\`
+ * at the bottom right of every story example.
+ */
+export default {
+  name: 'Button',
+
+  // Webpack-chunked nested import - the icon stays out of
+  // the button bundle unless actually rendered.
+  components: {
+    Icon: () => import(/* webpackChunkName: "Icon" */ '../Icon/Icon.vue'),
+  },
+
+  props: {
+    /** The native button type. */
+    nativeType: {
+      type: String,
+      default: 'button',
+      validator: (value) => nativeTypes.includes(value),
+    },
+
+    /** The button inner text. */
+    buttonText: { type: String, default: '' },
+
+    /** The button color/style theme. */
+    bgColor: {
+      type: String,
+      default: 'red',
+      validator: (value) => availableThemes.includes(value),
+    },
+
+    /** Set to false to hide the icon. */
+    showIcon: { type: Boolean, default: true },
+
+    /** The icon name; see the Icons gallery for valid values. */
+    icon: { type: String, default: 'right' },
+
+    /** Render icon on the left side instead of the right. */
+    iconLeft: { type: Boolean, default: false },
+
+    /**
+     * **(A11Y)** Label for the icon read by screen readers.
+     * WCAG 2.0 (1.1.1) — non-text content needs a text alternative
+     * that serves the equivalent purpose.
+     */
+    ariaIconLabel: { type: String, default: null },
+
+    /** If set, renders as <a> instead of <button>. */
+    link: { type: String, default: null },
+
+    /** Used for aria-disabled state. */
+    isDisabled: { type: Boolean, default: false },
+  },
+
+  // ... computed properties for class composition,
+  //     ariaLabel resolution, and link/button switching
+};
+</script>`;
+
+const tooltipVueSample = `<!-- faset/src/components/Tooltip/Tooltip.vue -->
+<!-- Keyboard + mouse + focus accessible. Auto-switches to a
+     modal when the message is too long for a bubble (50/250
+     char thresholds). Anchor-based positioning so a single
+     tooltip can be triggered from elsewhere on the page. -->
+
+<template>
+  <span
+    ref="container"
+    :id="cid"
+    :tabindex="tabIndexProp"
+    :role="targetElementRole"
+    class="tooltip no-outline-when-tabbing"
+    :class="containerClasses"
+    data-tooltip-trigger
+    :aria-label="targetElementAriaLabel ? targetElementAriaLabel : null"
+    :aria-describedby="\`tooltip-bubble-\${cid}\`"
+    :style="parentCSS"
+    @mouseover="onMouseOver"
+    @mouseleave="onMouseLeave"
+    @focusin="onFocus"
+    @focusout="onBlur"
+    @keydown.esc="onBlur"
+    @keydown.enter="onOpenModal"
+  >
+    <!-- Modal mode: long content opens in a modal -->
+    <template v-if="openTooltipInModal">
+      <div class="tooltip-trigger outline-when-tabbing" @click="onOpenModal">
+        <slot name="tooltip-trigger">
+          <span v-html="triggerText" />
+        </slot>
+      </div>
+
+      <Modal :openModal="openModal" @modal-close="onCloseModal">
+        <span :id="\`tooltip-bubble-\${cid}\`">
+          <slot name="customTooltip">
+            <span
+              class="tooltip-message"
+              v-html="message"
+              :aria-label="tooltipAriaLabel"
+            />
+          </slot>
+        </span>
+      </Modal>
+    </template>
+
+    <!-- Bubble mode: short content as a positioned bubble -->
+    <template v-else>
+      <div v-if="!anchorId" class="tooltip-trigger outline-when-tabbing">
+        <slot name="tooltip-trigger">
+          <span
+            v-html="triggerText"
+            role="tooltip"
+            :aria-label="tooltipAriaLabel"
+          />
+        </slot>
+      </div>
+
+      <span ref="tt_container" class="tooltip-container">
+        <span
+          ref="tooltip"
+          :id="\`tooltip-bubble-\${cid}\`"
+          :role="openProgrammatically && active ? 'alert' : 'tooltip'"
+          class="tooltip-bubble p3"
+          :class="[widthCSS, alignCSS, placement, textAlign]"
+          :style="bubblePosition"
+        >
+          <slot name="customTooltip">
+            <span class="tooltip-message" v-html="message" />
+          </slot>
+        </span>
+        <span class="tooltip-arrow" :style="arrowPosition" aria-hidden="true" />
+      </span>
+    </template>
+  </span>
+</template>
+
+<script>
+import { isElementInViewport, UniqueId } from '../../utils';
+
+const CHARS_MD = 50;
+const CHARS_LG = 250;
+
+export default {
+  name: 'Tooltip',
+  // ... props: triggerText, message, placement (top/bottom/left/right),
+  //     alignment, openProgrammatically, anchorId, tooltipAriaLabel
+  // ... methods: bubble position math, viewport detection,
+  //     auto-switch to modal when message exceeds CHARS_LG
+};
+</script>`;
+---
+
+<Base
+  title="FASET components — Jeff Mills"
+  description="Component browser and code samples from the archived FASET design system. Vue 2 SFCs with the patterns that became AXS."
+>
+  <p class="project-back"><a href="/projects/faset">&laquo; back to faset</a></p>
+  <h1 class="page-title">faset · components</h1>
+  <p class="project-meta">
+    <span class="project-year">2018 — 2022</span>
+    <span class="meta-sep">&middot;</span>
+    <span class="project-status">proprietary</span>
+    <span class="meta-sep">&middot;</span>
+    <span>{fasetComponents.length}+ components</span>
+    <span class="meta-sep">&middot;</span>
+    <span>vue 2 SFCs</span>
+  </p>
+
+  <p class="page-lede">
+    A browseable listing of the FASET component library plus a couple of
+    representative implementations. Tree below is the combined unique set
+    across <code>faset</code> and <code>faset-ui</code> &mdash; not every
+    file, just the component directories.
+  </p>
+
+  <aside class="callout">
+    <span class="callout-label">Proprietary &mdash; code samples only</span>
+    <p>
+      Only directory names and the two highlighted components are shown.
+      The other 100+ components are listed for breadth but the source
+      stays in the private repo.
+    </p>
+  </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">component tree</h2>
+  <p class="section-lede">
+    <code>{fasetComponents.length}</code> component directories. Featured
+    samples below are marked <span class="featured-marker">[&dagger;]</span>.
+  </p>
+
+  <pre class="component-tree" set:html={fasetTreeHtml}></pre>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">sample · Button</h2>
+  <p>
+    A representative Vue 2 SFC. Notable patterns: <strong>polymorphic
+    rendering</strong> (acts as <code>&lt;button&gt;</code> or
+    <code>&lt;a&gt;</code> depending on the <code>link</code> prop),
+    <strong>JSDoc-driven prop documentation</strong> that the Storybook
+    integration parsed into control panels and docs, <strong>webpack-chunked
+    nested imports</strong> so the Icon component stayed out of the Button
+    bundle, and <strong>WCAG-cited a11y prop comments</strong> embedded
+    next to the props they apply to.
+  </p>
+
+  <Code code={buttonVueSample} lang="vue" theme={theme} />
+
+  <p class="caption">
+    <code>faset/src/components/Button/Button.vue</code>
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">sample · Tooltip</h2>
+  <p>
+    The tooltip auto-switches between a positioned bubble and a modal based
+    on message length. Keyboard, focus, and mouse interaction handled
+    uniformly. Anchor-based positioning so a tooltip can be triggered from
+    an element elsewhere on the page (used in form-validation flows).
+    Slots for trigger text and custom tooltip content so consumers can
+    inject markup without rebuilding the component.
+  </p>
+
+  <Code code={tooltipVueSample} lang="vue" theme={theme} />
+
+  <p class="caption">
+    <code>faset/src/components/Tooltip/Tooltip.vue</code>
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">patterns you'll see across the library</h2>
+  <ul class="proof-list">
+    <li>
+      <strong>JSDoc on every prop.</strong> Storybook&rsquo;s
+      <code>vue-docgen</code> integration parsed these into Controls,
+      Args, and docs pages automatically. Documentation was structural,
+      not optional.
+    </li>
+    <li>
+      <strong>Slot composition.</strong> Most components default to text
+      props for the common case and expose named slots for advanced
+      use. Buttons, modals, tooltips, cards &mdash; same shape.
+    </li>
+    <li>
+      <strong>WCAG-cited a11y comments.</strong> Accessibility
+      requirements live next to the props they apply to, with WCAG
+      success criterion numbers (1.1.1, 2.4.6) inline.
+    </li>
+    <li>
+      <strong>Async-imported nested components</strong> via
+      <code>webpackChunkName</code> hints so the bundle stays
+      tree-shakeable across composition.
+    </li>
+    <li>
+      <strong>Custom directives instead of mixins</strong>
+      (<code>v-intersect</code>, <code>v-bounds</code>,
+      <code>v-drawer</code>) when the behavior was DOM-y rather than
+      data-y. Composition without component bloat.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <p class="project-foot">
+    Back to <a href="/projects/faset">FASET overview</a>
+    &middot; Compare to <a href="/projects/axs/components">AXS components</a>
+  </p>
+</Base>
+
+<style>
+  .project-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0.4rem;
+  }
+
+  .project-meta {
+    margin: 0 0 1rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+
+  .project-meta .project-year {
+    color: var(--jm-color-fg);
+  }
+
+  .project-meta .project-status {
+    color: var(--jm-color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .page-lede {
+    margin: 0 0 1rem;
+    color: var(--jm-color-fg);
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 2.25rem 0 0.5rem;
+  }
+
+  .section-lede {
+    margin: 0 0 0.75rem;
+    color: var(--jm-color-muted);
+    font-size: 0.95em;
+  }
+
+  .component-tree {
+    background: transparent;
+    border: 1px dashed var(--jm-color-border);
+    padding: 1rem 1.25rem;
+    margin: 0.5rem 0 0;
+    color: var(--jm-color-fg);
+    font-family: var(--jm-font-mono);
+    font-size: 0.78rem;
+    line-height: 1.45;
+    column-count: 3;
+    column-gap: 1.5rem;
+    column-rule: 1px dashed var(--jm-color-border);
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .component-tree .featured {
+    color: var(--jm-color-accent);
+    font-weight: 700;
+  }
+
+  .featured-marker {
+    color: var(--jm-color-accent);
+    font-weight: 700;
+  }
+
+  @media (max-width: 720px) {
+    .component-tree {
+      column-count: 2;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .component-tree {
+      column-count: 1;
+    }
+  }
+
+  .caption {
+    margin: 0.35rem 0 0;
+    color: var(--jm-color-dim);
+    font-size: 0.8em;
+  }
+
+  .caption code {
+    background: transparent;
+    color: var(--jm-color-muted);
+    padding: 0;
+  }
+
+  .proof-list {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .proof-list li {
+    position: relative;
+    margin: 0.6rem 0;
+  }
+
+  .proof-list li::before {
+    content: ">";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.25rem;
+  }
+
+  .proof-list strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+
+  code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+
+  :global(.astro-code) {
+    border: 1px solid var(--jm-color-border) !important;
+    padding: 1rem !important;
+    font-family: var(--jm-font-mono) !important;
+    font-size: 0.78rem !important;
+    line-height: 1.55 !important;
+    overflow-x: auto;
+    margin: 0.5rem 0 0;
+  }
+
+  :global(.astro-code code) {
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+  }
+
+  .project-foot {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>

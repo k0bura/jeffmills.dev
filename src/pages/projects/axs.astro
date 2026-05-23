@@ -1,0 +1,597 @@
+---
+import { Code } from "astro:components";
+import Base from "../../layouts/Base.astro";
+import syntaxTheme from "../../styles/jm-syntax.json";
+
+const theme = syntaxTheme as unknown as Parameters<typeof Code>[0]["theme"];
+
+const defineComponentsSample = `// libs/axs-web-components/src/defineComponents.ts
+//
+// The Vue-to-Web-Components transpilation entry point. Vue 3's
+// defineCustomElement wraps each .vue file into a standards-based
+// custom element that any framework (or no framework) can render.
+// One source, many targets — the architectural premise FASET proved
+// at smaller scale, scaled here to ~54 web components shipping into
+// 11 product teams.
+
+import { defineCustomElement } from "vue";
+
+import AxsButton from "@axs/axs-vue/src/components/AxsButton/AxsButton.vue";
+import AxsCard from "@axs/axs-vue/src/components/AxsCard/AxsCard.vue";
+import AxsModal from "@axs/axs-vue/src/components/AxsModal/AxsModal.vue";
+import AxsTooltip from "@axs/axs-vue/src/components/AxsTooltip/AxsTooltip.vue";
+import AxsAccordion from "@axs/axs-vue/src/components/AxsAccordion/AxsAccordion.vue";
+// ... ~50 more
+
+// Register each Vue component as a custom element. Public consumers
+// import this file once; any <axs-button>, <axs-card>, etc. in their
+// markup gets upgraded automatically.
+
+customElements.define("axs-button",    defineCustomElement(AxsButton));
+customElements.define("axs-card",      defineCustomElement(AxsCard));
+customElements.define("axs-modal",     defineCustomElement(AxsModal));
+customElements.define("axs-tooltip",   defineCustomElement(AxsTooltip));
+customElements.define("axs-accordion", defineCustomElement(AxsAccordion));
+// ... and so on`;
+
+const jwebTypesSample = `// libs/axs-automation/src/executors/jweb-types/executor.ts
+//
+// Build-time IDE metadata generator. Parses every Vue SFC with
+// vue-docgen-api, extracts props/events/slots, and emits a JetBrains
+// web-types JSON schema declared in package.json. Result: every
+// editor with the package installed gets autocomplete + hover docs
+// for every AXS custom element automatically.
+//
+// This is the foundation Layer 1 of the AXS + AI architecture
+// (see /case-studies/07-axs-ai-architecture). Without this, the
+// MCP server has no authoritative metadata to serve.
+
+import { BlockTag, parse, PropDescriptor } from "vue-docgen-api";
+import { collect, extractFromProp, getDocumentation } from "../../tool/collector";
+import * as path from "node:path";
+import * as fs from "node:fs";
+
+export default async function runExecutor(options: JwebTypesExecutorSchema) {
+  const collected = await collect();
+  const cmp = {};
+
+  console.log("Extracting docs and building map");
+  await Promise.all(
+    collected.components.map(async (filePath: string) => {
+      cmp[filePath.replace(/\\\\/g, "/")] = await extractInformation(
+        path.join(collected.root, filePath),
+      );
+      return true;
+    }),
+  );
+  console.log("Writing web-types to file ", options.out ?? "./");
+  await write(Object.values(cmp), options.out ?? "./");
+
+  return { success: true };
+}
+
+async function extractInformation(absolutePath: string) {
+  const doc = await parse(absolutePath);
+  const additional = await findAdditional(absolutePath);
+  const { description } = await getDocumentation(doc);
+
+  return {
+    tags: [
+      {
+        // PascalCase → kebab-case: AxsButton → axs-button
+        name: doc.displayName
+          .replace(/[A-Z]/g, (m) => "-" + m.toLowerCase())
+          .substring(1),
+        description,
+        attributes: doc.props
+          ?.map((prop: PropDescriptor) => {
+            const { theType, documentationTypeValue } = extractFromProp(prop);
+
+            // Respect @undocumented tag - some props are internal
+            if (prop?.tags && Object.keys(prop?.tags).includes("undocumented")) {
+              return undefined;
+            }
+
+            return {
+              name: prop.name.replace(/[A-Z]/g, (m) => "-" + m.toLowerCase()),
+              description: prop.description
+                ? prop.description + " (type: " + documentationTypeValue + ")"
+                : "type: " + documentationTypeValue,
+              value: { type: Array.isArray(theType) ? theType.join(" | ") : theType },
+              defaultValue: prop.defaultValue?.value ?? "undefined",
+              required: prop?.tags && Object.keys(prop?.tags).includes("required"),
+            };
+          })
+          .filter((q) => !!q),
+
+        // Events + slots get the same treatment
+        js: {
+          events: doc.events?.map((event) => ({
+            name: event.name,
+            description: event.description,
+          })),
+        },
+        slots: doc.slots?.map((slot) => ({
+          name: slot.name,
+          description: slot.description,
+          required: slot?.tags && Object.keys(slot?.tags).includes("required"),
+        })),
+
+        ...additional, // optional sidecar AxsButtonDoc.json with manual overrides
+      },
+    ],
+  };
+}`;
+
+const createComponentSample = `// libs/axs-automation/src/generators/create-component/generator.ts
+//
+// One Nx command (\`nx generate @axs/axs-automation:create-component\`)
+// scaffolds a new component into both axs-vue and axs-web-components,
+// with optional usage docs (.mdx) and meta JSON for the AI/IDE
+// integration. Reduces the cost of adding a component from "remember
+// 12 conventions" to "answer 3 questions". Documentation quality
+// becomes the default, not an afterthought.
+
+import { formatFiles, generateFiles, Tree } from "@nx/devkit";
+import * as path from "path";
+import { CreateComponentSchema } from "./schema";
+import { appendToFile, createBaseSubstitutions } from "../../util/utils";
+
+function createFileStucture(
+  tree: Tree,
+  tplDir: string,
+  outputDir: string,
+  name: { pascalName: string; kebabName: string; plainName: string },
+) {
+  generateFiles(tree, tplDir, outputDir, {
+    fileName: \`Axs\${name.pascalName}\`,
+    name: name.kebabName,
+    tpl: name.plainName,
+  });
+}
+
+export async function createComponentGenerator(
+  tree: Tree,
+  options: CreateComponentSchema,
+) {
+  const nameFormat = createBaseSubstitutions(options.name);
+
+  const dirWebTemplates = path.join(__dirname, "files-web-component");
+  const dirVueTemplates = path.join(__dirname, "files-vue");
+
+  const dirVueComponentRoot =
+    \`libs/axs-vue/src/components/Axs\${nameFormat.pascalName}\`;
+  const dirWebComponentRoot =
+    \`libs/axs-web-components/src/components/Axs\${nameFormat.pascalName}\`;
+
+  const fileDocs = path.join(
+    dirWebComponentRoot,
+    \`Axs\${nameFormat.pascalName}Usage.mdx\`,
+  );
+  const fileMeta = path.join(
+    dirWebComponentRoot,
+    \`\${nameFormat.kebabName}.meta.json\`,
+  );
+
+  // Scaffold both packages from templates
+  createFileStucture(tree, dirWebTemplates, dirWebComponentRoot, nameFormat);
+  createFileStucture(tree, dirVueTemplates, dirVueComponentRoot, nameFormat);
+
+  if (!options.docs)     tree.delete(fileDocs);
+  if (!options.examples) tree.delete(fileMeta);
+
+  // Auto-register the new tag in defineComponents.ts
+  appendToFile(
+    tree,
+    "/libs/axs-web-components/src/defineComponents.ts",
+    nameFormat.pascalName,
+  );
+
+  await formatFiles(tree);
+}
+
+export default createComponentGenerator;`;
+---
+
+<Base
+  title="AXS — Jeff Mills"
+  description="The framework-agnostic enterprise design system I architected. Nx monorepo with axs-vue + axs-web-components + axs-automation. Vue source compiles to standards-based custom elements; ships to Vue, Angular, AEM, and any HTML."
+>
+  <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
+  <h1 class="page-title">axs</h1>
+  <p class="project-meta">
+    <span class="project-year">2020 — 2025</span>
+    <span class="meta-sep">&middot;</span>
+    <span class="project-status">proprietary</span>
+    <span class="meta-sep">&middot;</span>
+    <span>nx monorepo</span>
+    <span class="meta-sep">&middot;</span>
+    <span>7 libs</span>
+  </p>
+
+  <p class="page-lede">
+    AXS is the framework-agnostic enterprise design system I architected.
+    The V0/V1 era covered here: Vue 3 source compiles to standards-based
+    custom elements via <code>defineCustomElement</code>, ships to Vue,
+    Angular, AEM, and any HTML, and gets backed by a custom
+    <code>axs-automation</code> Nx plugin that handles scaffolding, IDE
+    metadata, docs, and recipes. Three case studies on this site cover
+    the leadership arc; this page is the code receipts.
+  </p>
+
+  <p class="project-cta">
+    <a href="/projects/axs/components">Browse the component library + code samples &raquo;</a>
+  </p>
+
+  <aside class="callout">
+    <span class="callout-label">Proprietary &mdash; code samples only</span>
+    <p>
+      AXS lives in a private internal repository. The full source
+      can&rsquo;t be shared publicly. The samples below are scrubbed of
+      corporate identifiers &mdash; package namespaces, internal URLs
+      &mdash; with the architecture untouched. Happy to walk through the
+      system in depth under NDA;
+      <a href="mailto:jeffy9@gmail.com">reach out</a>.
+    </p>
+  </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">the seven libraries</h2>
+  <p>
+    Everything lives in one Nx monorepo. Seven libraries, each independently
+    versioned and published:
+  </p>
+
+  <dl class="stack-list">
+    <dt>axs-vue</dt>
+    <dd>
+      <strong>~104 Vue 3 components</strong> &mdash; the canonical source.
+      Forms, charts, modals, navigation, layouts, the lot. Built as Vue
+      single-file components so designers and engineers share one mental
+      model.
+    </dd>
+    <dt>axs-web-components</dt>
+    <dd>
+      <strong>~54 custom elements</strong> &mdash; the standards-based output.
+      Each one wraps a Vue SFC via <code>defineCustomElement</code> and
+      registers it with the global registry. Framework-agnostic consumers
+      use these directly.
+    </dd>
+    <dt>axs-angular</dt>
+    <dd>
+      Angular-flavored adapters and typed wrappers over the same custom
+      elements. Angular apps get typed templates without diverging from
+      the source of truth.
+    </dd>
+    <dt>axs-core</dt>
+    <dd>
+      Shared composables, directives, types, styles, and the foundation
+      utilities every component builds on.
+    </dd>
+    <dt>axs-styles</dt>
+    <dd>
+      Design tokens as CSS custom properties. Spacing, typography, color,
+      breakpoints &mdash; everything that pierces shadow DOM via the
+      cascade.
+    </dd>
+    <dt>axs-vue-recipes</dt>
+    <dd>
+      Pre-composed multi-component patterns &mdash; the &ldquo;here&rsquo;s
+      how to build a labeled-input-with-validation&rdquo; layer.
+      Discoverable via Storybook and the MCP server (see
+      <a href="/case-studies/07-axs-ai-architecture">AXS + AI deep dive</a>).
+    </dd>
+    <dt>axs-automation</dt>
+    <dd>
+      The custom Nx plugin we built ourselves. Generators
+      (<code>create-component</code>, <code>vue-recipe</code>,
+      <code>angular-recipe</code>) and executors (<code>doc-gen</code>,
+      <code>jweb-types</code>, <code>vcustom-html</code>,
+      <code>build-icon-blueprint</code>) that automate everything around
+      component lifecycle.
+    </dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">vue source → custom elements</h2>
+  <p>
+    The architectural premise. One Vue 3 single-file component, exposed as
+    a standards-based custom element. Any Vue app, Angular app, AEM
+    template, or plain HTML page renders the same tag and gets the same
+    behavior &mdash; same styles, same events, same accessibility tree.
+  </p>
+
+  <Code code={defineComponentsSample} lang="typescript" theme={theme} />
+
+  <p class="caption">
+    <code>libs/axs-web-components/src/defineComponents.ts</code> &middot;
+    Vue 3 + <code>defineCustomElement</code>
+  </p>
+
+  <p>
+    This is the direct successor to the FASET <code>vue-custom-element</code>
+    pattern, now built into Vue 3 itself. Same architecture, no third-party
+    runtime adapter, full TypeScript types.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">build-time IDE metadata (axs-automation:jweb-types)</h2>
+  <p>
+    The IDE-awareness foundation. At every build, an Nx executor walks
+    every Vue SFC, runs it through <code>vue-docgen-api</code>, extracts
+    props (with type info), events, slots, and emits two files:
+    <code>axs.web-types.json</code> (JetBrains schema) and
+    <code>axs.html-data.json</code> (VS Code custom HTML data). Both
+    declared in <code>package.json</code> so any editor that installs
+    the package gets autocomplete automatically.
+  </p>
+
+  <Code code={jwebTypesSample} lang="typescript" theme={theme} />
+
+  <p class="caption">
+    <code>libs/axs-automation/src/executors/jweb-types/executor.ts</code>
+    &middot; layer 1 of the AI architecture
+  </p>
+
+  <p>
+    This is Layer 1 of the
+    <a href="/case-studies/07-axs-ai-architecture">three-layer AI
+    architecture</a> &mdash; the metadata an MCP server can serve, an IDE
+    can autocomplete, and an agent can reason over. The other two layers
+    (the MCP server itself, and Claude Code skills) sit on top of this.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">component scaffolder (axs-automation:create-component)</h2>
+  <p>
+    The day-to-day developer experience. One command scaffolds a new
+    component into both <code>axs-vue</code> and
+    <code>axs-web-components</code>, with optional usage docs and meta JSON
+    for the AI/IDE integration, and auto-registers the new tag in
+    <code>defineComponents.ts</code>. Conventions encoded as templates;
+    boilerplate is no longer something engineers have to remember.
+  </p>
+
+  <Code code={createComponentSample} lang="typescript" theme={theme} />
+
+  <p class="caption">
+    <code>libs/axs-automation/src/generators/create-component/generator.ts</code>
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">what's not on this page</h2>
+  <p>
+    A few things from newer iterations of the system, covered elsewhere on
+    this site:
+  </p>
+  <ul class="proof-list">
+    <li>
+      <strong>The MCP server</strong> that exposes the design system to
+      AI assistants (Claude, Copilot, Cursor) &mdash; built on top of the
+      <code>jweb-types</code> output shown above. Full breakdown in the
+      <a href="/case-studies/07-axs-ai-architecture">AXS + AI deep dive</a>.
+    </li>
+    <li>
+      <strong>Claude Code skills</strong> for component migration
+      (<code>/build-v1</code>) and documentation auditing
+      (<code>/test-docs</code>). Discussed in the
+      <a href="/case-studies/08-mentoring-and-contribution">leadership
+      case study</a> and the
+      <a href="/writing/agentic-workflows-architecture">agentic-workflows
+      writing piece</a>.
+    </li>
+    <li>
+      <strong>The V3 Lit-based architecture</strong> currently shipping in
+      a separate active repo. The archive shown here is the foundation
+      that V3 is building on top of.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">stack</h2>
+  <dl class="stack-list">
+    <dt>Frontend</dt>
+    <dd>Vue 3 SFCs, Vue 3 <code>defineCustomElement</code>, TypeScript</dd>
+    <dt>Build</dt>
+    <dd>Nx monorepo with custom executors and generators; Vite</dd>
+    <dt>Documentation</dt>
+    <dd>Storybook 9 per package, composed root Storybook, MDX usage docs</dd>
+    <dt>Testing</dt>
+    <dd>Jest unit + visual regression + a11y</dd>
+    <dt>IDE / AI</dt>
+    <dd>
+      Build-time JetBrains web-types + VS Code html-data; MCP server (in
+      a separate repo) feeds AI assistants
+    </dd>
+    <dt>Distribution</dt>
+    <dd>Seven independently-versioned npm packages, semver-driven releases</dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <p class="project-foot">
+    More code: <a href="/projects/axs/components">component browser
+    &amp; samples &raquo;</a><br />
+    Related: <a href="/projects/faset">FASET</a>
+    (the precursor) &middot; <a href="/projects/skeletor">Skeletor</a>
+    (the agency-era seed) &middot;
+    <a href="/case-studies/02-building-axs">Building AXS</a>
+    &middot; <a href="/case-studies/07-axs-ai-architecture">AXS + AI
+    Architecture</a>
+  </p>
+</Base>
+
+<style>
+  .project-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0.4rem;
+  }
+
+  .project-meta {
+    margin: 0 0 1rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+
+  .project-meta .project-year {
+    color: var(--jm-color-fg);
+  }
+
+  .project-meta .project-status {
+    color: var(--jm-color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .page-lede {
+    margin: 0 0 1rem;
+    color: var(--jm-color-fg);
+  }
+
+  .project-cta {
+    margin: 0 0 1.25rem;
+    padding: 0.55rem 0.85rem;
+    border-left: 2px solid var(--jm-color-accent);
+    background: rgba(255, 204, 0, 0.04);
+    font-size: 0.95em;
+  }
+
+  .project-cta a {
+    color: var(--jm-color-accent);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .project-cta a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 2.25rem 0 0.5rem;
+  }
+
+  .caption {
+    margin: 0.35rem 0 0;
+    color: var(--jm-color-dim);
+    font-size: 0.8em;
+  }
+
+  .caption code {
+    background: transparent;
+    color: var(--jm-color-muted);
+    padding: 0;
+  }
+
+  .stack-list {
+    margin: 0.5rem 0 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1.25rem;
+    line-height: 1.6;
+  }
+
+  .stack-list dt {
+    color: var(--jm-color-accent);
+    font-weight: 700;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 0.15rem;
+  }
+
+  .stack-list dd {
+    margin: 0;
+    color: var(--jm-color-fg);
+    font-size: 0.95em;
+  }
+
+  @media (max-width: 540px) {
+    .stack-list {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+    .stack-list dd {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .proof-list {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .proof-list li {
+    position: relative;
+    margin: 0.6rem 0;
+  }
+
+  .proof-list li::before {
+    content: ">";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.25rem;
+  }
+
+  .proof-list strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+
+  code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+
+  :global(.astro-code) {
+    border: 1px solid var(--jm-color-border) !important;
+    padding: 1rem !important;
+    font-family: var(--jm-font-mono) !important;
+    font-size: 0.78rem !important;
+    line-height: 1.55 !important;
+    overflow-x: auto;
+    margin: 0.5rem 0 0;
+  }
+
+  :global(.astro-code code) {
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+  }
+
+  .project-foot {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>

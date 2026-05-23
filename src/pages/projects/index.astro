@@ -24,7 +24,7 @@ const projects = [...PROJECTS].sort((a, b) => b.year - a.year);
           <article>
             <header class="project-head">
               <span class="project-year">{p.year}</span>
-              <span class="project-status">{p.status}</span>
+              <span class:list={["project-status", `is-${p.status}`]}>{p.status}</span>
             </header>
             <h2 class="project-title">
               <a href={`/projects/${p.slug}`}>{p.title}</a>
@@ -85,9 +85,21 @@ const projects = [...PROJECTS].sort((a, b) => b.year - a.year);
   }
 
   .project-status {
-    color: var(--jm-color-ok);
+    color: var(--jm-color-muted);
     text-transform: uppercase;
     letter-spacing: 0.06em;
+  }
+
+  .project-status.is-live {
+    color: var(--jm-color-ok);
+  }
+
+  .project-status.is-archived {
+    color: var(--jm-color-dim);
+  }
+
+  .project-status.is-proprietary {
+    color: var(--jm-color-muted);
   }
 
   .project-title {

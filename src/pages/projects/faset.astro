@@ -1,0 +1,627 @@
+---
+import { Code } from "astro:components";
+import Base from "../../layouts/Base.astro";
+import syntaxTheme from "../../styles/jm-syntax.json";
+
+const theme = syntaxTheme as unknown as Parameters<typeof Code>[0]["theme"];
+
+const fasetClassSample = `// faset/src/custom-element-build-prod.js
+//
+// The Faset singleton owns shared state (event bus, breakpoints,
+// keyboard aliases, focus management, filters) and installs itself
+// as a Vue plugin. Same idea I would later port to AXS - but here it
+// runs on Vue 2 inside an enterprise that wouldn't be on Vue 3 for
+// years.
+
+import { KeyCodeAliases, SmartFocus, Viewport } from './plugins';
+import * as stringFilters from './filters/string/index';
+import { banner } from './utils';
+
+import 'document-register-element/build/document-register-element';
+import Vue from 'vue';
+import vueCustomElement from 'vue-custom-element';
+import { getProps } from 'vue-custom-element/src/utils/props';
+
+const components = {};
+const componentsMounted = {};
+
+class Faset {
+  constructor() {
+    this.VERSION_NUM = __VERSION__;
+    this.EVENTBUS = new Vue();
+
+    this.breakpoints = {
+      small: 0,
+      medium: 768,
+      large: 1025
+    };
+
+    this.install(Vue);
+  }
+
+  install(Vue) {
+    Vue.use(Viewport, this.breakpoints);
+    Vue.use(KeyCodeAliases);
+    Vue.use(SmartFocus);
+    Vue.config.productionTip = false;
+    this.registerFilters(Vue);
+
+    banner.info(this.VERSION_NUM);
+  }
+
+  registerFilters(Vue) {
+    Object.entries(stringFilters).forEach(([key, value]) => {
+      Vue.filter(key, value);
+    });
+  }
+}
+
+let faset = new Faset();
+Vue.use(vueCustomElement);
+
+const elementName = (name) => \`faset-\${name.toLowerCase()}\`;
+
+const customElement = (name, component) => {
+  Vue.customElement(name, asyncComponentDefinition(component.default), {
+    props: getProps(component.default).camelCase
+  });
+};
+
+export const registerComponent = (name, fn) => {
+  components[elementName(name)] = fn;
+};`;
+
+const mutationObserverSample = `// faset/src/custom-element-build-prod.js (continued)
+//
+// Lazy hydration: a single MutationObserver watches the entire
+// document for nodes whose tag starts with FASET-. When one appears,
+// the matching component chunk is dynamic-imported and registered as
+// a Vue custom element. No upfront bundle cost for components the
+// page doesn't actually use - solving for enterprise pages that
+// might include any of 86 components anywhere.
+
+const mutationObserver = new MutationObserver((mutations) => {
+  const elementNodes = (nodes) => Array.from(nodes).filter(
+    (node) => node.nodeType === Node.ELEMENT_NODE
+  );
+
+  const isFaset = (el) => el.tagName.startsWith('FASET-');
+
+  mutations.forEach((mutation) => {
+    elementNodes(mutation.addedNodes).forEach((node) => {
+      if (isFaset(node)) {
+        mountComponent(node.tagName.toLowerCase());
+      }
+      // Walk any subtree that came in with the same mutation.
+      node.querySelectorAll('[data-faset]').forEach((el) => {
+        if (isFaset(el)) mountComponent(el.tagName.toLowerCase());
+      });
+    });
+  });
+});
+
+mutationObserver.observe(document.body, {
+  childList: true,
+  subtree: true
+});
+
+const mountComponent = async (name) => {
+  if (components[name] && !componentsMounted[name]) {
+    const component = await components[name]();
+    customElement(name, component);
+    componentsMounted[name] = true;
+  }
+};`;
+
+const intersectDirectiveSample = `// faset-core/js/directives/intersect.js
+//
+// One observer, many elements. A WeakMap holds per-element callbacks,
+// the directive cleans up properly on unbind, and the polyfill takes
+// care of older browsers. The kind of small, careful primitive that
+// pays off across every component that needs visibility-aware
+// behavior (lazy load, animation triggers, sticky-state).
+
+import "intersection-observer";
+
+const callbacks = new WeakMap();
+let observer;
+
+const observerCallback = (entries) => {
+  entries.forEach((entry) => {
+    if (callbacks.has(entry.target)) {
+      const callback = callbacks.get(entry.target);
+      callback(entry);
+    }
+  });
+};
+
+export default {
+  inserted(el, { value, arg }) {
+    if (observer === undefined) {
+      observer = new IntersectionObserver(observerCallback, {
+        threshold: [0, 1]
+      });
+    }
+
+    if (arg || arg === undefined) {
+      observer.observe(el);
+    }
+
+    callbacks.set(el, value);
+  },
+
+  update(el, { arg }) {
+    if (arg || arg === undefined) {
+      observer.observe(el);
+    } else {
+      observer.unobserve(el);
+    }
+  },
+
+  unbind(el) {
+    observer.unobserve(el);
+    callbacks.delete(el);
+  }
+};`;
+
+const boundsDirectiveSample = `// faset-core/js/directives/bounds.js
+//
+// Toggles classes on an element based on which viewport edges it's
+// hitting (top, right, bottom, left). Used for sticky behaviors and
+// sidebar-style layouts that needed to know their position relative
+// to the viewport without per-component scroll listeners.
+
+const state = new WeakMap();
+const BOUNDS_TOP_CLASS = "top";
+const BOUND_RIGHT_CLASS = "right";
+const BOUNDS_BOTTOM_CLASS = "bottom";
+const BOUNDS_LEFT_CLASS = "left";
+
+const handleScroll = (el) => {
+  const elState = state.get(el);
+  const elBounds = el.getBoundingClientRect();
+  const vWidth = window.innerWidth;
+  const vHeight = window.innerHeight;
+
+  if (elState.active) {
+    el.classList.toggle(BOUNDS_TOP_CLASS,
+      elBounds.top - elState.offsets.top <= 0);
+    el.classList.toggle(BOUND_RIGHT_CLASS,
+      elBounds.right + elState.offsets.right >= vWidth);
+    el.classList.toggle(BOUNDS_BOTTOM_CLASS,
+      elBounds.bottom + elState.offsets.bottom >= vHeight);
+    el.classList.toggle(BOUNDS_LEFT_CLASS,
+      elBounds.left - elState.offsets.left <= 0);
+  } else {
+    el.classList.remove(BOUNDS_TOP_CLASS, BOUND_RIGHT_CLASS,
+                        BOUNDS_BOTTOM_CLASS, BOUNDS_LEFT_CLASS);
+  }
+};`;
+---
+
+<Base
+  title="FASET — Jeff Mills"
+  description="The enterprise design system I helped build before AXS. 86 Vue 2 components compiled to custom elements; the codebase where framework-agnostic ideas were incubated under enterprise constraints."
+>
+  <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
+  <h1 class="page-title">faset</h1>
+  <p class="project-meta">
+    <span class="project-year">2018 — 2022</span>
+    <span class="meta-sep">&middot;</span>
+    <span class="project-status">proprietary</span>
+    <span class="meta-sep">&middot;</span>
+    <span>enterprise design system</span>
+    <span class="meta-sep">&middot;</span>
+    <span>vue 2</span>
+  </p>
+
+  <p class="page-lede">
+    FASET was the design system that came before AXS. Three internal
+    packages &mdash; <code>faset</code>, <code>faset-core</code>,
+    <code>faset-ui</code> &mdash; with 86 Vue 2 components compiled to
+    native custom elements via <code>vue-custom-element</code>, lazy-mounted
+    by a document-wide MutationObserver, and styled with a Sass-driven
+    token system. The codebase where the framework-agnostic ideas were
+    incubated under real enterprise constraints.
+  </p>
+
+  <p class="project-cta">
+    <a href="/projects/faset/components">Browse the component library + code samples &raquo;</a>
+  </p>
+
+  <aside class="callout">
+    <span class="callout-label">Proprietary &mdash; code samples only</span>
+    <p>
+      FASET is internal to a regulated-finance enterprise. The full
+      repositories can&rsquo;t be shared publicly. What&rsquo;s on this
+      page is a curated set of code excerpts scrubbed of corporate
+      identifiers, with the architecture and patterns preserved verbatim.
+      If you&rsquo;d like a deeper code walkthrough under NDA,
+      <a href="mailto:jeffy9@gmail.com">reach out</a>.
+    </p>
+  </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">what it was</h2>
+  <p>
+    Three packages, scoped together as <code>@faset/*</code>, installed
+    through a private npm registry and consumed by every advisor-facing app
+    inside the enterprise:
+  </p>
+
+  <dl class="stack-list">
+    <dt>faset</dt>
+    <dd>
+      The main package. <strong>86 Vue components</strong>: forms, charts,
+      modals, navigation, video, content layouts. Storybook docs. The
+      compilation entrypoints that emit a single browser bundle of custom
+      elements.
+    </dd>
+    <dt>faset-core</dt>
+    <dd>
+      Shared runtime: SASS tokens + breakpoints, an event bus, Vue filters,
+      mixins, plugins, and the directives (<code>intersect</code>,
+      <code>bounds</code>, <code>drawer</code>, <code>anchorOffset</code>,
+      <code>target</code>) that the components built on top of.
+    </dd>
+    <dt>faset-ui</dt>
+    <dd>
+      A second generation of the component library, 98 components, with a
+      &ldquo;hero sandbox&rdquo; playground for advisor-finance scenarios
+      that the standard Storybook stories couldn&rsquo;t cover.
+    </dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">the singleton class</h2>
+  <p>
+    Every component shared a single runtime, owned by a singleton
+    <code>Faset</code> class. The pattern: install a couple of small
+    plugins (viewport, key-code aliases, focus management), register a
+    single shared event bus, expose filters, and quietly print a version
+    banner. Same idea I would later port forward to AXS &mdash; same
+    architectural posture, different framework era.
+  </p>
+
+  <Code code={fasetClassSample} lang="javascript" theme={theme} />
+
+  <p class="caption">
+    <code>faset/src/custom-element-build-prod.js</code> &middot;
+    Vue 2 + <code>vue-custom-element</code>
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">lazy hydration via mutationobserver</h2>
+  <p>
+    86 components is too many to ship upfront. The classic answer was
+    code-splitting; the harder problem was deciding <em>which</em> bundles
+    to load on which page when adopters didn&rsquo;t know what their CMS
+    templates were going to include.
+  </p>
+  <p>
+    The solution: one <code>MutationObserver</code> watching the whole
+    document. When any tag starting with <code>FASET-</code> appears in the
+    DOM, the matching component chunk is dynamic-imported and registered
+    on the fly. Pages that include the navbar but not the chart pay for
+    only the navbar. Pages that conditionally render the chart pay for it
+    only if the chart is actually rendered. Decoupled from the host
+    framework&rsquo;s scheduler.
+  </p>
+
+  <Code code={mutationObserverSample} lang="javascript" theme={theme} />
+
+  <p class="caption">
+    <code>faset/src/custom-element-build-prod.js</code> &middot;
+    lazy hydration pattern
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">the directives</h2>
+  <p>
+    Some of the most-reused primitives in FASET weren&rsquo;t components &mdash;
+    they were custom Vue directives. Two examples:
+  </p>
+
+  <p>
+    <strong><code>v-intersect</code></strong> &mdash; an
+    <code>IntersectionObserver</code> wrapper using a single shared observer
+    and a <code>WeakMap</code> for per-element callbacks. Lazy-load images,
+    animation triggers, infinite-scroll feeds &mdash; all built on this one
+    primitive.
+  </p>
+
+  <Code code={intersectDirectiveSample} lang="javascript" theme={theme} />
+
+  <p class="caption">
+    <code>faset-core/js/directives/intersect.js</code>
+  </p>
+
+  <p>
+    <strong><code>v-bounds</code></strong> &mdash; toggles class names based on
+    which viewport edges the element is currently touching. Used by
+    sticky-state components, sidebar positioning, in-page navigation
+    indicators. Cheaper and more declarative than per-component scroll
+    listeners.
+  </p>
+
+  <Code code={boundsDirectiveSample} lang="javascript" theme={theme} />
+
+  <p class="caption">
+    <code>faset-core/js/directives/bounds.js</code>
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">enterprise constraints that shaped the design</h2>
+  <ul class="proof-list">
+    <li>
+      <strong>Private npm registry, no public dependencies allowed.</strong>
+      Every dependency had to be vetted through internal security. That
+      pushed the team toward small, standalone primitives instead of a
+      kitchen-sink framework. Today&rsquo;s &ldquo;just install Lit&rdquo;
+      wasn&rsquo;t an option; FASET had to ship its own component runtime.
+    </li>
+    <li>
+      <strong>Node 18 + openssl-legacy-provider for Vue 2 builds.</strong>
+      The system had to keep shipping on a modern Node version while Vue 2
+      kept aging. Real evidence of long-running enterprise discipline:
+      patch the build, write the README, keep going.
+    </li>
+    <li>
+      <strong>Multiple consuming frameworks (Vue, Angular, AEM/Java).</strong>
+      The framework-agnostic web-component approach was the only way to
+      serve all three from one source. AXS scaled this; FASET proved it
+      worked.
+    </li>
+    <li>
+      <strong>POM-based artifact lifecycle.</strong> The npm packages had
+      to satisfy a Maven parent POM&rsquo;s versioning + publishing rules.
+      Bonus complexity that taught the team how to treat front-end
+      packages with the same release discipline as a Java backend service.
+    </li>
+    <li>
+      <strong>Brand color and tokens via SASS.</strong> CSS custom properties
+      weren&rsquo;t broadly safe across all consumer browsers FASET had to
+      support. Tokens lived in Sass and were inlined at build time. AXS
+      later moved them to custom properties; FASET was the constraint study.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">what carried forward</h2>
+  <p>
+    The most direct lineage from FASET to AXS:
+  </p>
+  <ul class="proof-list">
+    <li>
+      The <strong>Vue-source-to-Web-Component compilation</strong> approach
+      &mdash; FASET used <code>vue-custom-element</code> on Vue 2; AXS
+      replaced it with Vue 3&rsquo;s native <code>defineCustomElement</code>.
+      Same architectural premise; framework-agnostic distribution from a
+      single source.
+    </li>
+    <li>
+      The <strong>directives</strong>: <code>intersect</code>,
+      <code>bounds</code>, <code>drawer</code>, <code>anchorOffset</code>
+      survived almost verbatim into AXS&rsquo;s composables.
+    </li>
+    <li>
+      The <strong>monorepo / multiple packages</strong> shape &mdash; FASET
+      used Yarn workspaces; AXS uses Nx, but the partitioning logic is the
+      same: a core runtime, a component library, framework-specific
+      adapters.
+    </li>
+    <li>
+      The <strong>storybook-first</strong> documentation model with adopter
+      playgrounds that go beyond standard story isolation.
+    </li>
+    <li>
+      The <strong>token system</strong> shape &mdash; spacing, typography,
+      color, breakpoints &mdash; structured the same way, just promoted
+      from Sass to CSS custom properties when the browser support landed.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">stack</h2>
+  <dl class="stack-list">
+    <dt>Frontend</dt>
+    <dd>Vue 2.7, custom elements via <code>vue-custom-element</code></dd>
+    <dt>Build</dt>
+    <dd>Vue CLI, Webpack, Babel, PostCSS, SASS</dd>
+    <dt>Distribution</dt>
+    <dd>Private internal npm registry, three published packages</dd>
+    <dt>Documentation</dt>
+    <dd>Storybook + custom hero-sandbox playground</dd>
+    <dt>Testing</dt>
+    <dd>Jest unit tests + TestCafe visual-regression baseline</dd>
+    <dt>Monorepo</dt>
+    <dd>Yarn workspaces across <code>@faset/*</code> packages</dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <p class="project-foot">
+    More code: <a href="/projects/faset/components">component browser
+    &amp; samples &raquo;</a><br />
+    Related: <a href="/projects/axs">AXS</a>
+    (the successor) &middot; <a href="/projects/skeletor">Skeletor</a>
+    (the agency-era precursor) &middot;
+    <a href="/case-studies/02-building-axs">Building AXS</a>
+  </p>
+</Base>
+
+<style>
+  .project-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0.4rem;
+  }
+
+  .project-meta {
+    margin: 0 0 1rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+
+  .project-meta .project-year {
+    color: var(--jm-color-fg);
+  }
+
+  .project-meta .project-status {
+    color: var(--jm-color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .page-lede {
+    margin: 0 0 1rem;
+    color: var(--jm-color-fg);
+  }
+
+  .project-cta {
+    margin: 0 0 1.25rem;
+    padding: 0.55rem 0.85rem;
+    border-left: 2px solid var(--jm-color-accent);
+    background: rgba(255, 204, 0, 0.04);
+    font-size: 0.95em;
+  }
+
+  .project-cta a {
+    color: var(--jm-color-accent);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .project-cta a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 2.25rem 0 0.5rem;
+  }
+
+  .caption {
+    margin: 0.35rem 0 0;
+    color: var(--jm-color-dim);
+    font-size: 0.8em;
+  }
+
+  .caption code {
+    background: transparent;
+    color: var(--jm-color-muted);
+    padding: 0;
+  }
+
+  .stack-list {
+    margin: 0.5rem 0 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1.25rem;
+    line-height: 1.6;
+  }
+
+  .stack-list dt {
+    color: var(--jm-color-accent);
+    font-weight: 700;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 0.15rem;
+  }
+
+  .stack-list dd {
+    margin: 0;
+    color: var(--jm-color-fg);
+    font-size: 0.95em;
+  }
+
+  @media (max-width: 540px) {
+    .stack-list {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+    .stack-list dd {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .proof-list {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .proof-list li {
+    position: relative;
+    margin: 0.6rem 0;
+  }
+
+  .proof-list li::before {
+    content: ">";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.25rem;
+  }
+
+  .proof-list strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+
+  code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+
+  :global(.astro-code) {
+    border: 1px solid var(--jm-color-border) !important;
+    padding: 1rem !important;
+    font-family: var(--jm-font-mono) !important;
+    font-size: 0.78rem !important;
+    line-height: 1.55 !important;
+    overflow-x: auto;
+    margin: 0.5rem 0 0;
+  }
+
+  :global(.astro-code code) {
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+  }
+
+  .project-foot {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>

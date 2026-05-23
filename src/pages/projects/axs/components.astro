@@ -1,0 +1,612 @@
+---
+import { Code } from "astro:components";
+import Base from "../../../layouts/Base.astro";
+import syntaxTheme from "../../../styles/jm-syntax.json";
+
+const theme = syntaxTheme as unknown as Parameters<typeof Code>[0]["theme"];
+
+const axsVue = [
+  "AxsAccordion", "AxsActionList", "AxsActionSnackbar",
+  "AxsArticleFixedHeader", "AxsAudio", "AxsBadge", "AxsBanner",
+  "AxsBreadcrumb", "AxsButton", "AxsCard", "AxsCoachmark", "AxsDrawer",
+  "AxsError", "AxsFeaturedContent", "AxsFootnote", "AxsFundCard",
+  "AxsGallery", "AxsHero", "AxsHeroBasic", "AxsHint", "AxsHr", "AxsIcon",
+  "AxsInPageNav", "AxsInPageNavMenuBar", "AxsInPageNavSideMenu",
+  "AxsInPageNavigation", "AxsIndicator", "AxsInput", "AxsInputAssetValue",
+  "AxsInputCheckbox", "AxsInputDate", "AxsInputDatePicker",
+  "AxsInputDateRangePicker", "AxsInputNumber", "AxsInputRadioGroup",
+  "AxsInputRange", "AxsInputSearch", "AxsInputSearchSelect", "AxsInputText",
+  "AxsIntentSnackbar", "AxsMediaExperience", "AxsModal", "AxsModalV1",
+  "AxsNavigationMenu", "AxsPagination", "AxsPicture", "AxsPill", "AxsRating",
+  "AxsReadingProgress", "AxsRichContent", "AxsSelectDropdown", "AxsSkeleton",
+  "AxsSlideBar", "AxsSnackbarContainer", "AxsSocialShare", "AxsSpinner",
+  "AxsStat", "AxsStepIndicator", "AxsStickyContainer", "AxsSwitch",
+  "AxsTable", "AxsTableSortHeader", "AxsTabs", "AxsTag", "AxsTextarea",
+  "AxsToast", "AxsToggle", "AxsTooltip", "AxsTooltipV1", "AxsVideo",
+];
+
+const axsWc = [
+  "AxsAccordion", "AxsActionList", "AxsArticleFixedHeader", "AxsAudio",
+  "AxsBadge", "AxsBanner", "AxsBreadcrumb", "AxsButton", "AxsCard",
+  "AxsCoachmark", "AxsDrawer", "AxsFeaturedContent", "AxsFootnote",
+  "AxsFundCard", "AxsGallery", "AxsHero", "AxsHeroBasic", "AxsHr", "AxsIcon",
+  "AxsInPageNav", "AxsInPageNavMenuBar", "AxsInPageNavSideMenu",
+  "AxsInPageNavigation", "AxsIndicator", "AxsInput", "AxsInputAssetValue",
+  "AxsInputCheckbox", "AxsInputDate", "AxsInputDatePicker",
+  "AxsInputDateRangePicker", "AxsInputRadioGroup", "AxsInputRange",
+  "AxsInputSearch", "AxsInputSearchSelect", "AxsInputText",
+  "AxsMediaExperience", "AxsModal", "AxsNavigationMenu", "AxsPagination",
+  "AxsPicture", "AxsPill", "AxsRating", "AxsReadingProgress", "AxsRichContent",
+  "AxsSelectDropdown", "AxsSkeleton", "AxsSlideBar", "AxsSnackbar",
+  "AxsSocialShare", "AxsSpinner", "AxsStat", "AxsStepIndicator",
+  "AxsStickyContainer", "AxsSwitch", "AxsTable", "AxsTabs", "AxsTag",
+  "AxsTextarea", "AxsToast", "AxsToggle", "AxsTooltip", "AxsVideo",
+];
+
+const composables = [
+  "attribute", "binder", "deeplySlottedElement", "domElement",
+  "horizontalScroll", "hostElement", "notifier", "propSync", "request",
+  "resize", "slotElement", "slottedElements", "smoothScroll", "viewport",
+];
+
+const featured = new Set(["AxsButton", "AxsAccordion"]);
+
+const renderTreeLine = (name: string, mark: boolean): string => {
+  const featuredMark = mark
+    ? '  <span class="featured-marker">[&dagger;]</span>'
+    : "";
+  const classAttr = mark ? ' class="featured"' : "";
+  return `<span${classAttr}>├── ${name}</span>${featuredMark}`;
+};
+
+const axsVueTreeHtml =
+  "libs/axs-vue/src/components/\n" +
+  axsVue.map((c) => renderTreeLine(c, featured.has(c))).join("\n");
+
+const axsWcTreeHtml =
+  "libs/axs-web-components/src/components/\n" +
+  axsWc.map((c) => renderTreeLine(c, false)).join("\n");
+
+const composablesTreeHtml =
+  "libs/axs-vue/src/composables/\n" +
+  composables.map((c) => renderTreeLine(c, c === "viewport")).join("\n");
+
+const axsButtonSample = `<!-- libs/axs-vue/src/components/AxsButton/AxsButton.vue -->
+<!-- Vue 3 script setup with TypeScript. Compiled to a custom
+     element via defineCustomElement. Same component used by
+     Vue consumers directly and by Angular/AEM/raw HTML through
+     the custom element wrapper. -->
+
+<template>
+  <component
+    :is="props.axsLink ? 'a' : 'button'"
+    :id="buttonId"
+    ref="buttonElement"
+    :href="props.axsLink"
+    :class="[
+      'axs-button',
+      \`axs-button--\${props.axsType}\`,
+      \`axs-button--\${props.axsType}-\${props.axsSize}\`,
+      \`axs-button--\${props.axsType}-\${props.axsTheme}\`,
+      { 'axs-button--protected': props.axsProtected },
+      props.axsIconLeft
+        ? \`axs-button--\${props.axsType}-icon-left\`
+        : \`axs-button--\${props.axsType}-icon-right\`,
+      { 'axs-button--disabled': props.axsIsDisabled },
+    ]"
+    :target="isTargetBlank ? '_blank' : null"
+    :aria-label="ariaLabel"
+    :aria-controls="props.axsAriaControls"
+    :aria-expanded="props.axsAriaExpanded"
+    :aria-disabled="props.axsIsDisabled"
+    @click="onClick"
+    @keydown="onKeyDown"
+  >
+    <AxsIcon
+      v-if="iconLeft"
+      class="axs-button__icon"
+      :axs-type="props.axsIconType"
+      :axs-decorative="true"
+    />
+    <span v-if="showText" class="axs-button__text" v-html="props.axsText" />
+    <AxsIcon
+      v-if="iconRight"
+      class="axs-button__icon"
+      :axs-type="props.axsIconType"
+      :axs-decorative="true"
+    />
+  </component>
+</template>
+
+<script setup lang="ts">
+  import { ref, computed } from "vue";
+  import { uniqueId } from "lodash-es";
+
+  import AxsIcon from "../AxsIcon/AxsIcon.vue";
+  import { vClickOutside } from "../../directives";
+
+  import {
+    IconType,
+    ButtonType, ButtonTheme, ButtonSize, ButtonNativeType,
+  } from "@axs/axs-core";
+
+  // TypeScript Props interface drives both the component API
+  // and (via vue-docgen-api) the IDE metadata exported through
+  // the axs-automation:jweb-types executor.
+  interface Props {
+    /** Button design types. TS enum: \`ButtonType\`. */
+    axsType?: ButtonType;
+    /** Button text. */
+    axsText?: string;
+    /** Link target. Renders as <a> when set. */
+    axsLink?: string;
+    /** Button sizes. TS enum: \`ButtonSize\`. */
+    axsSize?: ButtonSize;
+    /** Button color theme. TS enum: \`ButtonTheme\`. */
+    axsTheme?: ButtonTheme;
+    /** Icon position. */
+    axsIconLeft?: boolean;
+    /** Icon type. TS enum: \`IconType\`. */
+    axsIconType?: IconType;
+    /** Disabled state (uses aria-disabled, not the native attribute). */
+    axsIsDisabled?: boolean;
+    /** Accessibility label. */
+    axsAriaLabel?: string;
+    /** ID of the element this button controls. */
+    axsAriaControls?: string;
+    /** Expanded state for accordion/disclosure buttons. */
+    axsAriaExpanded?: boolean;
+    // ... etc
+  }
+
+  const props = withDefaults(defineProps<Props>(), {
+    axsType: ButtonType.primary,
+    axsTheme: ButtonTheme.red,
+    axsSize: ButtonSize.large,
+  });
+
+  const buttonId = computed(() => props.axsCustomId ?? uniqueId("axs-button-"));
+  // ... event handlers, computed classes, focus/hover/tooltip wiring
+</script>`;
+
+const axsAccordionSample = `<!-- libs/axs-vue/src/components/AxsAccordion/
+            AxsAccordionController.vue -->
+<!-- A tiny component that demonstrates the V1 composable layer.
+     useHostElement + useDeeplySlottedElement + useDOMElement are
+     reactive abstractions over shadow DOM that handle the
+     normally-awkward "find my parent custom element" /
+     "find my slotted trigger" /  "talk to an external element"
+     patterns. -->
+
+<template>
+  <slot @click.prevent="clicked" />
+</template>
+
+<script setup lang="ts">
+  import { computed, reactive } from "vue";
+  import { uniqueId } from "lodash-es";
+
+  import { useDOMElement } from "../../composables/domElement";
+  import { useHostElement } from "../../composables/hostElement";
+  import { useDeeplySlottedElement } from "../../composables/deeplySlottedElement";
+  import { AccordionPanelProperty } from "./types";
+
+  interface Props {
+    /** ID of the accordion this controller drives. */
+    axsFor?: string;
+  }
+
+  const props = withDefaults(defineProps<Props>(), { axsFor: undefined });
+
+  const labelData = reactive<{ [key: string]: string | undefined }>({
+    id: uniqueId("axs-accordion-controller-"),
+  });
+
+  // The custom-element host that wraps this Vue component.
+  // Reactive read/write of attributes on the wrapping <axs-accordion-controller>.
+  const self = useHostElement();
+
+  self.watchAttributes(() => {
+    self.setPolitely("id", labelData.id);
+  });
+
+  // Find the slotted axs-accordion-trigger anywhere in the subtree
+  // and wire it up to point back at this controller's id.
+  const trigger = useDeeplySlottedElement("", "axs-accordion-trigger");
+
+  trigger.watchAttributes(() => {
+    trigger.setPolitely("axs-parent", self.attrRef["id"]);
+  });
+
+  // The indicator (chevron) gets its direction from the target
+  // accordion's open state. Reactive cross-element binding.
+  const indicator = useDeeplySlottedElement("", "axs-indicator");
+  const accordion = useDOMElement(computed(() => props.axsFor));
+
+  accordion.watchAttributes(() => {
+    indicator.attrRef["axs-direction"] =
+      accordion.getBool(AccordionPanelProperty.openedState) ? "up" : "down";
+  });
+
+  function clicked(event: Event) {
+    self.notifyElement(\`#\${props.axsFor}\`, "requestToggle");
+  }
+</script>`;
+
+const useViewportSample = `// libs/axs-vue/src/composables/viewport/index.ts
+//
+// One reactive viewport object per consumer, fed by five
+// matchMedia listeners. Consumers can computed/watch off it like
+// any reactive Vue 3 state. Replaces the FASET-era v-show-at /
+// v-hide-at directives with a hook that works the same in
+// templates, render functions, or computed properties.
+
+import { reactive } from "vue";
+import { Breakpoints } from "@axs/axs-core";
+
+export const useViewport = () => {
+  const viewport = reactive({
+    isSmall:   false,
+    isMedium:  false,
+    isLarge:   false,
+    isXlarge:  false,
+    isXxlarge: false,
+  });
+
+  const mqlSmall = window.matchMedia(
+    \`(max-width: \${Breakpoints.md - 1}px)\`
+  );
+  const mqlMedium = window.matchMedia(
+    \`(min-width: \${Breakpoints.md}px) and (max-width: \${Breakpoints.lg - 1}px)\`
+  );
+  const mqlLarge = window.matchMedia(
+    \`(min-width: \${Breakpoints.lg}px) and (max-width: \${Breakpoints.xlg - 1}px)\`
+  );
+  const mqlXlarge = window.matchMedia(
+    \`(min-width: \${Breakpoints.xlg}px) and (max-width: \${Breakpoints.xxlg - 1}px)\`
+  );
+  const mqlXxlarge = window.matchMedia(
+    \`(min-width: \${Breakpoints.xxlg}px)\`
+  );
+
+  const onMqlChange = () => {
+    viewport.isSmall   = mqlSmall.matches;
+    viewport.isMedium  = mqlMedium.matches;
+    viewport.isLarge   = mqlLarge.matches;
+    viewport.isXlarge  = mqlXlarge.matches;
+    viewport.isXxlarge = mqlXxlarge.matches;
+  };
+
+  mqlSmall.addEventListener("change", onMqlChange);
+  mqlMedium.addEventListener("change", onMqlChange);
+  mqlLarge.addEventListener("change", onMqlChange);
+  mqlXlarge.addEventListener("change", onMqlChange);
+  mqlXxlarge.addEventListener("change", onMqlChange);
+  onMqlChange();
+
+  return viewport;
+};`;
+---
+
+<Base
+  title="AXS components — Jeff Mills"
+  description="Component browser and code samples from the AXS design system. Vue 3 SFCs and the composables they're built on."
+>
+  <p class="project-back"><a href="/projects/axs">&laquo; back to axs</a></p>
+  <h1 class="page-title">axs · components</h1>
+  <p class="project-meta">
+    <span class="project-year">2020 — 2025</span>
+    <span class="meta-sep">&middot;</span>
+    <span class="project-status">proprietary</span>
+    <span class="meta-sep">&middot;</span>
+    <span>{axsVue.length} vue + {axsWc.length} custom elements</span>
+    <span class="meta-sep">&middot;</span>
+    <span>vue 3 + composition api</span>
+  </p>
+
+  <p class="page-lede">
+    Two parallel listings: the Vue 3 single-file components in
+    <code>axs-vue</code> (the canonical source) and the custom elements
+    in <code>axs-web-components</code> (the compiled output, registered
+    via <code>defineCustomElement</code>). Plus the composables layer
+    underneath. Featured component samples below.
+  </p>
+
+  <aside class="callout">
+    <span class="callout-label">Proprietary &mdash; code samples only</span>
+    <p>
+      Component directory names are listed in full so the breadth of the
+      system is legible; the source of all but the highlighted samples
+      stays in the private repo.
+    </p>
+  </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">axs-vue · {axsVue.length} components</h2>
+  <p class="section-lede">
+    The canonical Vue 3 source. Featured samples marked
+    <span class="featured-marker">[&dagger;]</span>.
+  </p>
+
+  <pre class="component-tree" set:html={axsVueTreeHtml}></pre>
+
+  <h2 class="section-title">axs-web-components · {axsWc.length} elements</h2>
+  <p class="section-lede">
+    The compiled custom elements registered via <code>defineCustomElement</code>.
+  </p>
+
+  <pre class="component-tree" set:html={axsWcTreeHtml}></pre>
+
+  <h2 class="section-title">composables · {composables.length}</h2>
+  <p class="section-lede">
+    The reactive primitives the components are built on. Featured sample
+    below.
+  </p>
+
+  <pre class="component-tree single-col" set:html={composablesTreeHtml}></pre>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">sample · AxsButton</h2>
+  <p>
+    A direct upgrade of the FASET button to Vue 3 + TypeScript +
+    <code>defineCustomElement</code>. The <code>Props</code>
+    interface is parsed by <code>vue-docgen-api</code> and emitted as
+    web-types JSON for IDE autocomplete and the MCP server. Same
+    component used by Vue consumers directly and by Angular / AEM /
+    raw HTML through the registered custom element.
+  </p>
+
+  <Code code={axsButtonSample} lang="vue" theme={theme} />
+
+  <p class="caption">
+    <code>libs/axs-vue/src/components/AxsButton/AxsButton.vue</code>
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">sample · AxsAccordionController</h2>
+  <p>
+    A tiny component that shows the composables layer in action.
+    <code>useHostElement</code> binds reactively to the wrapping custom
+    element. <code>useDeeplySlottedElement</code> finds slotted
+    descendants by tag name across the shadow DOM boundary.
+    <code>useDOMElement</code> exposes a reactive handle to an external
+    element by id. Each composable encapsulates a normally-awkward shadow
+    DOM access pattern as a typed reactive API.
+  </p>
+
+  <Code code={axsAccordionSample} lang="vue" theme={theme} />
+
+  <p class="caption">
+    <code>libs/axs-vue/src/components/AxsAccordion/AxsAccordionController.vue</code>
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">sample · useViewport composable</h2>
+  <p>
+    The Vue 3 replacement for FASET&rsquo;s <code>v-show-at</code> /
+    <code>v-hide-at</code> directives. Same shape as
+    <a href="https://vueuse.org/" target="_blank" rel="noopener">VueUse</a>
+    but pre-dates it as a custom in-house primitive; matchMedia listeners
+    drive a single reactive viewport object that any component can
+    <code>computed()</code> off.
+  </p>
+
+  <Code code={useViewportSample} lang="typescript" theme={theme} />
+
+  <p class="caption">
+    <code>libs/axs-vue/src/composables/viewport/index.ts</code>
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">patterns you'll see across the library</h2>
+  <ul class="proof-list">
+    <li>
+      <strong>TypeScript <code>Props</code> interfaces with TSDoc.</strong>
+      Drives both the component API and the
+      <code>axs-automation:jweb-types</code> build-time IDE metadata
+      generator. One source of truth for prop types, descriptions, and
+      defaults.
+    </li>
+    <li>
+      <strong>Composables, not mixins.</strong> Vue 3 Composition API
+      throughout. The <code>composables/</code> directory holds the
+      reactive primitives (host, slot, viewport, resize, click-outside,
+      DOM-by-id) the components compose with.
+    </li>
+    <li>
+      <strong>Shadow DOM-safe by default.</strong> Components ship with
+      shadow DOM enabled; tokens propagate via CSS custom properties so
+      theming pierces the boundary without the component needing to know.
+    </li>
+    <li>
+      <strong>Cross-element reactive wiring.</strong> Components like
+      <code>AxsAccordion</code> split responsibilities across multiple
+      tags (panel, trigger, controller, indicator) with reactive
+      attribute binding between them through the composables.
+    </li>
+    <li>
+      <strong>Custom-element-aware directives.</strong>
+      <code>v-click-outside</code> handles both regular DOM and shadow
+      DOM. <code>v-intersect</code> uses a single shared
+      <code>IntersectionObserver</code> and a WeakMap of callbacks.
+      Same pattern as FASET; refined for Vue 3.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <p class="project-foot">
+    Back to <a href="/projects/axs">AXS overview</a>
+    &middot; Compare to <a href="/projects/faset/components">FASET components</a>
+  </p>
+</Base>
+
+<style>
+  .project-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0.4rem;
+  }
+
+  .project-meta {
+    margin: 0 0 1rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+
+  .project-meta .project-year {
+    color: var(--jm-color-fg);
+  }
+
+  .project-meta .project-status {
+    color: var(--jm-color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .page-lede {
+    margin: 0 0 1rem;
+    color: var(--jm-color-fg);
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 2.25rem 0 0.5rem;
+  }
+
+  .section-lede {
+    margin: 0 0 0.75rem;
+    color: var(--jm-color-muted);
+    font-size: 0.95em;
+  }
+
+  .component-tree {
+    background: transparent;
+    border: 1px dashed var(--jm-color-border);
+    padding: 1rem 1.25rem;
+    margin: 0.5rem 0 0;
+    color: var(--jm-color-fg);
+    font-family: var(--jm-font-mono);
+    font-size: 0.78rem;
+    line-height: 1.45;
+    column-count: 3;
+    column-gap: 1.5rem;
+    column-rule: 1px dashed var(--jm-color-border);
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .component-tree.single-col {
+    column-count: 1;
+  }
+
+  .component-tree .featured {
+    color: var(--jm-color-accent);
+    font-weight: 700;
+  }
+
+  .featured-marker {
+    color: var(--jm-color-accent);
+    font-weight: 700;
+  }
+
+  @media (max-width: 720px) {
+    .component-tree {
+      column-count: 2;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .component-tree {
+      column-count: 1;
+    }
+  }
+
+  .caption {
+    margin: 0.35rem 0 0;
+    color: var(--jm-color-dim);
+    font-size: 0.8em;
+  }
+
+  .caption code {
+    background: transparent;
+    color: var(--jm-color-muted);
+    padding: 0;
+  }
+
+  .proof-list {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .proof-list li {
+    position: relative;
+    margin: 0.6rem 0;
+  }
+
+  .proof-list li::before {
+    content: ">";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.25rem;
+  }
+
+  .proof-list strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+
+  code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+
+  :global(.astro-code) {
+    border: 1px solid var(--jm-color-border) !important;
+    padding: 1rem !important;
+    font-family: var(--jm-font-mono) !important;
+    font-size: 0.78rem !important;
+    line-height: 1.55 !important;
+    overflow-x: auto;
+    margin: 0.5rem 0 0;
+  }
+
+  :global(.astro-code code) {
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: inherit !important;
+  }
+
+  .project-foot {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>
