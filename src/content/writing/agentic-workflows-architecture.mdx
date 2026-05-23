@@ -1,0 +1,142 @@
+---
+title: "Encoding architecture standards in agentic workflows"
+description: "Mentoring at scale doesn't mean having more 1:1s. It means building the system that teaches the standard, then using it. Claude Code skills are one way to do that."
+publishDate: 2026-05-15
+status: published
+---
+
+<aside class="callout">
+  <span class="callout-label">TL;DR</span>
+
+  The standards a senior engineer holds in their head are the bottleneck of every team they're on. You can't scale by talking more. You scale by encoding the standard in tooling so the right path is the default path. Claude Code skills turn architecture conventions into mandatory pre-work an AI agent does before writing any code. The skill is the mentor that runs every time.
+</aside>
+
+## The mentoring scale problem
+
+If you lead a team and you care about how the code looks, you have a problem. Your team will write code without you watching. They'll make decisions in PRs you don't review. They'll skip steps you'd never skip, not because they're sloppy — because the steps are in your head and not in theirs.
+
+You can fix this with more conversations. PR review, pair programming, 1:1s, design review. All of those work. None of them scale. There are only so many of you, and you have other things to do.
+
+The standard scaling answer is *write the docs*. Documentation is necessary and almost never sufficient. Docs that nobody re-reads after onboarding are a way of pretending to have raised the bar.
+
+The better answer is to put the standard in front of the work — not in a doc someone has to remember to read, but in the workflow itself, before the first line of code.
+
+## What a Claude Code skill is
+
+A skill is a structured, multi-step workflow that an AI agent follows when invoked. It's defined as a markdown file inside `.claude/skills/`, and it can do things like:
+
+- Mandate that the agent reads specific docs *before* proceeding.
+- Walk the agent through phases in a defined order.
+- Ask the agent to confirm understanding at checkpoints.
+- Reference patterns and reference implementations the agent should mirror.
+
+Skills are not chat prompts. They're closer to a runbook the agent is required to follow. When an engineer types `/build-v1` in their AI editor, the agent doesn't start writing code — it starts executing the skill.
+
+## A worked example: `/build-v1`
+
+On AXS, migrating a V0 component to V1 involves a non-trivial discipline. The engineer is expected to:
+
+1. Read the architecture doc (`docs/project.md`) and understand the V0→V1 strategy.
+2. Read the internal API index and find the right composables.
+3. Read the accessibility patterns for the component's category.
+4. Open the V0 source and understand what it currently does.
+5. Open a V1 reference component to understand the pattern.
+6. Then, and only then, start writing.
+
+This is a lot to remember. Engineers under deadline pressure skip steps. Pairing helps but doesn't scale. Code review catches issues after the work is done, which is the most expensive moment to catch them.
+
+The skill encodes the discipline:
+
+```text
+/build-v1 <component-name>
+
+  phase 1 — discovery (mandatory)
+    read docs/project.md
+    read docs/internal-api/INDEX.md
+    read all referenced composable docs
+    read docs/a11y/INDEX.md for the component's category
+
+  phase 2 — analysis
+    read v0 source
+    read v1 reference component
+    summarize: props, slots, events, deviations
+
+  phase 3 — implementation
+    propose component shell
+    confirm with engineer
+    implement following established patterns
+
+  phase 4 — verification
+    storybook story
+    a11y check
+    visual regression baseline
+
+  phase 5 — handoff
+    summary of changes
+    open questions
+```
+
+The discipline that used to live in a senior engineer's head now runs *every time*. Skip-the-docs is no longer the default; reading them is. The agent literally cannot proceed to phase 3 without completing phase 1.
+
+What this changed in practice:
+
+- New team members produce V1 components that follow the architecture from their first attempt.
+- Architecture decisions get re-encountered in every workflow, which keeps them fresh.
+- The mentor's standard scales without the mentor scaling.
+
+## The audit loop: `/test-docs`
+
+The other half of this is the feedback loop. The skill is only as good as the docs it depends on. If the architecture doc is unclear, the agent makes bad decisions in phase 1. If the a11y patterns are missing, the agent ships components with subtle a11y bugs.
+
+`/test-docs` audits the docs by simulating a fresh agent session. It walks the same discovery path a real workflow would, scores coverage against an 8-item universal checklist, and produces a Pass/Partial/Fail percentage per component category:
+
+```text
+/test-docs <component-name>
+
+  simulate: fresh-agent doc discovery
+    follow path: CLAUDE.md → INDEX → details
+
+  evaluate against checklist:
+    [ ] component purpose clear
+    [ ] api documented
+    [ ] slot semantics specified
+    [ ] event payloads typed
+    [ ] composition examples present
+    [ ] a11y patterns referenced
+    [ ] failure modes described
+    [ ] reference implementation linked
+
+  output: scorecard with % + missing items
+```
+
+Documentation quality went from gut-feel to a tracked metric. The team can see which docs are below threshold and improve them iteratively. The audit catches doc rot the moment it happens, not six months later when an engineer is stuck.
+
+## Why this works
+
+Two principles are doing the work:
+
+**Make the right path the default path.** If the standard requires effort to follow and no effort to skip, it will be skipped. If the standard runs automatically and skipping requires effort, it will be followed. Skills flip the default.
+
+**Measure the thing you want to improve.** Documentation quality is hard to argue about subjectively. With `/test-docs`, it becomes a number. Numbers are easier to move than vibes.
+
+The skills aren't a substitute for senior judgment. They're an extension of it. The senior engineer is now influencing every component migration *without being in the room*, because the discipline they would have enforced is the discipline the agent enforces.
+
+## What this isn't
+
+A few things worth saying explicitly:
+
+**This isn't AI writing your code.** Skills don't replace the engineer's thinking. They put the agent in the same starting position the senior engineer would have started from — informed, oriented, aware of the patterns — before any code gets written.
+
+**This isn't governance by AI.** The architecture decisions still come from humans. The skill just encodes those decisions in a place they can run repeatedly.
+
+**This isn't a magic productivity boost.** Skills require investment up front. The architecture docs have to actually be good, or `/test-docs` will mark them Fail and nothing else will work.
+
+**This isn't replacement for mentoring.** It's the layer underneath mentoring. The senior engineer's time, freed from rehearsing the same patterns, goes to the harder problems where judgment is irreducible.
+
+## The broader pattern
+
+The shape of the move is: take a thing that used to live in someone's head and put it in the system. Code review patterns become commit hooks. Architecture conventions become skills. Doc quality becomes a metric.
+
+Each one is a small step. Together they're how a team's standard gets enforced even when the people who set it aren't in the conversation.
+
+That's what mentoring at scale actually looks like. Not more 1:1s. Not more documents. The system itself teaches the pattern, every time, by default.

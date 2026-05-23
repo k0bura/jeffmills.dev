@@ -1,0 +1,90 @@
+---
+title: "The part where most design systems quietly die"
+description: "Design systems rarely fail because the components were wrong. They fail because the governance was nice — and nice doesn't hold up under sustained adoption pressure."
+publishDate: 2026-04-18
+status: published
+---
+
+<aside class="callout">
+  <span class="callout-label">TL;DR</span>
+
+  Design systems don't die from bad components. They die from a thousand small reasonable requests, each easy to approve in isolation, that collectively erode the system's coherence. Governance is the unglamorous work of saying the same no consistently. If you can't do that, no architecture saves you.
+</aside>
+
+## The shape of the failure
+
+A design system launches. Adoption climbs. Teams use the components, file feedback, request variants. The variants get approved because each one is reasonable. A team needs a slightly different button. A different team wants their own loading spinner. A third team wants to own a couple of their own components inside the library because their needs are special.
+
+Eighteen months in, you have:
+
+- 11 button variants — 4 actually distinct, 7 forks of the original.
+- Three competing loading patterns, two of which are deprecated but still in use.
+- A handful of "team-owned" components nobody central understands.
+- An adoption graph that's started to plateau because every team has worked around something.
+
+Nobody made a bad decision. Each individual request was reasonable. The cumulative effect is a system that's now technically a library of components and functionally a museum.
+
+This is the failure mode for most design systems. Not bad architecture. Not bad components. Governance that was too nice for too long.
+
+## The fragmentation pressure
+
+Once a design system has visible value, it attracts proposals that would dilute it. The flavors:
+
+- **Variant proliferation.** "Could we add a smaller button?" "Could we add a borderless variant?" Each one looks small. Together they fork the brand language.
+- **External ownership.** "Our team could own these three components and you own the rest." Mixed ownership splits the contract; consumers stop knowing who they're depending on.
+- **Adjacent design systems.** "Our org has its own library; can we merge them?" Mergers without clear governance are how you get two design systems wearing one name.
+- **Special-case escape hatches.** "We just need to override the styling on this one page." Override patterns become precedents become the norm.
+
+Every one of these has a real motivation behind it. None of them are bad people. They're all reasonable asks that, taken together, kill the system slowly.
+
+## The thing you have to say
+
+You will end up saying the same thing more times than you expect. Here's the version I had to repeat at Vanguard for years:
+
+> Allowing externally-owned components in the design system would fragment delivery and add dependencies. We can have one source of truth for the brand, or we can have many. We cannot have both.
+
+Practiced phrasing matters. So does the discipline of saying it the same way every time. The first time you say it, it's a position. The fifth time, it's a policy. By the twentieth time, it's just how the system works.
+
+Teams that respect a clear answer don't keep asking. Teams that get an ambiguous answer ask again next quarter.
+
+## What governance actually looks like
+
+It's not a document. Documents that nobody re-reads are a way of pretending to govern. What governance actually is in practice:
+
+**A clear ownership boundary, written and enforced.** Components are owned by the design-system team. Contributions are reviewed and merged into the central library. There is no parallel ownership track. This sounds obvious; it is not how most design systems are run.
+
+**A direct, repeatable response to fragmentation requests.** A no that includes the why, every time. Not a corporate-speak no — a *reasonable*, *grounded* no that acknowledges the request and explains the trade-off.
+
+**A path for legitimate variants.** Some requests are real. The system needs a way for those to land — RFC, design review, library inclusion — that doesn't degrade into "everyone gets a fork."
+
+**Enforced architectural boundaries.** What's a component, what's a composition, what's an application concern. These have to be defined clearly enough that "this could live in either place" stops being the default answer.
+
+**A weekly habit of reinforcing the boundaries.** Not big speeches. Small consistent signals. Same answer in standups. Same answer in design reviews. Same answer in code review. Same answer in 1:1s. The consistency *is* the governance.
+
+## The hardest trade-off
+
+Governance is friction. It's deliberately less responsive to individual team needs than no governance. That's the cost.
+
+The benefit is that the system stays coherent under pressure, which is the *entire reason teams want to use a design system in the first place*. A library that mutates to fit every consumer is just a folder of components with extra meetings.
+
+The trade-off you're really making: short-term team velocity for long-term system trust. Teams that get unlimited customization love the system this quarter and stop trusting it next year. Teams that learn to work within the boundaries are slightly slower this quarter and build on a stable foundation for the next decade.
+
+## How to know if you're failing
+
+Some signals:
+
+- Components have started to fork by team. ("MyTeam button" alongside the canonical button.)
+- The adoption graph plateaus or regresses. New teams pick alternatives.
+- Releases ship and consumers don't pick them up, because they've migrated to forks.
+- Architecture decisions feel reactive. Each one responds to the latest team proposal.
+- The team doing the governing starts hedging in writing.
+
+All of these are early warning signs. None of them are recoverable from with a big-bang re-platform. They're recoverable from with a hundred small acts of consistency over the next year.
+
+## The leadership claim
+
+This is unglamorous work. Most platform engineers I know want to be doing architecture, not policing it. But the architecture decisions you made — *especially* the good ones — only compound if you defend them.
+
+Building a design system is one body of work. Sustaining it is a different one. The skill that separates teams whose systems are still useful in five years from teams whose systems quietly became a folder of forks isn't more architecture. It's the willingness to hold a boundary with the same consistency a hundred times.
+
+That's the part where most design systems quietly die. And it's the part that doesn't make the launch deck.
