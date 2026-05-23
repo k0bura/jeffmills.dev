@@ -123,6 +123,34 @@ async function extractInformation(absolutePath: string) {
   };
 }`;
 
+const foundationDiff = `// nx.json — added in the founding commit, April 27 2022.
+// The monorepo configuration the next two years of work was built on.
+
+{
+  "npmScope": "axs",
+  "affected": { "defaultBase": "master" },
+  "cli": { "defaultCollection": "@nrwl/workspace" },
+  "implicitDependencies": {
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    }
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/workspace/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e"]
+      }
+    }
+  },
+  "targetDependencies": {
+    "build": [
+      { "target": "dev", "projects": "dependencies" }
+    ]
+  }
+}`;
+
 const createComponentSample = `// libs/axs-automation/src/generators/create-component/generator.ts
 //
 // One Nx command (\`nx generate @axs/axs-automation:create-component\`)
@@ -234,6 +262,44 @@ export default createComponentGenerator;`;
       <a href="mailto:jeffy9@gmail.com">reach out</a>.
     </p>
   </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">verified contribution &middot; the foundation</h2>
+  <p>
+    <strong>159 commits authored by me</strong> across the AXS repository,
+    April 2022 &mdash; March 2024. The single most foundational one:
+  </p>
+
+  <div class="commit-card">
+    <div class="commit-card-head">
+      <code class="commit-hash">75773a774</code>
+      <span class="commit-date">2022-04-27</span>
+      <span class="commit-stats">36 files &middot; +34,043 / &minus;12</span>
+    </div>
+    <p class="commit-msg">
+      <code>chore</code>: working nx structure with vue/vite/ts
+    </p>
+    <p class="commit-note">
+      Stood up the entire Nx monorepo &mdash; Vue 3 + Vite + TypeScript +
+      Storybook + ESLint &mdash; that the next nine thousand commits built
+      on top of. Pre-Vite-everywhere, pre-Nx-default-in-Vue-shops.
+      Architectural foundation in one push.
+    </p>
+  </div>
+
+  <Code code={foundationDiff} lang="javascript" theme={theme} />
+
+  <p class="caption">
+    <code>nx.json</code> &middot; from commit
+    <code>75773a774</code> &middot; scrubbed (npm scope renamed to
+    <code>axs</code>)
+  </p>
+
+  <p class="commit-cta">
+    <a href="/projects/axs/commits">See the full gallery of featured
+    commits &raquo;</a>
+  </p>
 
   <hr class="jm-rule" />
 
@@ -485,6 +551,74 @@ export default createComponentGenerator;`;
   }
 
   .project-cta a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .commit-card {
+    margin: 1.25rem 0 1rem;
+    padding: 0.75rem 1rem;
+    border: 1px dashed var(--jm-color-border);
+    background: rgba(255, 204, 0, 0.02);
+  }
+
+  .commit-card-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: baseline;
+    font-size: 0.85em;
+  }
+
+  .commit-hash {
+    color: var(--jm-color-accent);
+    background: transparent;
+    padding: 0;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .commit-date {
+    color: var(--jm-color-muted);
+  }
+
+  .commit-stats {
+    color: var(--jm-color-ok);
+    font-family: var(--jm-font-mono);
+  }
+
+  .commit-msg {
+    margin: 0.4rem 0 0.3rem;
+    color: var(--jm-color-fg);
+    font-family: var(--jm-font-mono);
+    font-size: 0.95em;
+  }
+
+  .commit-msg code {
+    color: var(--jm-color-accent);
+    background: transparent;
+    padding: 0;
+    font-weight: 700;
+  }
+
+  .commit-note {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+
+  .commit-cta {
+    margin: 1rem 0 0;
+    font-size: 0.9em;
+  }
+
+  .commit-cta a {
+    color: var(--jm-color-accent);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .commit-cta a:hover {
     text-decoration: underline;
     text-underline-offset: 3px;
   }
