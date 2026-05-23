@@ -1,130 +1,120 @@
 ---
 order: 8
-title: "Leadership Style: Mentoring and Code Contribution"
-chapter: "Leadership"
+title: "How I Mentor and Contribute"
+chapter: "Working Style"
 period: "ongoing"
-summary: "How I grow engineers, set technical standards, and build the infrastructure that encodes those standards so they outlast any single conversation."
-tags: ["leadership", "mentoring", "engineering culture", "architecture"]
+summary: "How I work with my team — the way I think about mentoring, the way I think about contributing code, and why those are the same engineering instincts at different scales."
+tags: ["engineering culture", "mentoring", "architecture", "AI-native"]
 ---
 
 <aside class="callout">
   <span class="callout-label">The pattern</span>
   <p>
-    Calibrate the challenge to where someone actually is, not to a generic
-    template. Pair recognition with the growth edge. Build the system that
-    teaches the pattern, then use it. Treat documentation as an engineering
-    deliverable. Encode standards in tooling so the right path is the default
-    path. Compounding value &mdash; not isolated wins &mdash; is the measure
-    that matters.
+    Encode the standard in the system, not in repeated conversations.
+    Pair recognition with the growth edge. Treat documentation as an
+    engineering deliverable. Make the right path the default path.
+    Measure quality explicitly so improvement is visible. Compounding
+    value &mdash; not isolated wins &mdash; is the measure that matters.
   </p>
 </aside>
 
 ## Overview
 
-I lead two engineering teams at Vanguard FAS: the design system team behind AXS, and the AI product team behind Expert Insights. Eight direct reports, with no intermediate management layer between me and the engineers — a constraint I'm explicit about — which means mentoring and contribution work operate at uncommon density for my level.
+I work with two teams at Vanguard FAS: the team behind the AXS design system and the team behind Expert Insights. Mentoring and contribution are continuous and overlapping for me &mdash; I write code alongside the engineers I work with, and the mentoring shows up as much in PR reviews and pairing sessions as in 1:1s. This is how I think about both.
 
-My stated long-term ambition: **developing the next generation of engineering leaders who carry the platform forward.**
+The through-line under everything below: I&rsquo;d rather build the system that teaches the pattern than have the same conversation twice.
 
-This is how that shows up in practice.
+## Part I &mdash; How I mentor
 
-## Part I — Mentoring philosophy
+### How I calibrate
 
-### Calibrated by level, not by template
+How I work with each engineer depends on where they are in their career arc, not on a generic template. The voice I use changes; the structure of the feedback doesn&rsquo;t.
 
-I don't give the same feedback twice. My developmental approach shifts systematically based on where someone is in their career.
+**With newer engineers**, my opening move is genuine recognition with specificity &mdash; *&ldquo;you&rsquo;re technically strong, you show up in discussions&rdquo;* &mdash; followed by a behavioral gap statement (not a character assessment), then a close with expressed belief: *&ldquo;the talent is there; I need the discipline to match it.&rdquo;* No cruelty, no hedging. The hard thing is said directly, once, clearly.
 
-**Earlier-career engineers** get behavioral scaffolding and expressed confidence. When an engineer is off-track, my opening move is genuine recognition — *"I see your potential clearly — you're technically strong, you show up in discussions"* — followed by a specific, behavioral gap statement (not a character assessment), and a close with expressed belief: *"The talent is there. I need the discipline to match it."* No cruelty, no hedging. The hard thing said directly, once, clearly.
+**With mid-level engineers**, the most useful thing I can do is invite them into the actual problem-solving rather than receive the problem from them. The ask I tend to make is explicit: *&ldquo;help me think through how we staff this, how we prioritize, where we can create leverage &mdash; don&rsquo;t just flag the problem.&rdquo;* I pair the invitation with scaffolding &mdash; named collaboration, protected time, direct coaching on confidence where needed.
 
-**Mid-level engineers** get partnership invitations. When an engineer has strong instincts but is still operating as an individual contributor, the challenge is explicit: *"At your level, I need you to be a partner in solutioning this with me — not just flagging the problem, but helping us think through how we staff it, how we prioritize, where we can create leverage."* I pair the ask with scaffolding — named collaboration, protected time, direct coaching on confidence where needed.
+**With senior engineers and tech leads**, the conversation turns outward. The patterns and architectural guidance they&rsquo;ve developed have broader value than the team they sit on; the growth move is to make those patterns visible &mdash; reusable frameworks, demos, architectural notes for other teams. *&ldquo;You don&rsquo;t need to wait for a formal venue; start creating them.&rdquo;*
 
-**Senior engineers and tech leads** get outward orientation. The growth challenge is no longer about the team — it's about the organization. *"The patterns and architectural guidance you've developed have broader value, and right now that value is largely contained. Proactively sharing reusable frameworks and guiding technical direction across other teams would increase your organizational leverage. You don't need to wait for a formal venue; start creating them."*
+**With peer leaders**, the framing is honest diagnosis as an equal. I&rsquo;ll name systemic patterns &mdash; breadth diluting impact, speed without architectural grounding, narrative updates where decisions should be forced &mdash; and name the structural fix without softening it.
 
-**Peer leaders** get honest diagnosis as an equal. I identify systemic patterns — breadth diluting impact, speed without architectural grounding, narrative updates where decisions should be forced — and name the structural fix without softening it.
-
-### The feedback structure
+### The shape of the feedback
 
 Every piece of substantive feedback I write follows the same underlying structure:
 
 1. Genuine, specific recognition of what is working.
-2. The growth edge — stated as a behavioral or strategic gap, not a judgment.
-3. A concrete path forward with an expressed belief that it's achievable.
+2. The growth edge &mdash; stated as a behavioral or strategic gap, not a judgment.
+3. A concrete path forward with expressed belief that it&rsquo;s achievable.
 
-I don't separate acknowledgment from challenge. They're always paired, and the pairing is deliberate: *"I set a high bar intentionally because I believe in the team."*
+Acknowledgment and challenge are always paired. The pairing is deliberate: *&ldquo;I set a high bar intentionally because I believe in the team.&rdquo;*
 
 ### Teaching through infrastructure
 
-The most distinctive part of my mentoring approach: I don't rely on repeated conversations to enforce standards. I build the infrastructure that makes the correct pattern the default path.
+This is the most distinctive part of how I work. **I don&rsquo;t rely on repeated conversations to enforce standards. I build the infrastructure that makes the correct pattern the default path.**
 
-When the AXS team migrates V0 components to V1, the process involves reading the design system architecture docs, consulting accessibility patterns, applying composable APIs correctly, and following a slot-over-props philosophy — a multi-step discipline that's easy to skip under deadline pressure. My solution: encode the entire workflow as a structured Claude Code skill (`/build-v1`) that mandates reading the architecture and a11y docs *before* any code is written. The standard is no longer carried in a person's head or enforced in code review after the fact. It runs before the first line of code.
+On AXS, migrating a V0 component to V1 means reading the architecture docs, consulting accessibility patterns, applying composable APIs correctly, and following a slot-over-props philosophy &mdash; a multi-step discipline that&rsquo;s easy to skip under deadline pressure. So I encoded the entire workflow as a structured Claude Code skill (`/build-v1`) that mandates reading the architecture and a11y docs *before* any code is written. The standard is no longer carried in a person&rsquo;s head or enforced in code review after the fact. It runs before the first line of code.
 
-Similarly, documentation quality is not a subjective judgment on my team — it's a scored metric. The `/test-docs` skill simulates a fresh agent session, follows the exact discovery path, and produces a Pass/Partial/Fail checklist with a percentage. The team can track whether documentation is improving over time as a concrete engineering measure.
+Same idea on documentation quality. Rather than &ldquo;we should write better docs,&rdquo; the team has a `/test-docs` skill that simulates a fresh agent session, follows the exact discovery path, and produces a Pass/Partial/Fail checklist with a percentage. Doc quality stopped being a gut feel and started being a tracked metric.
 
-This is my answer to mentoring at scale: build the system that teaches the pattern, then use it.
+Mentoring at scale, for me, is this: build the system that teaches the pattern, then we all use it.
 
-## Part II — Code contribution style
+## Part II &mdash; How I contribute code
 
 ### Platform-first, reusability-first
 
-I consistently evaluate technical work through the lens of compounding value. A contribution that works once is table stakes. A contribution that works for the next three teams is what I name and celebrate:
+I evaluate technical work through the lens of compounding value. A contribution that works once is table stakes. A contribution that works for the next three teams is what I name out loud when I see it:
 
-> Your data visualization content fragment architecture dramatically reduced hard-coded content and created a reusable data pipeline that is the foundation for all future content fragment implementations. That kind of forward-thinking architecture is exactly what I need from you at your level.
+> Your data-visualization content-fragment architecture dramatically reduced hard-coded content and created a reusable data pipeline that&rsquo;s the foundation for all future content-fragment implementations. That&rsquo;s the kind of forward-thinking architecture I want more of.
 
-When reviewing my own team's architecture decisions, the standard is the same: *I pushed for how we can build this for future scalability without confirmation on product requirements.* I explicitly value designs that *support progressive phases without requiring a rewrite at each stage.*
+When I review my own work, the standard is the same: *I push for designs that support progressive phases without requiring a rewrite at each stage.* Future-proofing isn&rsquo;t speculative scope &mdash; it&rsquo;s how I think about whether a design will still be useful three years from now.
 
 ### Clean baselines before evolution
 
-I don't ship new capabilities on top of technical debt when I can avoid it. On the AXS system, the V0-to-V1 conversion backlog was executed as a disciplined prerequisite to the V3 architectural work — the right call to prevent adoption fragmentation and long-term friction for consumers.
+I don&rsquo;t ship new capabilities on top of technical debt when I can avoid it. On AXS, the V0-to-V1 conversion backlog was executed as a disciplined prerequisite to the V3 architectural work &mdash; the right call to prevent adoption fragmentation and long-term friction for consumers.
 
-The pattern: establish a clean baseline, then build forward. Not because debt cleanup is interesting, but because it's what makes the next thing survivable.
+The pattern: establish a clean baseline, then build forward. Not because debt cleanup is interesting, but because it&rsquo;s what makes the next thing survivable.
 
 ### AI-native by design, not by addition
 
-My clearest technical conviction is that AI integration is a first-class architectural concern, not a layer applied after the fact. The benchmark language: *"'understand and apply AI tools' sets a low bar. The intent should be workflow-level change, not tool familiarity."*
+My clearest technical conviction is that AI integration is a first-class architectural concern, not a layer applied after the fact. The benchmark I hold myself to: *&ldquo;&lsquo;understand and apply AI tools&rsquo; sets a low bar. The intent should be workflow-level change, not tool familiarity.&rdquo;*
 
 This shows up in the actual contribution work. The AXS design system:
 
-- Generates machine-readable component metadata (`axs.web-types.json`, `axs.html-data.json`) at every build, so every developer's editor understands the component API automatically.
-- Ships an MCP server (`axs-mcp`) exposing 9 tools across components, design tokens, and recipes — making the entire design system queryable by any AI assistant without fine-tuning or RAG.
+- Generates machine-readable component metadata (`axs.web-types.json`, `axs.html-data.json`) at every build, so every developer&rsquo;s editor understands the component API automatically.
+- Ships an MCP server (`axs-mcp`) exposing 9 tools across components, design tokens, and recipes &mdash; making the entire design system queryable by any AI assistant without fine-tuning or RAG.
 - Uses Claude Code skills to enforce architecture patterns through agentic workflows, not code review.
 
-The framing I use for the IDE metadata layer: *"Before any AI agent enters the picture, the team ensured the authoritative component API was machine-readable and editor-discoverable. This is the foundation every other layer depends on."*
+The framing I use for the IDE metadata layer: *&ldquo;Before any AI agent enters the picture, the authoritative component API needs to be machine-readable and editor-discoverable. That&rsquo;s the foundation every other layer depends on.&rdquo;*
 
 The closed loop: the design system generates its own AI-readable documentation at build time, which feeds both external AI assistants and internal agentic workflows, and documentation quality is measured by an automated AI audit. The system continuously improves its own AI-readiness. See [AXS + AI: The Three-Layer Architecture](/case-studies/07-axs-ai-architecture) for the full technical breakdown.
 
 ### Documentation as an engineering deliverable
 
-I treat documentation quality as a first-class engineering metric, not a nice-to-have. The `/test-docs` audit skill exists because my team needed a way to answer a specific question: is our documentation actually sufficient to guide an AI agent through building a component correctly?
+I treat documentation quality as a first-class engineering metric, not a nice-to-have. The `/test-docs` audit skill exists because we needed a way to answer a specific question: are our docs actually sufficient to guide an AI agent through building a component correctly?
 
-The answer is now measurable, trackable, and improvable — with a percentage score and a structured checklist — rather than a gut feel. The underlying principle extends beyond AI tooling: documentation that can guide a capable agent can guide any new engineer. The bar is the same.
+The answer is now measurable, trackable, and improvable &mdash; percentage score, structured checklist &mdash; rather than a gut feel. The underlying principle extends beyond AI tooling: documentation that can guide a capable agent can guide any new engineer. The bar is the same.
 
-## Part III — The through-line
+## Part III &mdash; The through-line
 
-My mentoring approach and my code-contribution approach are the same philosophy applied at different scales.
+How I mentor and how I contribute are the same instincts applied at different scales.
 
-In both cases: encode the standard in the system rather than carrying it in your head. Make the right path the default path. Measure quality explicitly so improvement is visible. Calibrate the challenge to where someone (or something) actually is, not to a generic template.
+In both cases: **encode the standard in the system rather than carrying it in your head**. Make the right path the default path. Measure quality explicitly so improvement is visible. Calibrate the work to where someone (or something) actually is, not to a generic template.
 
-My articulated ambition for the team:
+What I want from the work:
 
-> Share reusable engineering patterns, demos, and architectural guidance across the engineering org to uplift collective engineering maturity.
+- Patterns I&rsquo;ve worked out should be usable across the org, not just inside my team &mdash; migration kits, templates, education sessions, the things that travel.
+- An experimentation-driven culture using GenAI tools as workflow change, not just chat assistants.
+- A team that doesn&rsquo;t need me in the room for the architecture to stay coherent.
 
-> Create migration kits, templates, and education sessions to support adoption across teams.
+The AXS MCP server is a working prototype of that posture. The V1 migration skills are a working prototype. The documentation quality audit is a working prototype. The case study is the pattern, already running.
 
-> Promote an experimentation-driven culture using GenAI tools to accelerate development and documentation.
+## Phrases that recur
 
-And the ambition for myself:
+These are mine, and they capture how I think:
 
-> I want to be the kind of leader who shapes how Vanguard builds software — not just within my own org, but influencing the standards, tools, and ways of working that other teams adopt.
-
-The AXS MCP server is a working prototype of that vision. The V1 migration skills are a working prototype. The documentation quality audit is a working prototype. The case study is the pattern, already running.
-
-## Characteristic language
-
-These phrases recur in my writing and capture how I think:
-
-- *"That kind of forward-thinking architecture is exactly what I need from you at your level."*
-- *"You don't need to wait for a formal venue; start creating them."*
-- *"The talent is there. I need the discipline to match it."*
-- *"Workflow-level change, not tool familiarity."*
-- *"I set a high bar intentionally because I believe in the team."*
-- *"Solutions-focused — don't just flag problems, always pair with 'so here's what we're thinking.'"*
-- **Compounding value** — the measure I apply to both architecture decisions and engineer growth.
+- *&ldquo;Workflow-level change, not tool familiarity.&rdquo;*
+- *&ldquo;You don&rsquo;t need to wait for a formal venue; start creating them.&rdquo;*
+- *&ldquo;The talent is there. I need the discipline to match it.&rdquo;*
+- *&ldquo;Solutions-focused &mdash; don&rsquo;t just flag problems, always pair with &lsquo;so here&rsquo;s what we&rsquo;re thinking.&rsquo;&rdquo;*
+- *&ldquo;I set a high bar intentionally because I believe in the team.&rdquo;*
+- **Compounding value** &mdash; the measure I apply to both architecture decisions and engineering growth.
