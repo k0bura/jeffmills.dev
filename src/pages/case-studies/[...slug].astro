@@ -1,0 +1,289 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("case-studies");
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry, entries },
+  }));
+}
+
+const { entry, entries } = Astro.props;
+const { Content } = await render(entry);
+
+const sorted = [...entries].sort((a, b) => a.data.order - b.data.order);
+const idx = sorted.findIndex((e) => e.id === entry.id);
+const prev = idx > 0 ? sorted[idx - 1] : null;
+const next = idx < sorted.length - 1 ? sorted[idx + 1] : null;
+---
+
+<Base title={`${entry.data.title} — Jeff Mills`} description={entry.data.summary}>
+  <article class="case-study">
+    <p class="case-back"><a href="/case-studies">&laquo; all case studies</a></p>
+
+    <header class="case-header">
+      <p class="case-meta">
+        <span class="case-chapter">{entry.data.chapter}</span>
+        <span class="meta-sep">&middot;</span>
+        <span class="case-period">{entry.data.period}</span>
+      </p>
+      <h1 class="case-title">{entry.data.title}</h1>
+      <p class="case-summary">{entry.data.summary}</p>
+      <p class="case-tags">
+        {
+          entry.data.tags.map((t, i) => (
+            <>
+              <span class="tag">{t}</span>
+              {i < entry.data.tags.length - 1 && (
+                <span class="tag-sep"> &middot; </span>
+              )}
+            </>
+          ))
+        }
+      </p>
+    </header>
+
+    <hr class="jm-rule" />
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <hr class="jm-rule" />
+
+    <nav class="case-nav" aria-label="Case study navigation">
+      <div class="nav-cell nav-prev">
+        {
+          prev && (
+            <>
+              <span class="nav-label">&laquo; previous</span>
+              <a href={`/case-studies/${prev.id}`}>{prev.data.title}</a>
+            </>
+          )
+        }
+      </div>
+      <div class="nav-cell nav-next">
+        {
+          next && (
+            <>
+              <span class="nav-label">next &raquo;</span>
+              <a href={`/case-studies/${next.id}`}>{next.data.title}</a>
+            </>
+          )
+        }
+      </div>
+    </nav>
+  </article>
+</Base>
+
+<style is:global>
+  .case-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .case-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .case-meta {
+    margin: 0 0 0.4rem;
+    font-size: 0.85em;
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    color: var(--jm-color-muted);
+  }
+
+  .case-meta .case-chapter {
+    color: var(--jm-color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+  }
+
+  .case-meta .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .case-study .case-title {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin: 0 0 0.5rem;
+    color: var(--jm-color-accent);
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+
+  .case-study .case-summary {
+    margin: 0 0 0.5rem;
+    color: var(--jm-color-fg);
+  }
+
+  .case-study .case-tags {
+    margin: 0;
+    font-size: 0.8em;
+    color: var(--jm-color-dim);
+  }
+
+  .case-study .tag-sep {
+    color: var(--jm-color-border);
+  }
+
+  .case-study .prose {
+    line-height: 1.7;
+  }
+  .case-study .prose > * + * {
+    margin-top: 1.1rem;
+  }
+  .case-study .prose h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.04em;
+  }
+  .case-study .prose h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    margin-top: 1.5rem;
+    margin-bottom: 0.4rem;
+  }
+  .case-study .prose ul,
+  .case-study .prose ol {
+    padding-left: 1.5rem;
+    list-style: none;
+  }
+  .case-study .prose ul li {
+    position: relative;
+  }
+  .case-study .prose ul li::before {
+    content: ">";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.25rem;
+  }
+  .case-study .prose ol {
+    counter-reset: cs-ol;
+  }
+  .case-study .prose ol li {
+    counter-increment: cs-ol;
+    position: relative;
+  }
+  .case-study .prose ol li::before {
+    content: counter(cs-ol) ".";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.5rem;
+  }
+  .case-study .prose li {
+    margin-top: 0.4rem;
+  }
+  .case-study .prose blockquote {
+    border-left: 2px solid var(--jm-color-accent);
+    padding-left: 1rem;
+    color: var(--jm-color-muted);
+    font-style: italic;
+    margin: 1rem 0;
+  }
+  .case-study .prose code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+  .case-study .prose pre {
+    background: #1a1a1a;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: var(--jm-font-mono);
+    font-size: 0.875rem;
+    border: 1px solid var(--jm-color-border);
+  }
+  .case-study .prose pre code {
+    background: transparent;
+    padding: 0;
+  }
+  .case-study .prose a {
+    color: var(--jm-color-link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .case-study .prose a:hover {
+    color: var(--jm-color-accent);
+  }
+  .case-study .prose strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+  .case-study .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    margin: 1rem 0;
+  }
+  .case-study .prose th {
+    color: var(--jm-color-accent);
+    text-align: left;
+    padding: 0.35rem 0.6rem;
+    border-bottom: 1px solid var(--jm-color-border);
+    font-weight: 700;
+  }
+  .case-study .prose td {
+    padding: 0.3rem 0.6rem;
+    border-bottom: 1px dashed var(--jm-color-border);
+    color: var(--jm-color-fg);
+  }
+  .case-study .prose .case-study-attachment {
+    margin: 1.5rem 0 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+
+  .case-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    font-size: 0.9em;
+  }
+
+  .nav-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .nav-next {
+    text-align: right;
+  }
+
+  .nav-label {
+    color: var(--jm-color-muted);
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .nav-cell a {
+    color: var(--jm-color-link);
+  }
+
+  .nav-cell a:hover {
+    color: var(--jm-color-accent);
+  }
+
+  @media (max-width: 540px) {
+    .case-nav {
+      grid-template-columns: 1fr;
+    }
+    .nav-next {
+      text-align: left;
+    }
+  }
+</style>

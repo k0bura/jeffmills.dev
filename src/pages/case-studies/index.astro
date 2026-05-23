@@ -1,0 +1,196 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const all = (await getCollection("case-studies")).sort(
+  (a, b) => a.data.order - b.data.order
+);
+
+const numbered = all.filter((c) => c.data.order <= 6);
+const extras = all.filter((c) => c.data.order > 6);
+---
+
+<Base
+  title="Case Studies — Jeff Mills"
+  description="The arc of 9 years at Vanguard FAS: Vue adoption, AXS platform creation, framework-agnostic architecture, AEM integration, governance at scale, and Expert Insights."
+>
+  <h1 class="page-title">case studies</h1>
+  <p class="page-lede">
+    Nine years at Vanguard FAS, condensed. The thread: introduce the right
+    thing at the right time, protect the system around it, and let the
+    compounding do the work. Each chapter is a real piece of platform work
+    that made the next chapter possible.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <section class="arc">
+    <h2 class="section-title">the arc</h2>
+    <p class="section-lede">
+      Six numbered chapters &mdash; the platform story start to finish.
+    </p>
+
+    <ol class="case-list">
+      {
+        numbered.map((c) => (
+          <li>
+            <article class="case-row">
+              <header class="case-row-head">
+                <span class="case-chapter">{c.data.chapter}</span>
+                <span class="case-period">{c.data.period}</span>
+              </header>
+              <h3 class="case-title">
+                <a href={`/case-studies/${c.id}`}>{c.data.title}</a>
+              </h3>
+              <p class="case-summary">{c.data.summary}</p>
+              <p class="case-tags">
+                {c.data.tags.map((t, i) => (
+                  <>
+                    <span class="tag">{t}</span>
+                    {i < c.data.tags.length - 1 && (
+                      <span class="tag-sep"> &middot; </span>
+                    )}
+                  </>
+                ))}
+              </p>
+            </article>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  {
+    extras.length > 0 && (
+      <>
+        <hr class="jm-rule" />
+        <section class="arc">
+          <h2 class="section-title">technical + leadership deep dives</h2>
+          <p class="section-lede">
+            Companion pieces. One on the AXS &times; AI architecture; one on
+            how I lead engineers and set technical standards.
+          </p>
+
+          <ul class="case-list">
+            {extras.map((c) => (
+              <li>
+                <article class="case-row">
+                  <header class="case-row-head">
+                    <span class="case-chapter">{c.data.chapter}</span>
+                    <span class="case-period">{c.data.period}</span>
+                  </header>
+                  <h3 class="case-title">
+                    <a href={`/case-studies/${c.id}`}>{c.data.title}</a>
+                  </h3>
+                  <p class="case-summary">{c.data.summary}</p>
+                  <p class="case-tags">
+                    {c.data.tags.map((t, i) => (
+                      <>
+                        <span class="tag">{t}</span>
+                        {i < c.data.tags.length - 1 && (
+                          <span class="tag-sep"> &middot; </span>
+                        )}
+                      </>
+                    ))}
+                  </p>
+                </article>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </>
+    )
+  }
+</Base>
+
+<style>
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.5rem 0 0.5rem;
+  }
+
+  .page-lede {
+    margin: 0 0 0.5rem;
+    color: var(--jm-color-muted);
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  .section-lede {
+    margin: 0 0 0.75rem;
+    color: var(--jm-color-muted);
+    font-size: 0.95em;
+  }
+
+  .case-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: case-counter;
+  }
+
+  .case-list > li {
+    padding: 1.25rem 0;
+    border-bottom: 1px dashed var(--jm-color-border);
+  }
+
+  .case-list > li:last-child {
+    border-bottom: none;
+  }
+
+  .case-row-head {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    font-size: 0.8em;
+    margin-bottom: 0.25rem;
+  }
+
+  .case-chapter {
+    color: var(--jm-color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+  }
+
+  .case-period {
+    color: var(--jm-color-muted);
+  }
+
+  .case-title {
+    font-size: 1.05rem;
+    font-weight: 400;
+    margin: 0.15rem 0 0.4rem;
+    color: var(--jm-color-fg);
+    line-height: 1.4;
+  }
+
+  .case-title a {
+    color: inherit;
+  }
+
+  .case-summary {
+    margin: 0 0 0.5rem;
+    color: var(--jm-color-muted);
+    font-size: 0.92em;
+  }
+
+  .case-tags {
+    margin: 0;
+    font-size: 0.8em;
+    color: var(--jm-color-dim);
+  }
+
+  .tag-sep {
+    color: var(--jm-color-border);
+  }
+</style>

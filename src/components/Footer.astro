@@ -1,9 +1,5 @@
 ---
 const year = new Date().getFullYear();
-const buildMonth = new Intl.DateTimeFormat("en-US", {
-  year: "numeric",
-  month: "short",
-}).format(new Date());
 ---
 
 <footer class="jm-footer">
@@ -12,11 +8,12 @@ const buildMonth = new Intl.DateTimeFormat("en-US", {
     <span>&copy; {year} jeff mills</span>
     <ul>
       <li><a href="https://github.com/k0bura">github</a></li>
+      <li><a href="https://linkedin.com/in/jeffdmills">linkedin</a></li>
       <li><a href="mailto:jeffy9@gmail.com">email</a></li>
     </ul>
   </div>
   <p class="jm-footer-meta">
-    built {buildMonth.toLowerCase()} &middot; no analytics &middot; no trackers
+    shipping front-end since 2004 &middot; greater philadelphia area &middot; no analytics &middot; no trackers
   </p>
 </footer>
 
