@@ -9,6 +9,91 @@ interface Props {
 }
 
 const { title, description = "Jeff Mills — Principal Front-End Engineer" } = Astro.props;
+
+const CRT_LOG: string[] = [
+  "[    0.000000] Linux version 6.18.28_1 (jeff-mills@jeffmills.dev) (gcc 13.2.0) #1 SMP PREEMPT_DYNAMIC Tue May 22 18:00:00 EDT 2026",
+  "[    0.000123] Command line: BOOT_IMAGE=/boot/vmlinuz-6.18 root=UUID=a1b2c3d4-e5f6-7890-abcd-ef1234567890 ro quiet splash",
+  "[    0.000345] x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'",
+  "[    0.000567] x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'",
+  "[    0.000789] x86/fpu: Supporting XSAVE feature 0x004: 'AVX registers'",
+  "[    0.001012] BIOS-provided physical RAM map:",
+  "[    0.001234] BIOS-e820: [mem 0x0000000000000000-0x000000000009fbff] usable",
+  "[    0.001456] BIOS-e820: [mem 0x000000000009fc00-0x000000000009ffff] reserved",
+  "[    0.001678] BIOS-e820: [mem 0x00000000000f0000-0x00000000000fffff] reserved",
+  "[    0.001890] BIOS-e820: [mem 0x0000000000100000-0x00000000bffdffff] usable",
+  "[    0.002345] efi: EFI v2.70 by EDK II",
+  "[    0.003456] ACPI: Early table checksum verification disabled",
+  "[    0.004567] ACPI: RSDP 0x00000000BFFE0014 000024 (v02 BOCHS )",
+  "[    0.005678] ACPI: XSDT 0x00000000BFFE2147 00005C (v01 BOCHS  BXPC     00000001 BXPC 00000001)",
+  "[    0.006789] ACPI: FACP 0x00000000BFFE1F8B 0000F4 (v03 BOCHS  BXPC     00000001 BXPC 00000001)",
+  "[    0.007890] ACPI: DSDT 0x00000000BFFE0148 001E43 (v01 BOCHS  BXPC     00000001 BXPC 00000001)",
+  "[    0.009123] No NUMA configuration found",
+  "[    0.012345] Booting paravirtualized kernel on KVM",
+  "[    0.023456] cpu: Intel(R) Xeon(R) Platinum 8259CL CPU @ 2.50GHz",
+  "[    0.034567] smpboot: Allowing 4 CPUs, 0 hotplug CPUs",
+  "[    0.045678] Memory: 32741M/32768M available (16384K kernel code, 4096K rwdata, 2048K rodata)",
+  "[    0.056789] tsc: Detected 2500.012 MHz processor",
+  "[    0.067890] random: crng init done",
+  "[    0.078901] clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x24093656c5b, max_idle_ns: 440795200381 ns",
+  "[    0.123456] pci 0000:00:00.0: [8086:1237] type 00 class 0x060000",
+  "[    0.134567] pci 0000:00:01.0: [8086:7000] type 00 class 0x060100",
+  "[    0.145678] pci 0000:00:01.3: [8086:7113] type 00 class 0x068000",
+  "[    0.156789] pci 0000:00:02.0: [1234:1111] type 00 class 0x030000",
+  "[    0.167890] pci 0000:00:03.0: [8086:100e] type 00 class 0x020000",
+  "[    0.178901] vgaarb: loaded",
+  "[    0.234567] usb usb1: New USB device found, idVendor=1d6b, idProduct=0002, bcdDevice=6.18",
+  "[    0.245678] usb usb1: Manufacturer: Linux 6.18 ehci_hcd",
+  "[    0.256789] hub 1-0:1.0: USB hub found",
+  "[    0.267890] hub 1-0:1.0: 6 ports detected",
+  "[    0.345678] e1000e 0000:00:19.0: (PCI Express:2.5GT/s:Width x1) 08:00:27:00:00:00",
+  "[    0.356789] e1000e: Intel(R) PRO/1000 Network Driver 3.8.7-k",
+  "[    0.367890] e1000e: Copyright(c) 1999 - 2024 Intel Corporation.",
+  "[    0.456789] tcp_listen_portaddr_hash hash table entries: 32768 (order: 7, 524288 bytes)",
+  "[    0.467890] TCP established hash table entries: 524288 (order: 10, 4194304 bytes)",
+  "[    0.567890] systemd[1]: Detected virtualization kvm.",
+  "[    0.578901] systemd[1]: Detected architecture x86-64.",
+  "[    0.589012] systemd[1]: Hostname set to <jeffmills.dev>.",
+  "[    0.701234] systemd[1]: Reached target Local File Systems (Pre).",
+  "[    0.712345] systemd[1]: Starting Journal Service...",
+  "[    0.823456] systemd[1]: Started Journal Service.",
+  "[    0.834567] systemd[1]: Mounting Huge Pages File System...",
+  "[    0.945678] systemd[1]: Mounted Huge Pages File System.",
+  "[    0.956789] systemd[1]: Listening on D-Bus System Message Bus Socket.",
+  "[    1.067890] systemd[1]: Starting Network Manager...",
+  "[    1.178901] NetworkManager[823]: <info>  [1716487201.1234] NetworkManager (version 1.42.0) starting... (boot:2bf94b4e)",
+  "[    1.289012] NetworkManager[823]: <info>  [1716487201.2345] DNS-MGR: init: dns=default rc-manager=symlink",
+  "[    1.301234] systemd[1]: Started Network Manager.",
+  "[    1.412345] dhclient[845]: DHCPDISCOVER on enp0s3 to 255.255.255.255 port 67 interval 8",
+  "[    1.523456] dhclient[845]: DHCPOFFER from 10.0.2.2",
+  "[    1.534567] dhclient[845]: DHCPREQUEST for 10.0.2.15 on enp0s3 to 255.255.255.255 port 67",
+  "[    1.545678] dhclient[845]: DHCPACK from 10.0.2.2 (xid=0x12345678)",
+  "[    1.556789] dhclient[845]: bound to 10.0.2.15 -- renewal in 43200 seconds.",
+  "[    1.567890] systemd[1]: Reached target Network is Online.",
+  "[    2.012345] systemd[1]: Starting OpenSSH server daemon...",
+  "[    2.123456] sshd[867]: Server listening on 0.0.0.0 port 22.",
+  "[    2.134567] sshd[867]: Server listening on :: port 22.",
+  "[    2.145678] systemd[1]: Started OpenSSH server daemon.",
+  "[    2.256789] cloudflared[891]: 2026-05-22T18:00:02Z INF starting tunnel tunnelID=jeffmills-dev",
+  "[    2.267890] cloudflared[891]: 2026-05-22T18:00:02Z INF registered tunnel with cloudflare edge connections=4",
+  "[    2.278901] cloudflared[891]: 2026-05-22T18:00:02Z INF route propagation complete jeffmills.dev",
+  "[    2.345678] systemd[1]: Reached target Multi-User System.",
+  "[    3.012345] login[923]: pam_unix(login:session): session opened for user kobura(uid=1000) by LOGIN(uid=0)",
+  "[    3.234567] kernel: jm-fonts: ibm-plex-mono loaded regular=18432B bold=18988B",
+  "[    3.345678] kernel: jm-paint: first contentful paint 38 ms",
+  "[    3.456789] kernel: jm-paint: largest contentful paint 142 ms",
+  "[    3.567890] kernel: jm-paint: time to interactive 198 ms",
+  "[    4.012345] kernel: gen-ui-demo: mock pipeline armed, USE_MOCKS=true",
+  "[    4.123456] kernel: crt-overlay: phosphor halo attached r=140px opacity=0.05",
+  "[    4.234567] kernel: crt-overlay: grid mask attached cell=12px lines=0.22",
+  "[    4.345678] kernel: crt-overlay: log stream attached lines=70 duration=35s",
+  "[    4.456789] kernel: pointer-tracker: armed at viewport 1920x1080",
+  "[    5.012345] kernel: 80 columns rendered. all systems nominal.",
+  "[    7.234567] kernel: visitor session id b3f8a2c1-7d4e-4f8a-9c2b-1a3f4b5d6e7f connected",
+  "[   12.345678] kernel: cursor tracker armed. phosphors stable. no errors. no carrier.",
+  "[   18.567890] kernel: heartbeat ok. still warm.",
+];
+
+const crtLogText = [...CRT_LOG, ...CRT_LOG].join("\n");
 ---
 
 <!doctype html>
@@ -30,7 +115,11 @@ const { title, description = "Jeff Mills — Principal Front-End Engineer" } = A
     >
       Skip to content
     </a>
-    <div class="crt-overlay" aria-hidden="true"></div>
+    <div class="crt-overlay" aria-hidden="true">
+      <div class="crt-log">
+        <pre class="crt-log-inner">{crtLogText}</pre>
+      </div>
+    </div>
     <div class="jm-shell">
       <Header />
       <main id="main">
