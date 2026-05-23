@@ -32,6 +32,47 @@ I played a key role in defining and reinforcing a framework-agnostic architectur
 
 **Designed AXS as framework-agnostic.** Components are independent of application frameworks. The same component logic runs across Angular, Vue, and AEM through framework adapters and standards-based custom elements. The implementation is intentionally separated from the application's technical stack.
 
+<div
+  class="diagram"
+  role="img"
+  aria-label="AXS code-agnostic distribution. A single Vue single-file component source compiles to two exports: a standards-based custom element and per-framework adapters. The same artifacts ship to Vue apps, Angular apps, AEM templates, Storybook, and any HTML page via CDN."
+>
+  <div class="diagram-node is-stage">
+    <div class="diagram-node-title">AXS component source</div>
+    <div class="diagram-node-body">Vue single-file component</div>
+  </div>
+  <div class="diagram-arrow">&#9660;<br /><span class="diagram-payload">build pipeline</span></div>
+
+  <div class="diagram-row-label">exports</div>
+  <div class="diagram-row">
+    <div class="diagram-node is-stage">
+      <div class="diagram-node-title">custom element</div>
+      <div class="diagram-node-body">standards-based<br />HTML / JS + global CSS</div>
+    </div>
+    <div class="diagram-node is-stage">
+      <div class="diagram-node-title">framework adapters</div>
+      <div class="diagram-node-body">Vue / Angular / AEM wrappers</div>
+    </div>
+  </div>
+  <div class="diagram-fanlines">
+    <span>&#9660;</span><span>&#9660;</span><span>&#9660;</span><span>&#9660;</span><span>&#9660;</span>
+  </div>
+
+  <div class="diagram-row-label">consumers</div>
+  <div class="diagram-row">
+    <div class="diagram-node">Vue app</div>
+    <div class="diagram-node">Angular app</div>
+    <div class="diagram-node">AEM template</div>
+    <div class="diagram-node">Storybook</div>
+    <div class="diagram-node">any HTML / CDN</div>
+  </div>
+
+  <p class="diagram-note">
+    One source. Two exports. Many consumers. Same component logic
+    everywhere.
+  </p>
+</div>
+
 **Enabled cross-framework component reuse.** Same component, same props, same behavior — across stacks. Teams stopped reimplementing UI for each framework.
 
 **Future-proofed the platform.** Explicitly designed to avoid dependency on any single framework, and to adapt easily to new frameworks, security requirements, and platform shifts. The system is built to "quickly adapt and support any new or better frameworks" — that's not a marketing line, it's the architectural premise.

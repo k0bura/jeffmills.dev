@@ -242,6 +242,44 @@ pre code {
   letter-spacing: 0.02em;
 }
 
+/* Horizontal row of nodes (fan-in inputs, fan-out consumers) */
+.diagram-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 38rem;
+}
+.diagram-row .diagram-node {
+  min-width: 0;
+  max-width: none;
+}
+.diagram-row-label {
+  color: var(--jm-color-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.1rem;
+}
+.diagram-fanlines {
+  width: 100%;
+  max-width: 38rem;
+  display: flex;
+  justify-content: space-around;
+  color: var(--jm-color-dim);
+  font-size: 0.8em;
+  line-height: 1;
+}
+.diagram-note {
+  width: 100%;
+  max-width: 38rem;
+  color: var(--jm-color-muted);
+  font-size: 0.85em;
+  text-align: center;
+  font-style: italic;
+  margin-top: 0.4rem;
+}
+
 /* CRT phosphor cursor — subtle glow + grid + scrolling log revealed around the pointer */
 .crt-overlay {
   position: fixed;

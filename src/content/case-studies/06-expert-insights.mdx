@@ -47,7 +47,30 @@ This turns probabilistic LLM output into a **stable product pattern**. Teams can
 
 In ITSS FAS AI Expert Insights, the architecture for the pilot is framed at three layers:
 
-<div class="diagram" role="img" aria-label="Three-layer Expert Insights architecture: foundational LLM, scalable platform API, guardrails and methodology embedded in the prompt.">
+<div
+  class="diagram"
+  role="img"
+  aria-label="Expert Insights architecture. Three input streams (portfolio data, methodology context, structured prompts) feed a foundational LLM, which feeds a scalable platform API, which feeds downstream surfaces. A separate LLM-as-a-judge loop scores model output and refines the prompts."
+>
+  <div class="diagram-row-label">inputs</div>
+  <div class="diagram-row">
+    <div class="diagram-node">
+      <div class="diagram-node-title">portfolio data</div>
+      <div class="diagram-node-body">structured account context</div>
+    </div>
+    <div class="diagram-node">
+      <div class="diagram-node-title">methodology</div>
+      <div class="diagram-node-body">guardrails, definitions, roles</div>
+    </div>
+    <div class="diagram-node">
+      <div class="diagram-node-title">prompts</div>
+      <div class="diagram-node-body">"what / so what / now what"</div>
+    </div>
+  </div>
+  <div class="diagram-fanlines">
+    <span>&#9660;</span><span>&#9660;</span><span>&#9660;</span>
+  </div>
+
   <div class="diagram-node is-stage">
     <div class="diagram-node-title">layer 1 &mdash; foundational LLM</div>
     <div class="diagram-node-body">model selection, evals, judges</div>
@@ -60,8 +83,31 @@ In ITSS FAS AI Expert Insights, the architecture for the pilot is framed at thre
   <div class="diagram-arrow">&#9660;</div>
   <div class="diagram-node is-stage">
     <div class="diagram-node-title">layer 3 &mdash; guardrails + methodology</div>
-    <div class="diagram-node-body">embedded in prompt; "what / so what / now what"</div>
+    <div class="diagram-node-body">embedded in prompt; reinforced via judge</div>
   </div>
+  <div class="diagram-fanlines">
+    <span>&#9660;</span><span>&#9660;</span><span>&#9660;</span>
+  </div>
+  <div class="diagram-row-label">surfaces</div>
+  <div class="diagram-row">
+    <div class="diagram-node">
+      <div class="diagram-node-title">dashboards</div>
+      <div class="diagram-node-body">internal tooling</div>
+    </div>
+    <div class="diagram-node">
+      <div class="diagram-node-title">advisor app</div>
+      <div class="diagram-node-body">streaming insight UI</div>
+    </div>
+    <div class="diagram-node">
+      <div class="diagram-node-title">downstream tools</div>
+      <div class="diagram-node-body">integrations</div>
+    </div>
+  </div>
+
+  <p class="diagram-note">
+    A separate LLM-as-a-judge loop scores model output against the
+    methodology and feeds refinements back into the prompts.
+  </p>
 </div>
 
 Not one-off prompting. A strategic enabler with a roadmap spanning production pilot through broader scaling phases.
@@ -114,7 +160,3 @@ The threads from previous chapters are the load-bearing structure of this one:
 ## Why it matters
 
 This is the chapter where the platform discipline of the earlier years compounds. AXS was the substrate. Expert Insights is the proof that the substrate scales into AI.
-
-<p class="case-study-attachment">
-  &gt; supporting deck: <a href="/case-studies/expert-insights-overview.pdf" target="_blank" rel="noopener">ITSS FAS AI Expert Insights (PDF)</a>
-</p>
