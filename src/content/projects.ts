@@ -17,4 +17,22 @@ export const PROJECTS: Project[] = [
     year: 2026,
     tags: ["Claude", "tool use", "Svelte", "Lit", "design systems"],
   },
+  {
+    slug: "sychonet",
+    title: "sych0net",
+    summary:
+      "A personal Astro site themed as a phosphor-amber BBS — project logs, hardware galleries, ANSI art, and the vintage-computing aesthetic this site grew out of.",
+    status: "live",
+    year: 2021,
+    tags: ["Astro", "vintage computing", "personal site", "design language"],
+  },
+  {
+    slug: "skeletor",
+    title: "Skeletor",
+    summary:
+      "A front-end component framework I built at Delphic Digital (2014–2017) with native Web Components in 2016. The architectural seed that became AXS nine years later.",
+    status: "archived",
+    year: 2016,
+    tags: ["Web Components", "design systems", "agency", "framework"],
+  },
 ];

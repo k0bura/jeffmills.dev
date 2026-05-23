@@ -1,0 +1,362 @@
+---
+import Base from "../../layouts/Base.astro";
+---
+
+<Base
+  title="Skeletor — Jeff Mills"
+  description="A front-end component framework I built at Delphic Digital (2014–2017) with native Web Components in 2016. The architectural seed that became AXS nine years later."
+>
+  <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
+  <h1 class="page-title">skeletor</h1>
+  <p class="project-meta">
+    <span class="project-year">2014 — 2017</span>
+    <span class="meta-sep">&middot;</span>
+    <span class="project-status">archived</span>
+    <span class="meta-sep">&middot;</span>
+    <span>delphic digital</span>
+    <span class="meta-sep">&middot;</span>
+    <span>~12 repos</span>
+  </p>
+
+  <p class="page-lede">
+    Skeletor was the front-end framework we built at Delphic Digital
+    (Philadelphia, 2014&ndash;2017). It started as a Gulp + Sass boilerplate
+    and grew into a multi-repo component system with native Web Components in
+    2016 &mdash; years before the broader industry caught up. The same
+    architectural instincts are what AXS scales today.
+  </p>
+
+  <aside class="callout">
+    <span class="callout-label">The throughline</span>
+    <p>
+      Skeletor isn&rsquo;t in production anywhere now &mdash; the agency
+      archived the org &mdash; but it&rsquo;s the receipt for a long-running
+      claim: I&rsquo;ve been betting on framework-agnostic component
+      architecture since 2016. The actual code is below.
+    </p>
+  </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">what it was</h2>
+  <p>
+    Skeletor started in 2014 as a project starter &mdash; directory structure,
+    Gulp pipeline, Sass utilities, a debug layer, a component loader. The
+    initial framing was modest: gather our best practices into a kit so every
+    client project didn&rsquo;t reinvent the front end.
+  </p>
+  <p>
+    By 2016 it had grown into a constellation of focused libraries published
+    independently:
+  </p>
+
+  <dl class="stack-list">
+    <dt>core</dt>
+    <dd>
+      <code>Skeletor.framework</code>, <code>Skeletor.core</code>,
+      <code>Skeletor.util.componentLoader</code> &mdash; the runtime,
+      registry, and dynamic component loader
+    </dd>
+    <dt>web components</dt>
+    <dd>
+      <code>skeletor-plugin-base</code> &mdash; a base class extending
+      <code>HTMLElement</code>; <code>skeletor-plugin-accordion</code>,
+      <code>Skeletor.flyouts</code>, <code>Skeletor.accordion</code> &mdash;
+      working components built on top
+    </dd>
+    <dt>tokens + design</dt>
+    <dd>
+      <code>Skeletor.sass.utilities</code>, <code>Skeletor.sass.helpers</code>,
+      <code>Skeletor.sass.flexgrid</code> &mdash; a Sass-driven token system
+      and grid
+    </dd>
+    <dt>devx</dt>
+    <dd>
+      <code>Skeletor.util.debug</code>, <code>Skeletor.docs</code>,
+      <code>Skeletor.pluginTemplate</code> &mdash; debugging, documentation
+      site, scaffold for new plugins
+    </dd>
+    <dt>feature detection</dt>
+    <dd>
+      <code>Skeletor.util.detects.mobile</code>,
+      <code>Skeletor.util.detects.flexbox</code> &mdash; the unglamorous
+      runtime checks that made the system actually ship cross-browser
+    </dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">web components in 2016</h2>
+  <p>
+    The Web Components v1 spec only stabilized in 2018. Lit didn&rsquo;t exist.
+    Stencil was a year out. The frameworks-vs-standards debate was still loud.
+    Skeletor picked standards. Here&rsquo;s the actual base class from
+    <code>skeletor-plugin-base</code> &mdash; December 2016:
+  </p>
+
+  <pre><code>{`import $ from 'jquery';
+import skeletor from 'skeletor-core';
+
+class SkeletorPlugin extends HTMLElement {
+
+  constructor(element, options){
+    super();
+    this.NAME = this.constructor.ELEMENT_NAME;
+    this.UUID = skeletor.getYoDigits(6, this.NAME);
+    this.$element = $(this) || $(document);
+    this.options = options;
+
+    if(!this.$element.data('skeletorComponent')){
+      this.$element.data('skeletorComponent', this);
+    }
+
+    skeletor.registerComponentInstance(this.UUID);
+  }
+
+  // web component v1 spec: Fired when custom element is added to DOM.
+  connectedCallback() {
+    this.init();
+  };
+
+  init(){
+    console.log('connected:', this);
+  }
+
+  static register(){
+    let elementName = this.ELEMENT_NAME;
+    if(!elementName){
+      throw new TypeError(\`You need to define an element name\`);
+    }
+    skeletor.registerComponent(this, this.ELEMENT_NAME);
+  }
+
+  set defaults(value){
+    this.options = $.extend(true, {}, value, this.options);
+  }
+}
+
+export default SkeletorPlugin;`}</code></pre>
+
+  <p>
+    <code>extends HTMLElement</code>. <code>connectedCallback</code>.
+    Component registry. A self-naming custom element. The same instincts that
+    show up in AXS today. The jQuery dependency dates it; the architectural
+    choice doesn&rsquo;t.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">companion artifacts</h2>
+  <p>
+    A few sister repos rounded out the story:
+  </p>
+
+  <ul class="proof-list">
+    <li>
+      <strong>accessible-components (2016)</strong> &mdash; a library of WAI-ARIA
+      Authoring-Practices-compliant components built on Skeletor. Accessibility
+      treated as a baseline, not a feature.
+    </li>
+    <li>
+      <strong>dd-pattern-library (2017)</strong> &mdash; the agency&rsquo;s pattern
+      library, started as a Pattern Lab experiment. The first version of
+      &ldquo;design system as an organizational artifact&rdquo; rather than a
+      per-project boilerplate.
+    </li>
+    <li>
+      <strong>on-media-query (2013)</strong> &mdash; an earlier utility for
+      triggering JS callbacks on media query state changes. The kind of small
+      library that solved a real responsive-design pain point at the time.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">what this proved (and what came next)</h2>
+  <p>
+    Skeletor never had to be a public open-source brand. It was infrastructure
+    for one agency&rsquo;s client work, and it did its job well for a few
+    years. What matters now is what it shows:
+  </p>
+  <ul class="proof-list">
+    <li>
+      <strong>Framework-agnostic component architecture isn&rsquo;t a 2024
+      trend for me.</strong> The pattern that powers AXS &mdash; standards-based
+      components, framework-light runtime, design tokens via Sass/CSS
+      properties &mdash; is the same pattern Skeletor was running in 2016.
+    </li>
+    <li>
+      <strong>The instinct to build platforms, not features, is durable.</strong>
+      Skeletor was always a system, not a project. The reason the AXS work
+      worked at Vanguard is the same reason Skeletor worked at the agency:
+      separate the substrate from the application code, and let it compound.
+    </li>
+    <li>
+      <strong>Agency speed compounds.</strong> Building on a shared component
+      runtime across ~50 client engagements is what taught me what does and
+      doesn&rsquo;t survive contact with real delivery pressure. AXS inherited
+      those instincts.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">stack</h2>
+  <dl class="stack-list">
+    <dt>Components</dt>
+    <dd>Native Web Components (v1 spec), custom elements, shadow DOM-adjacent encapsulation</dd>
+    <dt>Build</dt>
+    <dd>Gulp 3, JSPM, Bower (yes, Bower), Babel, Sass</dd>
+    <dt>Design tokens</dt>
+    <dd>Sass utilities + helpers + flexgrid</dd>
+    <dt>Distribution</dt>
+    <dd>npm + Delphic&rsquo;s internal Bower registry</dd>
+    <dt>Documentation</dt>
+    <dd>Skeletor.docs (custom site) + the &ldquo;Fednet&rdquo; agency knowledge base</dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <p class="project-foot">
+    Archived org: <a href="https://github.com/delphic-digital" target="_blank" rel="noopener">github.com/delphic-digital</a>
+    &middot; Related work: <a href="/case-studies/02-building-axs">Building AXS</a>
+    &middot; <a href="/case-studies/03-framework-agnostic">Framework-Agnostic Architecture</a>
+  </p>
+</Base>
+
+<style>
+  .project-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0.4rem;
+  }
+
+  .project-meta {
+    margin: 0 0 1rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+
+  .project-meta .project-year {
+    color: var(--jm-color-fg);
+  }
+
+  .project-meta .project-status {
+    color: var(--jm-color-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .page-lede {
+    margin: 0 0 1rem;
+    color: var(--jm-color-fg);
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 2rem 0 0.5rem;
+  }
+
+  .stack-list {
+    margin: 0.5rem 0 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1.25rem;
+    line-height: 1.6;
+  }
+
+  .stack-list dt {
+    color: var(--jm-color-accent);
+    font-weight: 700;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 0.15rem;
+  }
+
+  .stack-list dd {
+    margin: 0;
+    color: var(--jm-color-fg);
+    font-size: 0.95em;
+  }
+
+  @media (max-width: 540px) {
+    .stack-list {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+    .stack-list dd {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .proof-list {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .proof-list li {
+    position: relative;
+    margin: 0.6rem 0;
+  }
+
+  .proof-list li::before {
+    content: ">";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.25rem;
+  }
+
+  .proof-list strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+
+  pre {
+    background: #1a1a1a;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: var(--jm-font-mono);
+    font-size: 0.85rem;
+    border: 1px solid var(--jm-color-border);
+    line-height: 1.5;
+  }
+
+  pre code {
+    background: transparent;
+    padding: 0;
+  }
+
+  code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+
+  .project-foot {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>

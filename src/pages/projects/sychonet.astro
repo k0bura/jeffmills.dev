@@ -1,0 +1,293 @@
+---
+import Base from "../../layouts/Base.astro";
+---
+
+<Base
+  title="sych0net — Jeff Mills"
+  description="A personal Astro site themed as a phosphor-amber BBS. Project logs, hardware galleries, ANSI art — and the vintage-computing aesthetic this site grew out of."
+>
+  <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
+  <h1 class="page-title">sych0net</h1>
+  <p class="project-meta">
+    <span class="project-year">2021 — present</span>
+    <span class="meta-sep">&middot;</span>
+    <span class="project-status">live</span>
+    <span class="meta-sep">&middot;</span>
+    <span>personal site</span>
+    <span class="meta-sep">&middot;</span>
+    <span>astro</span>
+  </p>
+
+  <p class="page-lede">
+    <a href="https://sych0.net" target="_blank" rel="noopener">sych0.net</a>
+    is my hobby site. It&rsquo;s a BBS-themed home for project logs, vintage
+    computing builds, hardware galleries, and ANSI art &mdash; built in Astro,
+    set in IBM Plex Mono, and rendered in amber-on-black like a CRT terminal
+    that never went to sleep. It&rsquo;s also where the design language for
+    <em>this</em> site came from.
+  </p>
+
+  <aside class="callout">
+    <span class="callout-label">Where the phosphors never fade</span>
+    <p>
+      Sychonet exists because professional engineering work and weird old
+      hardware deserve different rooms. The tagline &mdash;
+      <em>&ldquo;where the phosphors never fade&rdquo;</em> &mdash; sums up
+      the project: vintage computing as an active hobby, documented like a
+      sysop&rsquo;s notebook.
+    </p>
+  </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">what&rsquo;s on it</h2>
+  <ul class="proof-list">
+    <li>
+      <strong>Project logs</strong> &mdash; long-form documentation of
+      restorations and builds: a GRiDCASE 1520 brought back from the dead, a
+      Compaq Portable 486c restoration, an ESP32 Wi-Fi modem built to plug
+      into a Compaq&rsquo;s enhanced options slot.
+    </li>
+    <li>
+      <strong>Hardware gallery</strong> &mdash; an inventory of the machines
+      and peripherals on the bench, photographed and annotated.
+    </li>
+    <li>
+      <strong>Bulletin board</strong> &mdash; short sysop posts with
+      BBS-board-name datacenter codes for vibes.
+    </li>
+    <li>
+      <strong>ANSI art</strong> &mdash; classic scene art rendered with
+      AnsiLove.js. A reminder that text-mode graphics had range.
+    </li>
+    <li>
+      <strong>Photo archive + message wall + system news</strong> &mdash; the
+      mainstream BBS information architecture, applied unironically.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">why it&rsquo;s here</h2>
+  <p>
+    Sychonet matters to this portfolio for three reasons:
+  </p>
+  <ul class="proof-list">
+    <li>
+      <strong>It&rsquo;s the design language source.</strong> The
+      phosphor-amber palette, the IBM Plex Mono typography, the 80-column
+      shell, the dashed rules, the <code>&gt;</code> bullets, the dmesg-style
+      log stream behind the CRT cursor on this site &mdash; all of it comes
+      from sychonet&rsquo;s aesthetic vocabulary. This site is sychonet,
+      dialed back from sysop to recruiter-safe.
+    </li>
+    <li>
+      <strong>It&rsquo;s real published work outside the day job.</strong>
+      Recruiters who skim &ldquo;hobby project&rdquo; and then click anyway
+      land on a site that&rsquo;s genuinely shipped: keyboard-shortcut nav,
+      lightbox image viewer, mobile-refusal &ldquo;phone wall&rdquo;
+      easter-egg screen, custom Shiki theme, the works.
+    </li>
+    <li>
+      <strong>It signals range.</strong> The same engineer architects
+      regulated-finance design systems Monday through Friday and reverse-
+      engineers a Compaq enhanced-options-slot on Saturday. The hardware work
+      and the design-system work share a posture: take a thing seriously,
+      learn how it&rsquo;s built, document it well.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">how it&rsquo;s built</h2>
+  <p>
+    Sychonet is intentionally simple infrastructure for a content-heavy site:
+  </p>
+
+  <dl class="stack-list">
+    <dt>Framework</dt>
+    <dd>Astro 5 (static-site generation, zero JS by default)</dd>
+    <dt>Type</dt>
+    <dd>Self-hosted IBM Plex Mono, no third-party fonts</dd>
+    <dt>Content</dt>
+    <dd>MDX + Astro content collections, photos optimized with Sharp</dd>
+    <dt>Theme</dt>
+    <dd>
+      Custom Shiki TextMate theme (sychonet.json) &mdash; the same one this
+      site uses for code blocks
+    </dd>
+    <dt>Layout</dt>
+    <dd>80-column shell, mobile refusal screen, lightbox image viewer</dd>
+    <dt>Hosting</dt>
+    <dd>GitHub Pages via Cloudflare Worker for asset rewriting</dd>
+    <dt>Source</dt>
+    <dd>
+      <a href="https://github.com/k0bura/sychonet" target="_blank" rel="noopener">
+        github.com/k0bura/sychonet
+      </a>
+    </dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">design influences on this site</h2>
+  <p>
+    Direct lineage from sychonet to jeffmills.dev:
+  </p>
+
+  <ul class="proof-list">
+    <li>
+      Amber-phosphor palette (<code>#ffcc00</code> accent,
+      <code>#665200</code> dim, <code>#88cc88</code> ok-green) and the dark
+      <code>#0e0e0e</code> background.
+    </li>
+    <li>
+      IBM Plex Mono everywhere &mdash; same font face, same weights,
+      self-hosted from the same woff2 files.
+    </li>
+    <li>
+      80-column shell, dashed-rule separators, <code>&gt;</code> bullets.
+    </li>
+    <li>
+      The CRT cursor + dmesg log stream on this site is sychonet&rsquo;s
+      aesthetic compressed into a single ambient effect.
+    </li>
+    <li>
+      Custom Shiki theme for code blocks &mdash; amber keywords, green
+      strings, blue functions, same palette across both sites.
+    </li>
+  </ul>
+
+  <p>
+    Sychonet is the lab. This site is the production application.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <p class="project-foot">
+    Live: <a href="https://sycho.net" target="_blank" rel="noopener">sycho.net</a>
+    &middot; Source: <a href="https://github.com/k0bura/sychonet" target="_blank" rel="noopener">github.com/k0bura/sychonet</a>
+  </p>
+</Base>
+
+<style>
+  .project-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0.4rem;
+  }
+
+  .project-meta {
+    margin: 0 0 1rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+
+  .project-meta .project-year {
+    color: var(--jm-color-fg);
+  }
+
+  .project-meta .project-status {
+    color: var(--jm-color-ok);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .page-lede {
+    margin: 0 0 1rem;
+    color: var(--jm-color-fg);
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 2rem 0 0.5rem;
+  }
+
+  .stack-list {
+    margin: 0.5rem 0 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1.25rem;
+    line-height: 1.6;
+  }
+
+  .stack-list dt {
+    color: var(--jm-color-accent);
+    font-weight: 700;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 0.15rem;
+  }
+
+  .stack-list dd {
+    margin: 0;
+    color: var(--jm-color-fg);
+    font-size: 0.95em;
+  }
+
+  @media (max-width: 540px) {
+    .stack-list {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+    .stack-list dd {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .proof-list {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .proof-list li {
+    position: relative;
+    margin: 0.6rem 0;
+  }
+
+  .proof-list li::before {
+    content: ">";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.25rem;
+  }
+
+  .proof-list strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+
+  code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+
+  .project-foot {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>
