@@ -1,6 +1,8 @@
 ---
 import Base from "../../layouts/Base.astro";
-import GenUI from "../../demo/GenUI.svelte";
+
+const DEMO_URL = "https://gen-ui.jeffmills.dev";
+const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
 ---
 
 <Base
@@ -39,13 +41,19 @@ import GenUI from "../../demo/GenUI.svelte";
 
   <hr class="jm-rule" />
 
-  <h2 class="section-title">try it</h2>
-  <p class="section-lede">
-    Pick a starter prompt or write your own. Currently running on mocks,
-    full Anthropic wiring lands next.
+  <div class="cta-row">
+    <a class="cta-primary" href={DEMO_URL} target="_blank" rel="noopener">
+      Open the live demo &raquo;
+    </a>
+    <a class="cta-secondary" href={SOURCE_URL} target="_blank" rel="noopener">
+      Source on GitHub &nearr;
+    </a>
+  </div>
+  <p class="cta-note">
+    The demo runs as a standalone app at
+    <code>{DEMO_URL.replace("https://", "")}</code>. Reviewers can clone
+    the repo and <code>npm run dev</code> in under a minute.
   </p>
-
-  <GenUI client:load />
 
   <hr class="jm-rule" />
 
@@ -148,7 +156,8 @@ import GenUI from "../../demo/GenUI.svelte";
 
   <p class="project-foot">
     Full write-up: <a href="/writing/gen-ui-with-claude-tool-use">Generating UI Without Generating Code</a>
-    &middot; <a href="https://github.com/k0bura/jeffmills.dev">source on github</a>
+    &middot; <a href={DEMO_URL} target="_blank" rel="noopener">live demo</a>
+    &middot; <a href={SOURCE_URL} target="_blank" rel="noopener">source</a>
   </p>
 </Base>
 
@@ -295,5 +304,48 @@ import GenUI from "../../demo/GenUI.svelte";
     font-size: 0.9em;
     background: #1a1a1a;
     padding: 0.1em 0.35em;
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1rem 0 0.5rem;
+  }
+
+  .cta-primary,
+  .cta-secondary {
+    display: inline-block;
+    padding: 0.65rem 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 0.95em;
+  }
+
+  .cta-primary {
+    color: var(--jm-color-bg);
+    background: var(--jm-color-accent);
+    border: 1px solid var(--jm-color-accent);
+  }
+
+  .cta-primary:hover {
+    background: var(--jm-color-fg);
+    border-color: var(--jm-color-fg);
+  }
+
+  .cta-secondary {
+    color: var(--jm-color-accent);
+    border: 1px dashed var(--jm-color-accent);
+  }
+
+  .cta-secondary:hover {
+    color: var(--jm-color-fg);
+    border-color: var(--jm-color-fg);
+  }
+
+  .cta-note {
+    margin: 0.75rem 0 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
   }
 </style>
