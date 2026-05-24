@@ -22,9 +22,10 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
   </p>
 
   <p class="page-lede">
-    Two Claude tool-use calls in series. Stage 1 picks components from a tiny
-    web-component library and fills them with content. Stage 2 arranges them
-    into a layout. The renderer is plain Svelte. The LLM never writes code.
+    Two Claude tool-use calls in series. Stage 1 picks components from a
+    framework-agnostic web-component library and fills them with content.
+    Stage 2 arranges them into a layout. The renderer is plain Svelte. The
+    LLM never writes code.
   </p>
 
   <aside class="callout">
@@ -36,6 +37,20 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
       renders them? If yes, the LLM stays in its safe lane (content
       generation, structured selection) and the application code keeps its
       deterministic guarantees.
+    </p>
+  </aside>
+
+  <aside class="callout">
+    <span class="callout-label">Why Shoelace</span>
+    <p>
+      Shoelace is the public stand-in for AXS. Both are framework-agnostic
+      web-component libraries with declarative props, named slots, and a
+      <code>custom-elements.json</code> manifest describing every component
+      and its API surface. Anything this demo does on top of Shoelace
+      transfers to AXS unchanged. The 30 components the LLM can choose from
+      are generated at build time by parsing the Shoelace manifest into
+      Anthropic tool specs, exactly the path a production system would take
+      to expose AXS to a model.
     </p>
   </aside>
 
@@ -91,29 +106,198 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
   <dl class="stage-list">
     <dt>Stage 1, content + component selection</dt>
     <dd>
-      Anthropic Messages API call with a tool schema describing each
-      component (name, description, prop types). The model returns its choices
-      as <code>tool_use</code> blocks. The app parses them into a flat array
-      of <code>{`{ component, props }`}</code> pairs. The model never returns
-      JSX, HTML, or CSS.
+      Sonnet- or Opus-tier model with one Anthropic tool definition per
+      Shoelace component (30 of them, generated from the manifest). The
+      model returns its choices as <code>tool_use</code> blocks: one tag
+      per call, with typed attributes, default-slot content, and named
+      slots. The app parses them into a flat array of
+      <code>ComponentInstance</code> objects. No JSX, HTML, or CSS ever
+      crosses the wire.
     </dd>
 
     <dt>Stage 2, layout decision</dt>
     <dd>
-      Second Messages API call. The component array from Stage 1 is the
-      input. The tool schema defines a recursive grid layout
-      (<code>type</code>, <code>columns</code>, <code>children</code>,
-      <code>span</code>). Output is a single layout object referencing
-      components by index.
+      Haiku-tier model with a single <code>compose_layout</code> tool. Its
+      schema is a recursive grammar of seven layout primitives
+      (<code>ref</code>, <code>grid</code>, <code>stack</code>,
+      <code>row</code>, <code>section</code>, <code>tabs</code>,
+      <code>sidebar</code>, <code>divider</code>). Output is one layout tree
+      that references Stage 1 components by id.
     </dd>
 
     <dt>Stage 3, deterministic render</dt>
     <dd>
-      A recursive Svelte component walks the layout JSON and renders each
-      web component with its filled props. Plain application code. No LLM
-      involvement. Predictable, testable, debuggable.
+      A recursive Svelte component walks the layout tree and a sibling
+      renderer materializes each web component with its attributes and
+      slot HTML. Plain application code. No LLM involvement. Predictable,
+      testable, debuggable.
     </dd>
   </dl>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">stage 1 prompt: forcing decomposition</h2>
+
+  <p>
+    The naive prompt produces a model that compresses everything into one
+    <code>sl-alert</code> with the whole answer as a giant content string.
+    That throws away every layout opportunity downstream. The fix is to make
+    decomposition the loudest rule in the system prompt and reinforce it on
+    every user turn.
+  </p>
+
+  <p>The system prompt opens with:</p>
+
+  <pre class="prompt-excerpt"><code>{`RULE #1 - DECOMPOSE THE ANSWER.
+
+The renderer treats every sl-card / sl-alert / sl-badge as a separate
+atom that the next stage can lay out in grids, rows, tabs, and sidebars.
+If you pack a multi-part answer into ONE component's content string, all
+of that layout capability is wasted and the page looks like a wall of text.
+
+Before you call any tool, COUNT the natural sections in your answer:
+  - A "2-week itinerary" has 14 sections (one per day) plus flights, tips.
+  - A "compare X, Y, Z" has 3 sections (one per option) plus a verdict.
+  - A "dashboard of metrics" has one component per metric.
+
+Then emit roughly that many components.`}</code></pre>
+
+  <p>
+    The user-turn wrapper repeats the directive with even stronger
+    language and an explicit reminder that parallel tool use is supported,
+    so the model knows it can emit many <code>tool_use</code> blocks in a
+    single response. Combined with <code>temperature: 0.2</code>, this
+    turns a coin-flip behavior into a reliable one. Same prompt, same
+    model: 1 tool_use vs 19 tool_uses. Below 0.5 the model stops landing
+    on "one big summary alert" as a valid completion.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">stage 2 prompt: forcing layout grouping</h2>
+
+  <p>
+    Stage 2 has the opposite problem. Given fifteen components, the default
+    behavior is to dump them all into a flat vertical stack: technically
+    correct, visually useless. The job here is to identify groupings (days
+    of a trip, metric tiles, comparison cards) and arrange them as grids,
+    rows, and sections rather than rows of one thing each.
+  </p>
+
+  <p>The system prompt is structured around that single rule:</p>
+
+  <pre class="prompt-excerpt"><code>{`RULE #1 - GROUP, DON'T STACK.
+
+A flat vertical list of 15+ components is almost always wrong. Read every
+component's header label and content preview before you decide anything.
+Look for:
+
+  - Series: items numbered/named in sequence ("Day 1", "Day 2", "Day 3")
+    -> arrange in a grid (2-4 columns).
+  - Categories: items sharing a topic (all Tokyo cards together)
+    -> nest in their own section.
+  - Metrics / tiles: small components (sl-progress-ring, sl-format-number)
+    -> group as a dashboard band.
+  - Primary + supporting: one big thing with small things around it
+    -> sidebar layout.`}</code></pre>
+
+  <p>
+    The prompt is followed by a worked example that draws the desired tree
+    shape for the test prompt ("2-week Japan itinerary"), and an explicit
+    anti-pattern showing the flat-stack output as wrong. The combination of
+    a hard rule plus a worked example plus a negative example reliably
+    produces nested layouts.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">passing context between stages</h2>
+
+  <p>
+    Stage 2 cannot do its job unless it sees the semantic signals Stage 1
+    embedded in each component. The first version of this pipeline sent
+    Stage 2 just the tag name and attributes:
+  </p>
+
+  <pre class="prompt-excerpt"><code>{`0. <sl-card>  variant="primary"
+1. <sl-card>  variant="primary"
+2. <sl-card>  variant="primary"
+...`}</code></pre>
+
+  <p>
+    From the model's perspective, that's fifteen indistinguishable cards.
+    Of course it produces a flat stack. The fix was to include the most
+    grouping-relevant field: the <code>header</code> slot, which is where
+    Stage 1 puts the card's label.
+  </p>
+
+  <pre class="prompt-excerpt"><code>{`0. <sl-card>  header="Flight: PHL -> HND"  content="Outbound ANA NH9 dep PHL 12:35..."
+1. <sl-card>  header="Day 1 - Tokyo: Asakusa"  content="Morning at Senso-ji, afternoon..."
+2. <sl-card>  header="Day 2 - Shibuya & Harajuku"  content="..."
+...
+14. <sl-card>  header="Day 14 - Return to PHL"  content="..."`}</code></pre>
+
+  <p>
+    With those header labels, Stage 2 immediately recognizes "days 1-14
+    are a sequence" and grids them, and "the flight is its own thing"
+    and breaks it out. Same model, same prompt, dramatically different
+    output. The reference-card format is a tiny serialization step in
+    the Pages Function, but it's the load-bearing piece that lets the
+    two stages reason about the same content from different angles.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">rendering: getting svelte out of the way</h2>
+
+  <p>
+    The renderer is two recursive Svelte components and one global
+    stylesheet. The interesting parts are where Svelte's defaults fight
+    the goal.
+  </p>
+
+  <p>
+    <strong>Slot HTML, not slot text.</strong> The LLM emits things like
+    <code>{`<sl-icon name="exclamation-triangle"></sl-icon>`}</code> into a
+    component's <code>icon</code> slot. If the renderer treats that as
+    text content the user sees escaped markup. <code>ComponentRenderer</code>
+    parses each slot value as HTML and appends the resulting nodes,
+    preserving the nested custom elements so they upgrade correctly.
+  </p>
+
+  <p>
+    <strong>Global layout primitives, not scoped CSS.</strong> Svelte's
+    scoped-CSS pass adds a class hash to every selector inside a component,
+    including the universal selector inside
+    <code>{`> * + *`}</code> spacing rules. Adjacent-sibling selectors
+    then only match children that carry the same hash, which excludes
+    every Shoelace element rendered in a different component. The
+    layout primitives (<code>.gen-stack</code>, <code>.gen-grid</code>,
+    <code>.gen-row</code>, <code>.gen-section</code>) live in a global
+    stylesheet so the lobotomized-owl pattern applies across every kind
+    of child element, framework-rendered or otherwise.
+  </p>
+
+  <p>
+    <strong>Recursive layout walker.</strong> The
+    <code>LayoutTree.svelte</code> component switches on
+    <code>node.kind</code> and recurses into itself for each container
+    type. <code>grid</code> sets
+    <code>grid-template-columns: repeat(N, 1fr)</code>;
+    <code>row</code> and <code>stack</code> use flexbox with a
+    <code>data-gap</code> attribute that maps to a named gap size from
+    the global stylesheet. The tree shape is purely declarative; styling
+    is purely CSS. No layout decisions live in JavaScript.
+  </p>
+
+  <p>
+    <strong>Content normalization.</strong> The LLM sometimes falls back
+    to <code>&lt;br&gt;&lt;br&gt;</code> for paragraph breaks even when the
+    prompt asks for semantic HTML. The renderer rewrites those into real
+    <code>&lt;p&gt;</code> blocks before injecting them, so the typography
+    CSS for cards and alerts has elements with sensible margins to style
+    rather than a wall of inline text.
+  </p>
 
   <hr class="jm-rule" />
 
@@ -130,6 +314,20 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
       risks that block production use of free-form LLM output.
     </li>
     <li>
+      <strong>The manifest is the API surface.</strong> Because the 30 tool
+      definitions are generated from <code>custom-elements.json</code> at
+      build time, the design system stays the source of truth. Adding a
+      Shoelace component or attribute propagates to the LLM&rsquo;s tool
+      surface on the next build with zero handwritten glue.
+    </li>
+    <li>
+      <strong>Stages need different prompts and different signals.</strong>
+      Stage 1 has to be pushed toward decomposition; Stage 2 has to be
+      pushed toward grouping and given the right semantic signals (slot
+      labels, not just tag names) to act on. Same tool-use API, two distinct
+      prompt-engineering problems.
+    </li>
+    <li>
       <strong>A well-designed design system is the substrate.</strong>
       Framework-agnostic web components with constrained props were the
       right shape for this years before generative UI was a real category.
@@ -143,13 +341,24 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
   <h2 class="section-title">stack</h2>
   <dl class="stack-list">
     <dt>Frontend</dt>
-    <dd>Astro, Svelte 5, Lit web components</dd>
+    <dd>
+      Astro, Svelte 5 (runes), Shoelace 2.x web components, Tailwind v4 for
+      tokens
+    </dd>
     <dt>Pipeline</dt>
-    <dd>Anthropic Messages API, two-stage tool use, async generator stream</dd>
+    <dd>
+      Anthropic Messages API, two-stage tool use, prompt caching on
+      tools + system prompt, low-temperature stages for consistency
+    </dd>
+    <dt>Tool generation</dt>
+    <dd>
+      Build-time parser over Shoelace&rsquo;s <code>custom-elements.json</code>
+      manifest, emitting one Anthropic tool spec per component
+    </dd>
     <dt>Hosting</dt>
-    <dd>Cloudflare Pages + Pages Functions</dd>
+    <dd>Cloudflare Pages + Pages Functions, key in Pages env vars</dd>
     <dt>Original prototype</dt>
-    <dd>Svelte, Node.js, AWS Bedrock with Claude tool use</dd>
+    <dd>Svelte, Node.js, AWS Bedrock with Claude tool use, AXS components</dd>
   </dl>
 
   <hr class="jm-rule" />
@@ -304,6 +513,24 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
     font-size: 0.9em;
     background: #1a1a1a;
     padding: 0.1em 0.35em;
+  }
+
+  .prompt-excerpt {
+    margin: 0.75rem 0 1rem;
+    padding: 0.85rem 1rem;
+    background: #111;
+    border-left: 2px solid var(--jm-color-accent);
+    overflow-x: auto;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  .prompt-excerpt code {
+    background: transparent;
+    padding: 0;
+    font-size: inherit;
+    color: var(--jm-color-fg);
+    white-space: pre;
   }
 
   .cta-row {
