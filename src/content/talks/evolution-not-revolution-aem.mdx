@@ -1,0 +1,84 @@
+---
+title: "Evolution, Not Revolution: Rebranding on a Framework-Agnostic System"
+description: "An internal cross-discipline co-presentation on absorbing a global brand refresh, a design-tool migration, and a CMS migration on top of a single framework-agnostic design system. Notes on the thinking I brought to the engineering segment."
+venue: "Internal — large enterprise audience, cross-discipline (design, engineering, CMS, brand)"
+format: "Multi-speaker co-presentation with live demos, ~45 min + Q&A"
+deliveredOn: 2022-09-15
+coPresenters:
+  - "Cross-functional partners — design systems, UX, CMS platform, brand"
+tags:
+  - "design systems"
+  - "Web Components"
+  - "AEM"
+  - "Figma"
+  - "framework-agnostic"
+---
+
+<aside class="callout">
+  <span class="callout-label">TL;DR</span>
+
+  Three enterprise mandates landed at the same time: a global brand refresh, a move to Figma, and a migration to AEM. The default outcome would have been three parallel reactions and a lot of inconsistency. The team paused, built a single design system that absorbed all three, and shipped the rebrand as an evolution instead of a frankenstein. The talk walked an internal audience through that story. My segment focused on the architecture choice that made one system serve every surface from one source of truth.
+</aside>
+
+## The setup
+
+Three large initiatives showed up on the calendar at once:
+
+- A new global brand expression rolling out across the firm.
+- A design-tooling migration to Figma.
+- A content-platform migration to AEM.
+
+Stacked together, the default reaction is to spin up a workstream per mandate and let each one land in isolation — a recipe for visual drift, parallel rewrites, and years of cleanup. The team pushed back on that default. We hit the pause button instead, treated the three mandates as one problem, and built a single design system that could absorb all of them on the same timeline.
+
+That system became the canvas everything else was painted on.
+
+## The thesis I brought to the room
+
+The talk had several voices in it. Mine was the engineering segment. The thesis I argued in front of a mixed audience of designers, content authors, IT leadership, and brand stakeholders:
+
+> The platforms underneath should be invisible.
+
+A designer in Figma, a content author in the CMS, and an app developer in their framework of choice should not be solving the same component three different ways. If they are, the system has already failed. The whole reason to invest in a design system is to make those people's work compound across surfaces — and the only way that compounding actually happens is if the components themselves are *not* coupled to any one of those surfaces.
+
+That sentence is the load-bearing one. Everything else in my segment is a consequence of it.
+
+## What that buys you, concretely
+
+The architecture argument unpacked into a few points the audience could carry out of the room:
+
+- **One library, one source of truth.** Components are authored once. The Figma library and the code library share names, slots, and props. Drift between them is treated as a defect, not a fact of life.
+- **Components are standards-based custom elements.** Internal authoring framework is an implementation detail. The shipped artifact is HTML the browser already understands. Consumers get a tag, not a framework import.
+- **Lightweight adapters, not parallel libraries.** Convenience wrappers exist for the frameworks teams actually use, but the underlying component is the same custom element. Raw HTML, an SPA, and a CMS template render identical behavior.
+- **Centralised documentation.** A single docs surface (Storybook) is what designers, developers, and authors all reference. There is no separate "developer doc" and "designer doc" that drift.
+- **Future-proofing isn't a luxury.** IT modernisation cycles move on their own clock. The design system has to outlive any specific framework choice upstream of it. Standards-based custom elements are the only foundation that does.
+
+The case wasn't aesthetic. It was economic. Re-implementing components per platform burns money and produces inconsistency. The agnostic substrate is what makes the rebrand viable as an *evolution* — same components, refreshed tokens, threaded through every channel — instead of a revolution that resets every product team's roadmap.
+
+## The CMS demo, in one sentence
+
+The audience saw the same component, in the same design system, render in CMS authoring and in an app. Not a copy, not a re-implementation — the same custom element, declared the same way, behaving the same way, with content flowing through a content fragment and an API keyed by domain identifiers. The point I wanted that demo to land: the CMS doesn't import a framework, it declares a tag. Everything else is the system doing its job.
+
+## The closing thought
+
+I wrapped my segment with the line that became internal shorthand for the architecture's purpose:
+
+> Behind every component is a designer, a content author, and a developer who has to use it. Agnostic is how we make that easy for all of them — in one place.
+
+That framing reframes "framework-agnostic" away from a tooling debate and toward a people decision. The architecture is the medium. The audience is the message.
+
+## What this talk changed
+
+The presentation re-anchored expectations across three audiences in one sitting:
+
+- **Design.** Figma and the code library are not two libraries. They are one library with two surfaces. Naming, composition, and component contracts are shared.
+- **CMS and content.** Authors get the same components as the apps. There is no "CMS version" of a button.
+- **Engineering leadership.** The design system is not coupled to a JavaScript framework. Future modernisation moves happen below the system's surface and consumers never see them.
+
+It also previewed work that hadn't been imagined yet. The same agnostic substrate later absorbed an [MCP server for the design system](/writing/mcp-server-design-system), a set of [agentic workflows around component authoring](/writing/agentic-workflows-architecture), and a Gen UI tool-use pipeline. None of that was on the roadmap when the talk was given. All of it became possible because the platform underneath had been built to be invisible.
+
+## Related material
+
+- [Case study: building the design system](/case-studies/02-building-the-design-system)
+- [Case study: bridging engineering and the business through CMS integration](/case-studies/04-cms-integration)
+- [Writing: why we bet on web components for a 9-year-old design system](/writing/framework-agnostic-design-system)
+- [Writing: thin CMS, thick system — letting the CMS author web components you own](/writing/thin-cms-design-system-aem)

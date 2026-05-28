@@ -1,0 +1,391 @@
+---
+import Base from "../../layouts/Base.astro";
+---
+
+<Base
+  title="DS-V2 — Design System, Jeff Mills"
+  description="The framework-agnostic enterprise design system I architected. Nx monorepo with Vue 3 source compiling to standards-based custom elements; ships to Vue, Angular, AEM, and any HTML."
+>
+  <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
+  <h1 class="page-title">ds-v2 · design system</h1>
+  <p class="project-meta">
+    <span class="project-year">2020-2025</span>
+    <span class="meta-sep">&middot;</span>
+    <span class="project-status">proprietary</span>
+    <span class="meta-sep">&middot;</span>
+    <span>nx monorepo</span>
+    <span class="meta-sep">&middot;</span>
+    <span>7 libs</span>
+  </p>
+
+  <p class="page-lede">
+    DS-V2 is the framework-agnostic enterprise design system I architected.
+    Vue 3 source compiles to standards-based custom elements via
+    <code>defineCustomElement</code>, ships to Vue, Angular, AEM, and any
+    HTML, and gets backed by a custom Nx plugin that handles scaffolding,
+    IDE metadata, docs, and recipes. Three case studies on this site cover
+    the leadership arc; this page is the architectural overview.
+  </p>
+
+  <p class="project-cta">
+    <a href="/projects/design-system-v2/components">Architectural overview of the component library &raquo;</a>
+  </p>
+
+  <aside class="callout">
+    <span class="callout-label">Architectural overview only</span>
+    <p>
+      DS-V2 lives in a private internal repository. Source is not
+      reproduced on this site. The pages here describe the architecture
+      and patterns; the implementation stays in the private repo. Happy
+      to walk through the system in depth under NDA,
+      <a href="mailto:jeffy9@gmail.com">reach out</a>.
+    </p>
+  </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">the seven libraries</h2>
+  <p>
+    Everything lives in one Nx monorepo. Seven libraries, each independently
+    versioned and published:
+  </p>
+
+  <dl class="stack-list">
+    <dt>vue source layer</dt>
+    <dd>
+      The canonical Vue 3 source. Forms, charts, modals, navigation,
+      layouts, content. Built as Vue single-file components so designers
+      and engineers share one mental model.
+    </dd>
+    <dt>custom-elements layer</dt>
+    <dd>
+      The standards-based output. Each component is wrapped via
+      <code>defineCustomElement</code> and registered with the global
+      registry. Framework-agnostic consumers use these directly.
+    </dd>
+    <dt>angular adapter</dt>
+    <dd>
+      Angular-flavored adapters and typed wrappers over the same custom
+      elements. Angular apps get typed templates without diverging from
+      the source of truth.
+    </dd>
+    <dt>core utilities</dt>
+    <dd>
+      Shared composables, directives, types, styles, and the foundation
+      utilities every component builds on.
+    </dd>
+    <dt>style tokens</dt>
+    <dd>
+      Design tokens as CSS custom properties. Spacing, typography, color,
+      breakpoints, everything that pierces shadow DOM via the cascade.
+    </dd>
+    <dt>recipes</dt>
+    <dd>
+      Pre-composed multi-component patterns, the &ldquo;here&rsquo;s
+      how to build a labeled-input-with-validation&rdquo; layer.
+      Discoverable via Storybook and the MCP server (see
+      <a href="/case-studies/07-design-system-ai-architecture">the AI-architecture deep dive</a>).
+    </dd>
+    <dt>automation plugin</dt>
+    <dd>
+      A custom Nx plugin built in-house. Generators for component and
+      recipe scaffolding; executors for IDE metadata generation,
+      documentation, custom-HTML output, and icon-blueprint builds. The
+      automation layer that keeps conventions encoded as templates and
+      tooling rather than tribal knowledge.
+    </dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">vue source → custom elements</h2>
+  <p>
+    The architectural premise. One Vue 3 single-file component, exposed as
+    a standards-based custom element. Any Vue app, Angular app, AEM
+    template, or plain HTML page renders the same tag and gets the same
+    behavior, same styles, same events, same accessibility tree.
+  </p>
+
+  <p>
+    Each component compiles through Vue 3&rsquo;s
+    <code>defineCustomElement</code>, registers a kebab-case tag, and is
+    exported from a single entry point so consumers import once and get
+    every tag upgraded automatically. This is the direct successor to the
+    DS-V1 <code>vue-custom-element</code> pattern, now built into Vue 3
+    itself, no third-party runtime adapter, full TypeScript types.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">build-time IDE metadata</h2>
+  <p>
+    The IDE-awareness foundation. At every build, an Nx executor walks
+    every Vue SFC, runs it through <code>vue-docgen-api</code>, extracts
+    props (with type info), events, slots, and emits two schema files,
+    JetBrains web-types JSON and VS Code custom HTML data, both
+    declared in <code>package.json</code> so any editor that installs
+    the package gets autocomplete automatically.
+  </p>
+
+  <p>
+    This is Layer 1 of the
+    <a href="/case-studies/07-design-system-ai-architecture">three-layer AI
+    architecture</a>, the metadata an MCP server can serve, an IDE
+    can autocomplete, and an agent can reason over. The other two layers
+    (the MCP server itself, and Claude Code skills) sit on top of this.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">component scaffolder</h2>
+  <p>
+    The day-to-day developer experience. One Nx generator scaffolds a new
+    component into both the Vue source and custom-elements layers, with
+    optional usage docs and meta JSON for the AI/IDE integration, and
+    auto-registers the new tag in the component registry. Conventions
+    encoded as templates; boilerplate is no longer something engineers
+    have to remember.
+  </p>
+
+  <p>
+    Cost of adding a component drops from &ldquo;remember a dozen
+    conventions&rdquo; to &ldquo;answer three questions.&rdquo;
+    Documentation quality becomes the default, not an afterthought.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">contribution profile</h2>
+  <p>
+    Roughly 160 commits authored across the monorepo over two years of
+    active platform work. Shape of the work was heavy on
+    <code>feat</code> and <code>chore</code>, the platform-level
+    decisions (monorepo plumbing, Storybook with Vite when default was
+    still Webpack, lint and format hooks at write time, conventional-commit
+    release tooling, design-token plumbing) that let the rest of the team
+    move quickly.
+  </p>
+
+  <p class="commit-cta">
+    <a href="/projects/design-system-v2/commits">More on the contribution profile &raquo;</a>
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">what's not on this page</h2>
+  <p>
+    A few things from newer iterations of the system, covered elsewhere on
+    this site:
+  </p>
+  <ul class="proof-list">
+    <li>
+      <strong>The MCP server</strong> that exposes the design system to
+      AI assistants (Claude, Copilot, Cursor), built on top of the
+      build-time IDE metadata described above. Full breakdown in the
+      <a href="/case-studies/07-design-system-ai-architecture">AI-architecture deep dive</a>.
+    </li>
+    <li>
+      <strong>Claude Code skills</strong> for component migration
+      and documentation auditing. Discussed in the
+      <a href="/case-studies/08-mentoring-and-contribution">leadership
+      case study</a> and the
+      <a href="/writing/agentic-workflows-architecture">agentic-workflows
+      writing piece</a>.
+    </li>
+    <li>
+      <strong>The Lit-based next iteration</strong> currently shipping in
+      a separate active repo. The foundation described here is what the
+      next version is building on top of.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">stack</h2>
+  <dl class="stack-list">
+    <dt>Frontend</dt>
+    <dd>Vue 3 SFCs, Vue 3 <code>defineCustomElement</code>, TypeScript</dd>
+    <dt>Build</dt>
+    <dd>Nx monorepo with custom executors and generators; Vite</dd>
+    <dt>Documentation</dt>
+    <dd>Storybook 9 per package, composed root Storybook, MDX usage docs</dd>
+    <dt>Testing</dt>
+    <dd>Jest unit + visual regression + a11y</dd>
+    <dt>IDE / AI</dt>
+    <dd>
+      Build-time JetBrains web-types + VS Code html-data; MCP server (in
+      a separate repo) feeds AI assistants
+    </dd>
+    <dt>Distribution</dt>
+    <dd>Seven independently-versioned npm packages, semver-driven releases</dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <p class="project-foot">
+    More: <a href="/projects/design-system-v2/components">component-library overview &raquo;</a><br />
+    Related: <a href="/projects/design-system-v1">DS-V1</a>
+    (the predecessor) &middot; <a href="/projects/skeletor">Skeletor</a>
+    (the agency-era seed) &middot;
+    <a href="/case-studies/02-building-the-design-system">Building the design system</a>
+    &middot; <a href="/case-studies/07-design-system-ai-architecture">Design System + AI
+    Architecture</a>
+  </p>
+</Base>
+
+<style>
+  .project-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0.4rem;
+  }
+
+  .project-meta {
+    margin: 0 0 1rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+
+  .project-meta .project-year {
+    color: var(--jm-color-fg);
+  }
+
+  .project-meta .project-status {
+    color: var(--jm-color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .page-lede {
+    margin: 0 0 1rem;
+    color: var(--jm-color-fg);
+  }
+
+  .project-cta {
+    margin: 0 0 1.25rem;
+    padding: 0.55rem 0.85rem;
+    border-left: 2px solid var(--jm-color-accent);
+    background: rgba(255, 204, 0, 0.04);
+    font-size: 0.95em;
+  }
+
+  .project-cta a {
+    color: var(--jm-color-accent);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .project-cta a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .commit-cta {
+    margin: 1rem 0 0;
+    font-size: 0.9em;
+  }
+
+  .commit-cta a {
+    color: var(--jm-color-accent);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .commit-cta a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 2.25rem 0 0.5rem;
+  }
+
+  .stack-list {
+    margin: 0.5rem 0 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1.25rem;
+    line-height: 1.6;
+  }
+
+  .stack-list dt {
+    color: var(--jm-color-accent);
+    font-weight: 700;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 0.15rem;
+  }
+
+  .stack-list dd {
+    margin: 0;
+    color: var(--jm-color-fg);
+    font-size: 0.95em;
+  }
+
+  @media (max-width: 540px) {
+    .stack-list {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+    .stack-list dd {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .proof-list {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .proof-list li {
+    position: relative;
+    margin: 0.6rem 0;
+  }
+
+  .proof-list li::before {
+    content: ">";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.25rem;
+  }
+
+  .proof-list strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+
+  code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+
+  .project-foot {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>

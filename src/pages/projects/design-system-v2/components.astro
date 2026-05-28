@@ -1,0 +1,231 @@
+---
+import Base from "../../../layouts/Base.astro";
+---
+
+<Base
+  title="DS-V2 components, Jeff Mills"
+  description="Architectural overview of the DS-V2 component library: a Vue 3 source layer that compiles to standards-based custom elements, backed by a reactive composables layer for shadow-DOM-aware primitives."
+>
+  <p class="project-back"><a href="/projects/design-system-v2">&laquo; back to ds-v2</a></p>
+  <h1 class="page-title">ds-v2 · component library</h1>
+  <p class="project-meta">
+    <span class="project-year">2020-2025</span>
+    <span class="meta-sep">&middot;</span>
+    <span class="project-status">proprietary</span>
+    <span class="meta-sep">&middot;</span>
+    <span>~70 components</span>
+    <span class="meta-sep">&middot;</span>
+    <span>vue 3 + composition api</span>
+  </p>
+
+  <p class="page-lede">
+    Two parallel layers, plus the reactive primitives underneath. The Vue 3
+    single-file components are the canonical source; the custom elements
+    are the compiled output, registered via <code>defineCustomElement</code>
+    so any framework or no framework can consume them.
+  </p>
+
+  <aside class="callout">
+    <span class="callout-label">Architectural overview only</span>
+    <p>
+      Component source stays in the private repository. The patterns and
+      architecture are described below. Happy to walk through component
+      implementations under NDA,
+      <a href="mailto:jeffy9@gmail.com">reach out</a>.
+    </p>
+  </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">the three layers</h2>
+
+  <dl class="stack-list">
+    <dt>vue source layer</dt>
+    <dd>
+      Roughly 70 Vue 3 single-file components, the canonical source.
+      Coverage spans forms, charts, modals, navigation, layouts, content,
+      and media. Each component is a TypeScript <code>setup</code> script
+      with a typed <code>Props</code> interface and TSDoc on every prop.
+    </dd>
+    <dt>custom-elements layer</dt>
+    <dd>
+      Roughly 60 custom elements, the compiled output. Each one wraps a
+      Vue SFC via <code>defineCustomElement</code> and registers it with
+      the global registry. Framework-agnostic consumers use these tags
+      directly.
+    </dd>
+    <dt>composables</dt>
+    <dd>
+      Roughly a dozen reactive primitives the components compose with.
+      Shadow-DOM-aware host bindings, slotted-descendant lookups,
+      reactive attribute binding, viewport, resize, click-outside, DOM
+      element handles by id, an HTTP request hook. Vue 3 Composition
+      API throughout, no mixins.
+    </dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">patterns you'll see across the library</h2>
+  <ul class="proof-list">
+    <li>
+      <strong>TypeScript <code>Props</code> interfaces with TSDoc.</strong>
+      Drives both the component API and the build-time IDE metadata
+      generator. One source of truth for prop types, descriptions, and
+      defaults. The same metadata feeds the MCP server downstream.
+    </li>
+    <li>
+      <strong>Composables, not mixins.</strong> Vue 3 Composition API
+      throughout. The reactive primitives, shadow-DOM-aware host
+      bindings, slotted-descendant lookups, viewport, resize,
+      click-outside, are factored into a small, testable composables
+      layer that the components compose with.
+    </li>
+    <li>
+      <strong>Shadow DOM-safe by default.</strong> Components ship with
+      shadow DOM enabled; tokens propagate via CSS custom properties so
+      theming pierces the boundary without the component needing to know.
+    </li>
+    <li>
+      <strong>Cross-element reactive wiring.</strong> Composite components
+      split responsibilities across multiple tags (panel, trigger,
+      controller, indicator) with reactive attribute binding between them
+      through the composables layer.
+    </li>
+    <li>
+      <strong>Custom-element-aware directives.</strong> Click-outside and
+      intersection observers handle both regular DOM and shadow DOM, using
+      a single shared observer with a WeakMap of callbacks. Same pattern as
+      DS-V1; refined for Vue 3.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <p class="project-foot">
+    Back to <a href="/projects/design-system-v2">DS-V2 overview</a>
+    &middot; Compare to <a href="/projects/design-system-v1/components">DS-V1 components</a>
+  </p>
+</Base>
+
+<style>
+  .project-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0.4rem;
+  }
+
+  .project-meta {
+    margin: 0 0 1rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+
+  .project-meta .project-year {
+    color: var(--jm-color-fg);
+  }
+
+  .project-meta .project-status {
+    color: var(--jm-color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .page-lede {
+    margin: 0 0 1rem;
+    color: var(--jm-color-fg);
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 2.25rem 0 0.5rem;
+  }
+
+  .stack-list {
+    margin: 0.5rem 0 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1.25rem;
+    line-height: 1.6;
+  }
+
+  .stack-list dt {
+    color: var(--jm-color-accent);
+    font-weight: 700;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 0.15rem;
+  }
+
+  .stack-list dd {
+    margin: 0;
+    color: var(--jm-color-fg);
+    font-size: 0.95em;
+  }
+
+  @media (max-width: 540px) {
+    .stack-list {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+    .stack-list dd {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .proof-list {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .proof-list li {
+    position: relative;
+    margin: 0.6rem 0;
+  }
+
+  .proof-list li::before {
+    content: ">";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.25rem;
+  }
+
+  .proof-list strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+
+  code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+
+  .project-foot {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>

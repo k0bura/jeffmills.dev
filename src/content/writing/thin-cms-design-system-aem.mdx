@@ -25,13 +25,13 @@ Pick one principle and hold it under all pressure:
 
 > The design system owns components. The CMS consumes them. The CMS owns nothing component-shaped.
 
-In our case the design system is AXS, the CMS is Adobe Experience Manager, and "consumes" means the components ship as standards-based custom elements that AEM templates declare directly.
+In our case the design system is DS-V2, the CMS is Adobe Experience Manager, and "consumes" means the components ship as standards-based custom elements that AEM templates declare directly.
 
 ```html
 <!-- An AEM template -->
-<axs-card heading="${heading}" eyebrow="${eyebrow}">
-  <axs-rich-text>${body}</axs-rich-text>
-</axs-card>
+<ds-card heading="${heading}" eyebrow="${eyebrow}">
+  <ds-rich-text>${body}</ds-rich-text>
+</ds-card>
 ```
 
 That's the whole pattern. AEM dialogues collect authoring data. The template emits a custom element with attributes filled in. The browser instantiates the same component a Vue app would instantiate, same styles, same behavior, same accessibility tree.
@@ -53,20 +53,20 @@ What it gives you, by construction:
 Three pieces:
 
 ```text
-1. axs-ui, the design system. Ships custom elements + tokens.
-2. axs-aem-bundle, an AEM package that vendors axs-ui as a dependency.
+1. ds-package, the design system. Ships custom elements + tokens.
+2. ds-cms-bundle, an AEM package that vendors ds-package as a dependency.
                        Provides AEM components whose templates are just thin
                        wrappers around the custom element tags.
-3. axs.css + axs.js, loaded into AEM-rendered pages via the same delivery
+3. ds.css + ds.js, loaded into AEM-rendered pages via the same delivery
                        infrastructure as any other page asset.
 ```
 
-The AEM component (in HTL) for `axs-card` is one line of structural markup. All it does is take the dialog properties and emit:
+The AEM component (in HTL) for the card custom element is one line of structural markup. All it does is take the dialog properties and emit:
 
 ```html
-<axs-card heading="${heading}" eyebrow="${eyebrow}" ...>
+<ds-card heading="${heading}" eyebrow="${eyebrow}" ...>
   <slot from-aem-richtext />
-</axs-card>
+</ds-card>
 ```
 
 The component's *behavior* is in the custom element. The CMS is contributing structured attribute data and slot content, nothing else. That's why we call it thin-CMS: AEM templates are the thinnest possible layer between the authoring UI and the custom element.
@@ -75,9 +75,9 @@ The component's *behavior* is in the custom element. The CMS is contributing str
 
 **Faster content delivery.** A marketer building a new product page picks from the design-system components, fills in attributes through the AEM dialog, and ships. No engineering ticket. No custom AEM components per page.
 
-**Cross-channel consistency by construction.** The same `axs-card` renders identically in an Angular app, a Vue app, and an AEM-published marketing page. There's no "marketing version" of the brand that drifts from the app version.
+**Cross-channel consistency by construction.** The same the card custom element renders identically in an Angular app, a Vue app, and an AEM-published marketing page. There's no "marketing version" of the brand that drifts from the app version.
 
-**Brand updates that propagate.** Update a token in the design system, ship a new version of `axs-ui`, redeploy. Every AEM page picks it up because the components are vendored, not reimplemented. The CMS doesn't need to know anything changed.
+**Brand updates that propagate.** Update a token in the design system, ship a new version of the design system package, redeploy. Every AEM page picks it up because the components are vendored, not reimplemented. The CMS doesn't need to know anything changed.
 
 **Reduced AEM-specific engineering.** AEM components become so thin that adding a new one is mostly an authoring concern, define the dialog, point it at an existing custom element. Engineering writes one wrapper per design-system component, not one wrapper per page or feature.
 
@@ -87,7 +87,7 @@ The architectural rule is the easy part. The work that actually has to happen:
 
 **Authoring discipline.** The AEM dialog has to map cleanly to component attributes. If a designer wants a card variant that doesn't exist in the design system, you don't fork the CMS template, you add the variant to the design system. That changes a workflow.
 
-**A clear ownership boundary.** AXS owns the component. AEM owns the authoring experience and the slot content. Neither side touches the other's surface. Decisions about styling go to AXS; decisions about authoring ergonomics go to AEM. Mixing those produces fragmentation in under a quarter.
+**A clear ownership boundary.** DS-V2 owns the component. AEM owns the authoring experience and the slot content. Neither side touches the other's surface. Decisions about styling go to DS-V2; decisions about authoring ergonomics go to AEM. Mixing those produces fragmentation in under a quarter.
 
 **Tokens have to pierce AEM.** Custom properties on the page root, set by the AEM theme layer, consumed by the design-system components. If you can't get tokens to flow into AEM-rendered pages, the pattern breaks.
 

@@ -1,0 +1,262 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+
+export async function getStaticPaths() {
+  const talks = await getCollection("talks");
+  return talks
+    .filter((talk) => talk.data.status === "published")
+    .map((talk) => ({
+      params: { slug: talk.id },
+      props: { talk },
+    }));
+}
+
+const { talk } = Astro.props;
+const { Content } = await render(talk);
+
+const dateFmt = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<Base title={`${talk.data.title}, Jeff Mills`} description={talk.data.description}>
+  <article class="talk">
+    <p class="talk-back"><a href="/talks">&laquo; all talks</a></p>
+
+    <header class="talk-header">
+      <p class="talk-meta">
+        <time datetime={talk.data.deliveredOn.toISOString()}>
+          {dateFmt.format(talk.data.deliveredOn)}
+        </time>
+        <span class="meta-sep">&middot;</span>
+        <span>{talk.data.venue}</span>
+      </p>
+      <h1 class="talk-title">{talk.data.title}</h1>
+      <p class="talk-desc">{talk.data.description}</p>
+
+      <dl class="talk-facts">
+        <dt>format</dt>
+        <dd>{talk.data.format}</dd>
+        {talk.data.coPresenters.length > 0 && (
+          <>
+            <dt>co-presenters</dt>
+            <dd>
+              <ul class="co-list">
+                {talk.data.coPresenters.map((p) => <li>{p}</li>)}
+              </ul>
+            </dd>
+          </>
+        )}
+        {talk.data.tags.length > 0 && (
+          <>
+            <dt>topics</dt>
+            <dd class="talk-tags">
+              {talk.data.tags.map((t, i) => (
+                <>
+                  <span class="tag">{t}</span>
+                  {i < talk.data.tags.length - 1 && (
+                    <span class="tag-sep"> &middot; </span>
+                  )}
+                </>
+              ))}
+            </dd>
+          </>
+        )}
+      </dl>
+    </header>
+
+    <hr class="jm-rule" />
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <hr class="jm-rule" />
+
+    <footer class="talk-footer">
+      <a href="/talks">&laquo; all talks</a>
+    </footer>
+  </article>
+</Base>
+
+<style is:global>
+  .talk-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .talk-header {
+    margin-bottom: 0.75rem;
+  }
+
+  .talk-meta {
+    margin: 0 0 0.4rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+
+  .talk-meta .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .talk .talk-title {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin: 0 0 0.5rem;
+    color: var(--jm-color-accent);
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+
+  .talk .talk-desc {
+    margin: 0 0 0.75rem;
+    color: var(--jm-color-fg);
+  }
+
+  .talk-facts {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.25rem 1rem;
+    margin: 0.75rem 0 0;
+    font-size: 0.85em;
+  }
+
+  .talk-facts dt {
+    color: var(--jm-color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .talk-facts dd {
+    margin: 0;
+    color: var(--jm-color-fg);
+  }
+
+  .talk-facts .co-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .talk-facts .co-list li {
+    color: var(--jm-color-fg);
+  }
+
+  .talk-facts .talk-tags {
+    color: var(--jm-color-dim);
+  }
+
+  .talk-facts .tag-sep {
+    color: var(--jm-color-border);
+  }
+
+  .talk .prose {
+    line-height: 1.7;
+  }
+  .talk .prose > * + * {
+    margin-top: 1.25rem;
+  }
+  .talk .prose h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.04em;
+  }
+  .talk .prose h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    margin-top: 1.5rem;
+    margin-bottom: 0.4rem;
+  }
+  .talk .prose ul,
+  .talk .prose ol {
+    padding-left: 1.5rem;
+    list-style: none;
+  }
+  .talk .prose ul li {
+    position: relative;
+  }
+  .talk .prose ul li::before {
+    content: ">";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.25rem;
+  }
+  .talk .prose ol {
+    counter-reset: tk-ol;
+  }
+  .talk .prose ol li {
+    counter-increment: tk-ol;
+    position: relative;
+  }
+  .talk .prose ol li::before {
+    content: counter(tk-ol) ".";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.5rem;
+  }
+  .talk .prose li {
+    margin-top: 0.4rem;
+  }
+  .talk .prose blockquote {
+    border-left: 2px solid var(--jm-color-accent);
+    padding-left: 1rem;
+    color: var(--jm-color-muted);
+    font-style: italic;
+    margin: 1rem 0;
+  }
+  .talk .prose code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+  .talk .prose a {
+    color: var(--jm-color-link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .talk .prose a:hover {
+    color: var(--jm-color-accent);
+  }
+  .talk .prose strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+
+  .talk-figure {
+    margin: 1.5rem 0;
+    padding: 0;
+    border: 1px dashed var(--jm-color-border);
+    background: #1a1a1a;
+  }
+  .talk-figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .talk-figure figcaption {
+    padding: 0.6rem 0.8rem;
+    border-top: 1px dashed var(--jm-color-border);
+    color: var(--jm-color-muted);
+    font-size: 0.85em;
+    line-height: 1.5;
+  }
+
+  .talk-footer {
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>

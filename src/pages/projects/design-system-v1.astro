@@ -1,0 +1,373 @@
+---
+import Base from "../../layouts/Base.astro";
+---
+
+<Base
+  title="DS-V1 — Design System (Vue 2), Jeff Mills"
+  description="The enterprise design system I helped build before DS-V2. ~86 Vue 2 components compiled to custom elements; the codebase where framework-agnostic ideas were incubated under enterprise constraints."
+>
+  <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
+  <h1 class="page-title">ds-v1 · design system</h1>
+  <p class="project-meta">
+    <span class="project-year">2018-2022</span>
+    <span class="meta-sep">&middot;</span>
+    <span class="project-status">proprietary</span>
+    <span class="meta-sep">&middot;</span>
+    <span>enterprise design system</span>
+    <span class="meta-sep">&middot;</span>
+    <span>vue 2</span>
+  </p>
+
+  <p class="page-lede">
+    DS-V1 was the design system that came before DS-V2. Three internal
+    packages: a main component package, a shared core runtime, and a
+    second-generation UI library. Roughly 86 Vue 2 components compiled
+    to native custom elements via <code>vue-custom-element</code>,
+    lazy-mounted by a document-wide MutationObserver, and styled with a
+    Sass-driven token system. The codebase where the framework-agnostic
+    ideas were incubated under real enterprise constraints.
+  </p>
+
+  <p class="project-cta">
+    <a href="/projects/design-system-v1/components">Architectural overview of the component library &raquo;</a>
+  </p>
+
+  <aside class="callout">
+    <span class="callout-label">Architectural overview only</span>
+    <p>
+      DS-V1 lives in a private internal repository. Source is not
+      reproduced on this site. The notes here describe the architecture
+      and patterns; the implementation stays in the private repo. Happy
+      to walk through the system in depth under NDA,
+      <a href="mailto:jeffy9@gmail.com">reach out</a>.
+    </p>
+  </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">what it was</h2>
+  <p>
+    Three packages, scoped together under a private internal npm
+    registry, consumed by every front-end app inside the enterprise:
+  </p>
+
+  <dl class="stack-list">
+    <dt>main components</dt>
+    <dd>
+      Roughly 86 Vue components covering forms, charts, modals,
+      navigation, video, and content layouts. Storybook docs. The
+      compilation entrypoints that emit a single browser bundle of
+      custom elements.
+    </dd>
+    <dt>core runtime</dt>
+    <dd>
+      Shared runtime: Sass tokens and breakpoints, an event bus, Vue
+      filters, mixins, plugins, and the custom directives the components
+      built on top of (intersection, viewport bounds, drawer behavior,
+      anchor offsets, target binding).
+    </dd>
+    <dt>second-generation ui</dt>
+    <dd>
+      A second library with broader coverage and a &ldquo;hero
+      sandbox&rdquo; playground for end-to-end scenarios that standard
+      Storybook stories couldn&rsquo;t cover.
+    </dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">the singleton runtime</h2>
+  <p>
+    Every component shared a single runtime, owned by a singleton class
+    installed as a Vue plugin. The pattern: a small set of utility plugins
+    (viewport, key-code aliases, focus management), a shared event bus,
+    a registered set of Vue filters, and a quiet version banner at boot.
+    Same architectural posture I would later port forward to DS-V2,
+    different framework era.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">lazy hydration via MutationObserver</h2>
+  <p>
+    86 components is too many to ship upfront. The classic answer was
+    code-splitting; the harder problem was deciding <em>which</em>
+    bundles to load on which page when adopters didn&rsquo;t know what
+    their CMS templates were going to include.
+  </p>
+  <p>
+    The solution: one <code>MutationObserver</code> watching the whole
+    document. When any custom element with the system&rsquo;s tag prefix
+    appears in the DOM, the matching component chunk is dynamic-imported
+    and registered on the fly. Pages that include the navbar but not the
+    chart pay for only the navbar. Pages that conditionally render the
+    chart pay for it only if the chart is actually rendered. Decoupled
+    from the host framework&rsquo;s scheduler.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">the directives</h2>
+  <p>
+    Some of the most-reused primitives in DS-V1 weren&rsquo;t components,
+    they were custom Vue directives. Two notable examples:
+  </p>
+
+  <p>
+    <strong><code>v-intersect</code></strong> wraps a single shared
+    <code>IntersectionObserver</code> with a <code>WeakMap</code> for
+    per-element callbacks. Lazy-load images, animation triggers,
+    infinite-scroll feeds, all built on this one primitive.
+  </p>
+
+  <p>
+    <strong><code>v-bounds</code></strong> toggles class names based on
+    which viewport edges the element is currently touching. Used by
+    sticky-state components, sidebar positioning, in-page navigation
+    indicators. Cheaper and more declarative than per-component scroll
+    listeners.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">enterprise constraints that shaped the design</h2>
+  <ul class="proof-list">
+    <li>
+      <strong>Private internal npm registry, no public dependencies
+      allowed.</strong> Every dependency had to be vetted through internal
+      security. That pushed the team toward small, standalone primitives
+      instead of a kitchen-sink framework. Today&rsquo;s &ldquo;just
+      install Lit&rdquo; wasn&rsquo;t an option; DS-V1 had to ship its
+      own component runtime.
+    </li>
+    <li>
+      <strong>Node 18 + openssl-legacy-provider for Vue 2 builds.</strong>
+      The system had to keep shipping on a modern Node version while Vue 2
+      kept aging. Real evidence of long-running enterprise discipline:
+      patch the build, write the README, keep going.
+    </li>
+    <li>
+      <strong>Multiple consuming frameworks (Vue, Angular, AEM/Java).</strong>
+      The framework-agnostic web-component approach was the only way to
+      serve all three from one source. DS-V2 scaled this; DS-V1 proved
+      it worked.
+    </li>
+    <li>
+      <strong>POM-based artifact lifecycle.</strong> The npm packages had
+      to satisfy a Maven parent POM&rsquo;s versioning and publishing
+      rules. Bonus complexity that taught the team how to treat front-end
+      packages with the same release discipline as a Java backend service.
+    </li>
+    <li>
+      <strong>Brand color and tokens via Sass.</strong> CSS custom
+      properties weren&rsquo;t broadly safe across all consumer browsers
+      DS-V1 had to support. Tokens lived in Sass and were inlined at
+      build time. DS-V2 later moved them to custom properties; DS-V1
+      was the constraint study.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">what carried forward</h2>
+  <p>
+    The most direct lineage from DS-V1 to DS-V2:
+  </p>
+  <ul class="proof-list">
+    <li>
+      The <strong>Vue-source-to-Web-Component compilation</strong> approach.
+      DS-V1 used <code>vue-custom-element</code> on Vue 2; DS-V2 replaced
+      it with Vue 3&rsquo;s native <code>defineCustomElement</code>.
+      Same architectural premise; framework-agnostic distribution from a
+      single source.
+    </li>
+    <li>
+      The <strong>directives</strong>: intersection, bounds, drawer, anchor
+      offsets, survived almost verbatim into the DS-V2 composables layer.
+    </li>
+    <li>
+      The <strong>monorepo / multiple packages</strong> shape. DS-V1 used
+      Yarn workspaces; DS-V2 uses Nx, but the partitioning logic is the
+      same: a core runtime, a component library, framework-specific
+      adapters.
+    </li>
+    <li>
+      The <strong>Storybook-first</strong> documentation model with
+      adopter playgrounds that go beyond standard story isolation.
+    </li>
+    <li>
+      The <strong>token system</strong> shape, spacing, typography,
+      color, breakpoints, structured the same way, just promoted from
+      Sass to CSS custom properties when the browser support landed.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">stack</h2>
+  <dl class="stack-list">
+    <dt>Frontend</dt>
+    <dd>Vue 2.7, custom elements via <code>vue-custom-element</code></dd>
+    <dt>Build</dt>
+    <dd>Vue CLI, Webpack, Babel, PostCSS, Sass</dd>
+    <dt>Distribution</dt>
+    <dd>Private internal npm registry, three published packages</dd>
+    <dt>Documentation</dt>
+    <dd>Storybook + custom hero-sandbox playground</dd>
+    <dt>Testing</dt>
+    <dd>Jest unit tests + TestCafe visual-regression baseline</dd>
+    <dt>Monorepo</dt>
+    <dd>Yarn workspaces across the internal scope</dd>
+  </dl>
+
+  <hr class="jm-rule" />
+
+  <p class="project-foot">
+    More: <a href="/projects/design-system-v1/components">component-library overview &raquo;</a><br />
+    Related: <a href="/projects/design-system-v2">DS-V2</a>
+    (the successor) &middot; <a href="/projects/skeletor">Skeletor</a>
+    (the agency-era precursor) &middot;
+    <a href="/case-studies/02-building-the-design-system">Building the design system</a>
+  </p>
+</Base>
+
+<style>
+  .project-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0.4rem;
+  }
+
+  .project-meta {
+    margin: 0 0 1rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+
+  .project-meta .project-year {
+    color: var(--jm-color-fg);
+  }
+
+  .project-meta .project-status {
+    color: var(--jm-color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .page-lede {
+    margin: 0 0 1rem;
+    color: var(--jm-color-fg);
+  }
+
+  .project-cta {
+    margin: 0 0 1.25rem;
+    padding: 0.55rem 0.85rem;
+    border-left: 2px solid var(--jm-color-accent);
+    background: rgba(255, 204, 0, 0.04);
+    font-size: 0.95em;
+  }
+
+  .project-cta a {
+    color: var(--jm-color-accent);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .project-cta a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 2.25rem 0 0.5rem;
+  }
+
+  .stack-list {
+    margin: 0.5rem 0 0;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.4rem 1.25rem;
+    line-height: 1.6;
+  }
+
+  .stack-list dt {
+    color: var(--jm-color-accent);
+    font-weight: 700;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 0.15rem;
+  }
+
+  .stack-list dd {
+    margin: 0;
+    color: var(--jm-color-fg);
+    font-size: 0.95em;
+  }
+
+  @media (max-width: 540px) {
+    .stack-list {
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+    }
+    .stack-list dd {
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .proof-list {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .proof-list li {
+    position: relative;
+    margin: 0.6rem 0;
+  }
+
+  .proof-list li::before {
+    content: ">";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.25rem;
+  }
+
+  .proof-list strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+
+  code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+
+  .project-foot {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>

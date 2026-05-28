@@ -1,0 +1,171 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+const talks = (await getCollection("talks")).sort(
+  (a, b) => b.data.deliveredOn.valueOf() - a.data.deliveredOn.valueOf()
+);
+
+const dateFmt = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+});
+---
+
+<Base
+  title="Talks, Jeff Mills"
+  description="Internal co-presentations on design systems, framework-agnostic architecture, and generative AI in regulated environments."
+>
+  <h1 class="page-title">talks</h1>
+  <p class="page-lede">
+    Internal co-presentations given at Vanguard. Slides are not public, the
+    narrative summaries below capture what each talk covered.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <ul class="talk-list">
+    {
+      talks.map((talk) => {
+        const isPublished = talk.data.status === "published";
+        return (
+          <li class:list={["talk-item", { "is-unpublished": !isPublished }]}>
+            <article>
+              <header class="talk-head">
+                <time
+                  datetime={talk.data.deliveredOn.toISOString()}
+                  class="talk-date"
+                >
+                  {dateFmt.format(talk.data.deliveredOn)}
+                </time>
+                <span class="meta-sep">&middot;</span>
+                <span class="talk-venue">{talk.data.venue}</span>
+                {!isPublished && (
+                  <>
+                    <span class="meta-sep">&middot;</span>
+                    <span class="talk-restricted">internal — summary on request</span>
+                  </>
+                )}
+              </header>
+              <h2 class="talk-title">
+                {isPublished ? (
+                  <a href={`/talks/${talk.id}`}>{talk.data.title}</a>
+                ) : (
+                  <span class="talk-title-text">{talk.data.title}</span>
+                )}
+              </h2>
+              {isPublished && <p class="talk-desc">{talk.data.description}</p>}
+              <p class="talk-tags">
+                {talk.data.tags.map((t, i) => (
+                  <>
+                    <span class="tag">{t}</span>
+                    {i < talk.data.tags.length - 1 && (
+                      <span class="tag-sep"> &middot; </span>
+                    )}
+                  </>
+                ))}
+              </p>
+            </article>
+          </li>
+        );
+      })
+    }
+  </ul>
+</Base>
+
+<style>
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.5rem 0 0.5rem;
+  }
+
+  .page-lede {
+    margin: 0 0 0.5rem;
+    color: var(--jm-color-muted);
+  }
+
+  .talk-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .talk-list > li {
+    padding: 1rem 0;
+    border-bottom: 1px dashed var(--jm-color-border);
+  }
+
+  .talk-list > li:last-child {
+    border-bottom: none;
+  }
+
+  .talk-head {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    font-size: 0.85em;
+    flex-wrap: wrap;
+  }
+
+  .talk-date {
+    color: var(--jm-color-muted);
+  }
+
+  .talk-venue {
+    color: var(--jm-color-muted);
+  }
+
+  .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .talk-title {
+    font-size: 1rem;
+    font-weight: 400;
+    margin: 0.35rem 0 0.35rem;
+    color: var(--jm-color-fg);
+  }
+
+  .talk-title a {
+    color: inherit;
+  }
+
+  .talk-title-text {
+    color: var(--jm-color-muted);
+  }
+
+  .talk-restricted {
+    color: var(--jm-color-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.85em;
+  }
+
+  .talk-item.is-unpublished .talk-title-text::before {
+    content: "[ ";
+    color: var(--jm-color-border);
+  }
+
+  .talk-item.is-unpublished .talk-title-text::after {
+    content: " ]";
+    color: var(--jm-color-border);
+  }
+
+  .talk-desc {
+    margin: 0 0 0.4rem;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+
+  .talk-tags {
+    margin: 0;
+    font-size: 0.8em;
+    color: var(--jm-color-dim);
+  }
+
+  .tag-sep {
+    color: var(--jm-color-border);
+  }
+</style>

@@ -1,6 +1,6 @@
 ---
 title: "Generating UI Without Generating Code"
-description: "A two-day prototype exploring generative UI patterns on AXS, Vanguard's framework-agnostic design system, without ever asking an LLM to write production code."
+description: "A two-day prototype exploring generative UI patterns on DS-V2, Vanguard's framework-agnostic design system, without ever asking an LLM to write production code."
 publishDate: 2025-02-25
 status: published
 ---
@@ -8,14 +8,14 @@ status: published
 <aside class="callout">
   <span class="callout-label">TL;DR</span>
 
-  The goal: show what AXS could do as a substrate for generative UI. The constraint: at the time, AI-generated code was too risky for our production environments. The solution was a two-stage LLM pipeline where every model output was constrained, structured JSON, never code. A Svelte app rendered the result deterministically. The LLM composes; the application code executes.
+  The goal: show what DS-V2 could do as a substrate for generative UI. The constraint: at the time, AI-generated code was too risky for our production environments. The solution was a two-stage LLM pipeline where every model output was constrained, structured JSON, never code. A Svelte app rendered the result deterministically. The LLM composes; the application code executes.
 </aside>
 
 ## The Problem
 
 When I built this, AI-generated code was off the table for our production environments. So the interesting question wasn't "can an LLM write a UI component?" That path led straight to maintenance and correctness nightmares. The interesting question was: can an LLM compose a UI from a known set of trusted components, without writing the code that renders them?
 
-If yes, the LLM stays in its safe lane (content generation, structured selection) while the application code keeps the deterministic guarantees that production needs. AXS, built as framework-agnostic Web Components with well-defined props, was the right substrate. Each component is a known entity with a constrained interface; the LLM just needed to pick which ones to use and what to fill them with.
+If yes, the LLM stays in its safe lane (content generation, structured selection) while the application code keeps the deterministic guarantees that production needs. DS-V2, built as framework-agnostic Web Components with well-defined props, was the right substrate. Each component is a known entity with a constrained interface; the LLM just needed to pick which ones to use and what to fill them with.
 
 ## The Architecture
 
@@ -54,9 +54,9 @@ App → LLM → App → LLM → App. Two LLM round-trips, each constrained by a 
 
 **Input:** a user prompt (e.g., "Build a dashboard summarizing my Q3 portfolio").
 
-The LLM was given a tool schema describing AXS components and their props. Its job: generate the content that answers the prompt, AND choose the AXS components best suited to display that content. The output was a JSON array of component definitions, each filled with the right property values.
+The LLM was given a tool schema describing DS-V2 components and their props. Its job: generate the content that answers the prompt, AND choose the DS-V2 components best suited to display that content. The output was a JSON array of component definitions, each filled with the right property values.
 
-What it never returned: code. Never JSX, never HTML, never CSS. The LLM didn't need to know how AXS components were implemented; it just needed to know what they did and what props they took. The tool schema enforced this.
+What it never returned: code. Never JSX, never HTML, never CSS. The LLM didn't need to know how DS-V2 components were implemented; it just needed to know what they did and what props they took. The tool schema enforced this.
 
 ```typescript
 const componentTools = [
@@ -73,7 +73,7 @@ const componentTools = [
       required: ["title", "value"],
     },
   },
-  // ...one tool per AXS component (chart, table, list, text, accordion, ...)
+  // ...one tool per DS-V2 component (chart, table, list, text, accordion, ...)
 ];
 ```
 
@@ -111,7 +111,7 @@ The LLM's job here was to decide how to arrange these components on the page. Gr
 
 **Input:** the layout object and component list.
 
-A Svelte template walked the layout JSON, rendered each AXS component with its filled props, and placed them in the specified grid structure. This step was regular application code. No LLM involvement. Predictable, testable, debuggable.
+A Svelte template walked the layout JSON, rendered each DS-V2 component with its filled props, and placed them in the specified grid structure. This step was regular application code. No LLM involvement. Predictable, testable, debuggable.
 
 ## Why this approach works
 
@@ -126,13 +126,13 @@ By forcing all LLM output through tool schemas, the prototype got:
 - **No injection risk.** Output is constrained JSON, not freeform text.
 - **Predictable rendering.** Deterministic Svelte templates do the drawing.
 - **Easy debugging.** LLM responses are inspectable as data.
-- **Provable design system conformance.** Only AXS components can be chosen.
+- **Provable design system conformance.** Only DS-V2 components can be chosen.
 
 ## What this validated
 
-The exercise proved something I'd been betting on for years: AXS's framework-agnostic primitive design is durable against paradigm shifts. The library was designed before generative AI was mainstream, but it was designed right, components as standalone primitives with constrained interfaces, not framework-coupled abstractions. That made it the perfect substrate for Gen UI work: the LLM could reason about components without knowing anything about how they were built.
+The exercise proved something I'd been betting on for years: DS-V2's framework-agnostic primitive design is durable against paradigm shifts. The library was designed before generative AI was mainstream, but it was designed right, components as standalone primitives with constrained interfaces, not framework-coupled abstractions. That made it the perfect substrate for Gen UI work: the LLM could reason about components without knowing anything about how they were built.
 
-If AXS had been a typical framework-bound component library, this prototype would have required more glue, more compromise, more code generation. Instead, it worked because the design system was already AI-friendly. The MCP server I later added to AXS extends the same idea: expose component metadata so AI agents can compose with AXS without needing to learn AXS's internals.
+If DS-V2 had been a typical framework-bound component library, this prototype would have required more glue, more compromise, more code generation. Instead, it worked because the design system was already AI-friendly. The MCP server I later added to DS-V2 extends the same idea: expose component metadata so AI agents can compose with DS-V2 without needing to learn DS-V2's internals.
 
 ## Limits and open questions
 
@@ -140,13 +140,13 @@ This was a two-day prototype, not a production system. The honest limits:
 
 - **No evaluation harness.** I knew it worked from manual inspection but didn't measure component selection quality or layout coherence systematically.
 - **No streaming.** The two LLM round-trips ran sequentially; the user waited for both before seeing anything.
-- **Limited component coverage.** The tool schema described a subset of AXS; a full system would need automated schema generation from the library.
+- **Limited component coverage.** The tool schema described a subset of DS-V2; a full system would need automated schema generation from the library.
 - **No interaction model.** Generated UIs were static. Adding event handlers or component-level state would be the next architectural decision.
 
 The prototype's job was to show that the architectural pattern works, not to ship it. That goal it accomplished, in two days, solo.
 
 ## What's next
 
-The same pattern generalizes beyond AXS. Any design system with structured component metadata and constrained props can be a Gen UI substrate. The MCP server work makes this practical: an AI coding agent can read the component schema directly, then either generate static UIs (this prototype's pattern) or scaffold component-based application code.
+The same pattern generalizes beyond DS-V2. Any design system with structured component metadata and constrained props can be a Gen UI substrate. The MCP server work makes this practical: an AI coding agent can read the component schema directly, then either generate static UIs (this prototype's pattern) or scaffold component-based application code.
 
 The bigger question Gen UI raises: as the cost of generating UIs drops, what does it mean to design one? I don't think the answer is "no more designers." I think it's "designers who define the substrate that generators compose against." Which is exactly what design system designers have been doing all along, with the audience now shifting from human engineers to AI agents.

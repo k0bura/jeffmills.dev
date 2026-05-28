@@ -17,7 +17,7 @@ If you've shipped a design system at any real scale, you've watched the same fai
 
 The problem isn't the model. The model just doesn't know about your design system. It can't.
 
-You can paper over this with prompts ("always use AXS components"), instructions, or a custom GPT loaded with screenshots of your Storybook. All of those degrade fast. The model still doesn't *know* what `axs-button` accepts as props, it's guessing from patterns in similar libraries it saw during training.
+You can paper over this with prompts ("always use DS-V2 components"), instructions, or a custom GPT loaded with screenshots of your Storybook. All of those degrade fast. The model still doesn't *know* what the button custom element accepts as props, it's guessing from patterns in similar libraries it saw during training.
 
 The Model Context Protocol gives you a way to fix this at the architecture level: expose your design system through a server that any MCP-capable AI client (Claude, Copilot, Cursor) can call at runtime to get authoritative answers.
 
@@ -25,7 +25,7 @@ The Model Context Protocol gives you a way to fix this at the architecture level
 
 In an MCP-enabled session, the AI assistant can ask your server questions like:
 
-- "Give me the full API for `axs-button`."
+- "Give me the full API for the button custom element."
 - "What spacing tokens are available?"
 - "Is there a recipe for a labeled-input pattern in Vue?"
 - "Search for components related to 'notification'."

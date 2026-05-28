@@ -20,7 +20,7 @@ tags: ["engineering culture", "mentoring", "architecture", "AI-native"]
 
 ## Overview
 
-I work with two teams at Vanguard FAS: the team behind the AXS design system and the team behind Expert Insights. Mentoring and contribution are continuous and overlapping for me, I write code alongside the engineers I work with, and the mentoring shows up as much in PR reviews and pairing sessions as in 1:1s. This is how I think about both.
+I work with two teams at Vanguard FAS: the team behind the DS-V2 design system and the team behind Expert Insights. Mentoring and contribution are continuous and overlapping for me, I write code alongside the engineers I work with, and the mentoring shows up as much in PR reviews and pairing sessions as in 1:1s. This is how I think about both.
 
 The through-line under everything below: I&rsquo;d rather build the system that teaches the pattern than have the same conversation twice.
 
@@ -52,7 +52,7 @@ Acknowledgment and challenge are always paired. The pairing is deliberate: *&ldq
 
 This is the most distinctive part of how I work. **I don&rsquo;t rely on repeated conversations to enforce standards. I build the infrastructure that makes the correct pattern the default path.**
 
-On AXS, migrating a V0 component to V1 means reading the architecture docs, consulting accessibility patterns, applying composable APIs correctly, and following a slot-over-props philosophy, a multi-step discipline that&rsquo;s easy to skip under deadline pressure. So I encoded the entire workflow as a structured Claude Code skill (`/build-v1`) that mandates reading the architecture and a11y docs *before* any code is written. The standard is no longer carried in a person&rsquo;s head or enforced in code review after the fact. It runs before the first line of code.
+On DS-V2, migrating a V0 component to V1 means reading the architecture docs, consulting accessibility patterns, applying composable APIs correctly, and following a slot-over-props philosophy, a multi-step discipline that&rsquo;s easy to skip under deadline pressure. So I encoded the entire workflow as a structured Claude Code skill (`/build-v1`) that mandates reading the architecture and a11y docs *before* any code is written. The standard is no longer carried in a person&rsquo;s head or enforced in code review after the fact. It runs before the first line of code.
 
 Same idea on documentation quality. Rather than &ldquo;we should write better docs,&rdquo; the team has a `/test-docs` skill that simulates a fresh agent session, follows the exact discovery path, and produces a Pass/Partial/Fail checklist with a percentage. Doc quality stopped being a gut feel and started being a tracked metric.
 
@@ -70,7 +70,7 @@ When I review my own work, the standard is the same: *I push for designs that su
 
 ### Clean baselines before evolution
 
-I don&rsquo;t ship new capabilities on top of technical debt when I can avoid it. On AXS, the V0-to-V1 conversion backlog was executed as a disciplined prerequisite to the V3 architectural work, the right call to prevent adoption fragmentation and long-term friction for consumers.
+I don&rsquo;t ship new capabilities on top of technical debt when I can avoid it. On DS-V2, the legacy-to-current conversion backlog was executed as a disciplined prerequisite to the V3 architectural work, the right call to prevent adoption fragmentation and long-term friction for consumers.
 
 The pattern: establish a clean baseline, then build forward. Not because debt cleanup is interesting, but because it&rsquo;s what makes the next thing survivable.
 
@@ -78,15 +78,15 @@ The pattern: establish a clean baseline, then build forward. Not because debt cl
 
 My clearest technical conviction is that AI integration is a first-class architectural concern, not a layer applied after the fact. The benchmark I hold myself to: *&ldquo;&lsquo;understand and apply AI tools&rsquo; sets a low bar. The intent should be workflow-level change, not tool familiarity.&rdquo;*
 
-This shows up in the actual contribution work. The AXS design system:
+This shows up in the actual contribution work. The DS-V2 design system:
 
-- Generates machine-readable component metadata (`axs.web-types.json`, `axs.html-data.json`) at every build, so every developer&rsquo;s editor understands the component API automatically.
-- Ships an MCP server (`axs-mcp`) exposing 9 tools across components, design tokens, and recipes, making the entire design system queryable by any AI assistant without fine-tuning or RAG.
+- Generates machine-readable component metadata (`ds-v2.web-types.json`, `ds-v2.html-data.json`) at every build, so every developer&rsquo;s editor understands the component API automatically.
+- Ships an MCP server (`ds-v2-mcp`) exposing 9 tools across components, design tokens, and recipes, making the entire design system queryable by any AI assistant without fine-tuning or RAG.
 - Uses Claude Code skills to enforce architecture patterns through agentic workflows, not code review.
 
 The framing I use for the IDE metadata layer: *&ldquo;Before any AI agent enters the picture, the authoritative component API needs to be machine-readable and editor-discoverable. That&rsquo;s the foundation every other layer depends on.&rdquo;*
 
-The closed loop: the design system generates its own AI-readable documentation at build time, which feeds both external AI assistants and internal agentic workflows, and documentation quality is measured by an automated AI audit. The system continuously improves its own AI-readiness. See [AXS + AI: The Three-Layer Architecture](/case-studies/07-axs-ai-architecture) for the full technical breakdown.
+The closed loop: the design system generates its own AI-readable documentation at build time, which feeds both external AI assistants and internal agentic workflows, and documentation quality is measured by an automated AI audit. The system continuously improves its own AI-readiness. See [Design System + AI: The Three-Layer Architecture](/case-studies/07-design-system-ai-architecture) for the full technical breakdown.
 
 ### Documentation as an engineering deliverable
 
@@ -106,7 +106,7 @@ What I want from the work:
 - An experimentation-driven culture using GenAI tools as workflow change, not just chat assistants.
 - A team that doesn&rsquo;t need me in the room for the architecture to stay coherent.
 
-The AXS MCP server is a working prototype of that posture. The V1 migration skills are a working prototype. The documentation quality audit is a working prototype. The case study is the pattern, already running.
+The DS-V2 MCP server is a working prototype of that posture. The V1 migration skills are a working prototype. The documentation quality audit is a working prototype. The case study is the pattern, already running.
 
 ## Phrases that recur
 

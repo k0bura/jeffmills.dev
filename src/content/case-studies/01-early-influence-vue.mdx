@@ -12,7 +12,7 @@ tags: ["Vue.js", "architecture", "platform thinking"]
   <p>
     I drove the early adoption of Vue at Vanguard FAS while making sure it
     scaled inside a real enterprise architecture, not in a corner. I embedded
-    Vue into AXS through shared libraries and tooling, then defended the
+    Vue into DS-V2 through shared libraries and tooling, then defended the
     platform against pressure to fragment ownership. The work laid the
     foundation for the framework-agnostic platform that came next.
   </p>
@@ -30,7 +30,7 @@ I acted as the early technical influencer and decision shaper. The point wasn't 
 
 **Positioned Vue as part of a component-driven architecture shift**, not a stack swap. The framing was about how UI was *built*, not which framework owned the runtime. That made it easier for skeptical teams to engage on first principles.
 
-**Embedded Vue into the platform, not into a single team.** Vue became a supported runtime inside AXS alongside Angular and AEM, with a shared component library (`axs-vue`) and a dedicated Vue Storybook setup inside the AXS monorepo. Adoption became a configuration choice instead of a rewrite.
+**Embedded Vue into the platform, not into a single team.** Vue became a supported runtime inside DS-V2 alongside Angular and AEM, with a shared component library (the Vue source layer) and a dedicated Vue Storybook setup inside the DS-V2 monorepo. Adoption became a configuration choice instead of a rewrite.
 
 **Operationalized through tooling, not advocacy.** A scaffold + Storybook + tokens setup that any team could pick up. Repeatable, reviewable, and supported by the same shared service that owned the rest of the system.
 
@@ -38,11 +38,11 @@ I acted as the early technical influencer and decision shaper. The point wasn't 
 
 Three patterns showed up.
 
-**Pressure to fragment ownership.** There were repeated proposals to introduce externally-owned components into AXS, components built by other teams but living in the same library. I pushed back hard. Mixed ownership models fragment a design system; you can have one source of truth or you can have many; you cannot have both.
+**Pressure to fragment ownership.** There were repeated proposals to introduce externally-owned components into DS-V2, components built by other teams but living in the same library. I pushed back hard. Mixed ownership models fragment a design system; you can have one source of truth or you can have many; you cannot have both.
 
 **Competing technical directions.** Pushes to adopt alternative component frameworks before the current architecture had landed. I held the line on evaluating changes in the context of scale, shared service responsibilities, and delivery speed, not on technical novelty.
 
-**Cross-team alignment friction.** Other teams questioned how AXS worked across Vue, AEM, and design workflows simultaneously. I addressed it by articulating the model clearly and repeatedly: one component system, Storybook for discoverability, Figma alignment with design.
+**Cross-team alignment friction.** Other teams questioned how DS-V2 worked across Vue, AEM, and design workflows simultaneously. I addressed it by articulating the model clearly and repeatedly: one component system, Storybook for discoverability, Figma alignment with design.
 
 ## How I handled it
 
@@ -50,7 +50,7 @@ Direct and decisive. I didn't allow ambiguity about what was in and out of scope
 
 ## Outcome
 
-- Vue is now an enterprise-supported framework inside AXS, with shared libraries and tooling.
+- Vue is now an enterprise-supported framework inside DS-V2, with shared libraries and tooling.
 - Ownership of the design system stayed cohesive, no externally-owned drift, no fragmented dependencies.
 - Teams can build with Vue against shared components and centralized standards.
 - The framework-agnostic architecture that followed (Chapter 3) was only possible because the platform foundation was protected during the Vue adoption phase.

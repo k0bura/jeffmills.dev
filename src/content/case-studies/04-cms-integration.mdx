@@ -1,0 +1,77 @@
+---
+order: 4
+title: "Design System + CMS: Bridging Engineering and the Business"
+chapter: "Chapter 4"
+period: "2022-2023"
+summary: "Deploying DS-V2 components into Adobe Experience Manager so marketers and content creators could ship on-brand experiences without engineering bottlenecks."
+tags: ["AEM", "design systems", "platform integration", "business enablement"]
+---
+
+<aside class="callout">
+  <span class="callout-label">Executive summary</span>
+  <p>
+    I led the integration of DS-V2 with Adobe Experience Manager, extending the
+    front-end platform beyond engineering teams to enable marketers and
+    content creators directly. The architecture, DS-V2 owns components,
+    AEM consumes them as web components in templates, ensures one
+    visual layer across applications, marketing, and content, and turned DS-V2
+    into a business platform with measurable impact.
+  </p>
+</aside>
+
+## Context
+
+Even with a strong design system, a major gap remained. DS-V2 primarily served developers. Business users, marketing, content teams, relied on AEM. Engineers built reusable components; business users couldn't easily leverage them. The result: slower content delivery, inconsistent experiences, and continued reliance on engineering for execution that should have been self-service.
+
+The front-end platform needed to connect to the business content ecosystem. Not as integration trivia, but as the next stage of the platform's value.
+
+## My role
+
+I played a key role in defining and implementing the DS-V2 → AEM integration. Designed the technical model, influenced how components are delivered inside AEM, and positioned DS-V2 as a business enablement platform rather than just a developer system.
+
+## What I did
+
+**Established the integration model.**
+
+- DS-V2 UI library deployed into AEM.
+- AEM templates consume DS-V2 web components directly.
+
+The rule: DS-V2 owns the components. AEM declares them in templates. AEM stays thin; the design system stays the source of truth. Consistency across every touchpoint by construction, not by review.
+
+**Enabled business users to leverage engineering assets.** DS-V2 components integrated into AEM so marketers and content creators use pre-built components without needing custom engineering. The phrase that came out of the rollout: *put the design system at the fingertips of the business*.
+
+**Delivered consistent experiences across channels.** The same DS-V2 components power applications, marketing pages, and content experiences. One visual layer. Cross-channel consistency without a separate effort to enforce it.
+
+**Scaled content delivery through platformization.** Business teams build pages from reusable components and deliver content faster, without engineering bottlenecks.
+
+**Connected the design → engineering → content flow.** DS-V2 component library + Figma design system + AEM templates aligned to a single mental model. No re-interpretation between stages. No duplicate implementations of the same component for different audiences.
+
+## Resistance
+
+**AEM architecture complexity.** AEM has its own component model and rendering constraints. Integrating a modern design system into AEM is non-trivial and required a clean abstraction strategy.
+
+**Organizational boundaries.** Traditional model: engineering builds, marketing requests. Moving to marketing self-service via DS-V2 required trust, new workflows, and behavior change on multiple sides.
+
+**Competing approaches.** Other groups explored different AEM component architectures. Without a clear shared direction, the experience would have fragmented across Vanguard.
+
+## How I handled it
+
+Simplified the integration model into a single principle, *DS-V2 owns components, AEM consumes them*, and eliminated the ambiguity that usually kills cross-system integrations. Framed the work in business outcomes (speed to market, consistency, scalability) rather than technical elegance. Drove alignment through practical implementation, demos, walkthroughs, socialization, not just architecture diagrams.
+
+## Outcome
+
+- **Business enablement at scale.** Marketing and content teams use DS-V2 components directly in AEM. Engineering dependency reduced for content work.
+- **Faster content delivery.** Reusable components → faster page creation. No more custom builds for templated content.
+- **Cross-channel consistency.** Same components across apps, AEM pages, and digital experiences. One visual layer, by construction.
+- **Stronger ROI from DS-V2.** No longer a developer tool, a business platform with measurable impact.
+- **Foundation for future innovation.** This integration is what makes personalization at scale, AI-driven content generation, and dynamic component-driven experiences possible.
+
+## Why it matters
+
+This is where the work transcends engineering. Converting a design system into a business capability is what separates a library from a platform.
+
+- From engineering efficiency → to **enterprise enablement**.
+- Non-engineers can ship on-brand digital experiences.
+- The organization moves faster without scaling engineering cost linearly.
+
+The arc continues: the same component primitives that supported multi-framework apps in Chapter 3 now serve marketing and content. That compounding is the whole point of building framework-agnostic from the start.

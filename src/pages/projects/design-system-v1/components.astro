@@ -1,0 +1,179 @@
+---
+import Base from "../../../layouts/Base.astro";
+---
+
+<Base
+  title="DS-V1 components, Jeff Mills"
+  description="Architectural overview of the DS-V1 component library: Vue 2 SFCs compiled to custom elements, with the directive and slot patterns that later became DS-V2."
+>
+  <p class="project-back"><a href="/projects/design-system-v1">&laquo; back to ds-v1</a></p>
+  <h1 class="page-title">ds-v1 · component library</h1>
+  <p class="project-meta">
+    <span class="project-year">2018-2022</span>
+    <span class="meta-sep">&middot;</span>
+    <span class="project-status">proprietary</span>
+    <span class="meta-sep">&middot;</span>
+    <span>~100 components</span>
+    <span class="meta-sep">&middot;</span>
+    <span>vue 2 SFCs</span>
+  </p>
+
+  <p class="page-lede">
+    Roughly a hundred Vue 2 components across the two iterations of
+    DS-V1. Coverage spans forms, charts, modals, navigation, content
+    layouts, video, and media-player wrappers. Notes on the patterns
+    used across the library below.
+  </p>
+
+  <aside class="callout">
+    <span class="callout-label">Architectural overview only</span>
+    <p>
+      Component source stays in the private repository. The patterns and
+      architecture are described below. Happy to walk through component
+      implementations under NDA,
+      <a href="mailto:jeffy9@gmail.com">reach out</a>.
+    </p>
+  </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">patterns you'll see across the library</h2>
+  <ul class="proof-list">
+    <li>
+      <strong>JSDoc on every prop.</strong> Storybook&rsquo;s
+      <code>vue-docgen</code> integration parsed these into Controls,
+      Args, and docs pages automatically. Documentation was structural,
+      not optional.
+    </li>
+    <li>
+      <strong>Polymorphic rendering.</strong> Common components (Button,
+      Card, Hero) decide between <code>&lt;a&gt;</code> and
+      <code>&lt;button&gt;</code> (or other host elements) based on a
+      prop, so the same component covers the common variants without a
+      separate &ldquo;LinkButton.&rdquo;
+    </li>
+    <li>
+      <strong>Slot composition.</strong> Most components default to text
+      props for the common case and expose named slots for advanced
+      use. Buttons, modals, tooltips, cards, same shape.
+    </li>
+    <li>
+      <strong>WCAG-cited a11y comments.</strong> Accessibility
+      requirements live next to the props they apply to, with WCAG
+      success criterion numbers (1.1.1, 2.4.6) inline.
+    </li>
+    <li>
+      <strong>Async-imported nested components</strong> via
+      <code>webpackChunkName</code> hints so the bundle stays
+      tree-shakeable across composition. Icons stay out of the Button
+      bundle unless actually rendered.
+    </li>
+    <li>
+      <strong>Custom directives instead of mixins</strong>
+      (intersect, bounds, drawer) when the behavior was DOM-y rather than
+      data-y. Composition without component bloat.
+    </li>
+    <li>
+      <strong>Length-aware tooltip rendering.</strong> The tooltip
+      component switches between a positioned bubble and a modal based
+      on message length, so the same API covers short hints and long
+      explanatory copy without consumers having to choose.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <p class="project-foot">
+    Back to <a href="/projects/design-system-v1">DS-V1 overview</a>
+    &middot; Compare to <a href="/projects/design-system-v2/components">DS-V2 components</a>
+  </p>
+</Base>
+
+<style>
+  .project-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0.4rem;
+  }
+
+  .project-meta {
+    margin: 0 0 1rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+
+  .project-meta .project-year {
+    color: var(--jm-color-fg);
+  }
+
+  .project-meta .project-status {
+    color: var(--jm-color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .page-lede {
+    margin: 0 0 1rem;
+    color: var(--jm-color-fg);
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 2.25rem 0 0.5rem;
+  }
+
+  .proof-list {
+    list-style: none;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 0;
+  }
+
+  .proof-list li {
+    position: relative;
+    margin: 0.6rem 0;
+  }
+
+  .proof-list li::before {
+    content: ">";
+    color: var(--jm-color-muted);
+    position: absolute;
+    left: -1.25rem;
+  }
+
+  .proof-list strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+
+  code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+
+  .project-foot {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>

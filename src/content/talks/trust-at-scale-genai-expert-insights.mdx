@@ -1,0 +1,90 @@
+---
+title: "Trust at Scale: Digitizing Vanguard Expertise With GenAI"
+description: "How a small cross-functional team is codifying decades of Vanguard methodology and layering generative AI on top — to deliver advisor-ready insights with deterministic precision, generative flexibility, and engineered trust. Internal co-presentation on Expert Insights."
+venue: "Internal — Vanguard, cross-discipline AI/engineering audience"
+format: "Multi-speaker co-presentation, story-driven walkthrough with architecture diagram and lessons learned, ~30 min"
+deliveredOn: 2026-04-22
+coPresenters:
+  - "Cross-functional Expert Insights team — IT, product, design, methodology"
+tags:
+  - "GenAI"
+  - "LLM evaluation"
+  - "AWS Bedrock"
+  - "Expert Insights"
+  - "platform observability"
+status: unpublished
+---
+
+<aside class="callout">
+  <span class="callout-label">TL;DR</span>
+
+  In an era where AI accelerates everything, the real challenge isn't generating more output — it's scaling trustworthy judgment. This talk walks through how a small cross-functional Vanguard team is digitizing decades of institutional expertise and pairing it with generative AI to deliver consistent, advisor-ready insights without compromising brand standards. The core principle: trust must be engineered. Codify deterministic, auditable methodology first; then layer GenAI to amplify it.
+</aside>
+
+## Tagline
+
+> Advisors don't want more data — they want judgment they can trust.
+
+## The framing
+
+The opening reframes the room's assumptions. The bottleneck for advisor-facing GenAI isn't model quality, prompt cleverness, or output volume. It's trust. An advisor reading an AI-generated insight is implicitly asking three things: Is the methodology behind this defensible? Is the output consistent with how Vanguard would say it? Will it be the same answer tomorrow? A system that can't answer all three doesn't ship to 110,000 advisors.
+
+The talk's thesis: **trust must be engineered**. You don't get it from a better model. You get it by codifying the deterministic, auditable parts of expert judgment — the rules, constraints, and ground truth — and then layering generative AI on top to deliver that expertise in client-ready language.
+
+That order matters. Methodology first, generation second.
+
+## The platform, one diagram
+
+The architecture slide does the heavy lifting in the room. The shape:
+
+<figure class="talk-figure">
+  <img
+    src="/talks/trust-at-scale-architecture.svg"
+    alt="Architecture diagram: portfolio data, context, and prompts feed an Expert Insights methodology engine spanning Fixed Income, Equities, and Future Objective, with rows for capital preservation, total return, income, and diversify risk. The methodology engine sends to a foundational LLM (Bedrock), which returns through a Platform API to consumers: current tool integrations, the Expert Insights dashboard, and future advisor experiences. A testing framework (LLM-as-a-judge) sits beneath and feeds back into prompts."
+    loading="lazy"
+  />
+  <figcaption>The Expert Insights platform — methodology engine on the left, foundational LLM in the middle, advisor surfaces on the right, LLM-as-a-judge testing loop closing on the prompts.</figcaption>
+</figure>
+
+Reading the diagram left to right:
+
+- **Inputs.** Portfolio data, structured context (definitions, guardrails, role descriptions), and prompts shaped to elicit assessments and implications.
+- **The methodology engine.** This is the deterministic core. Vanguard methodology, encoded — a grid across asset classes (Fixed Income, Equities, Future Objective) and objectives (capital preservation, total return, income, diversify risk). Specifics of how methodology applies live *in the prompting*, not in model fine-tunes.
+- **The foundational LLM.** A model on AWS Bedrock turns deterministic methodology output into clear, advisor-ready language. The LLM is the generative surface — it never decides methodology, only how to express it.
+- **The platform API.** A stable contract for everything downstream. Today it powers current tool integrations and the Expert Insights dashboard. Tomorrow it powers the future advisor experience without consumers having to change their integration.
+- **The testing framework.** LLM-as-a-judge evaluators close the loop. Their job is to score generated output against criteria the methodology team owns. Their findings feed back into prompts — they fine-tune *the prompts*, not the model.
+
+The whole picture deliberately separates the parts that must be deterministic from the parts that benefit from being generative. That separation is what makes the output auditable.
+
+## Hardening for quality
+
+The talk's middle section is about how a small team operationalizes quality without slowing delivery to a crawl. Three practices.
+
+**Ground truth validation across thousands of synthetic portfolios.** Real advisor portfolios are scarce, sensitive, and skewed. Synthetic portfolios — generated to cover the methodology grid exhaustively — give the team a regression suite the size of which would be impossible with real-world data alone. Every model or prompt change runs against the suite and gets a per-cell pass/fail before anyone reviews narrative output.
+
+**LLM-based judges for quality and consistency.** The system has two model surfaces: one that generates, one that evaluates. Judges are prompted with the same methodology vocabulary the generator uses, so an evaluator's verdict is in the same frame as the work it's grading. Judges aren't a replacement for human review — they're how the team makes human review tractable.
+
+**Platform-level observability.** Every prompt, every response, every judge verdict is traceable. When an advisor flags an unexpected insight, the team can replay the exact run, see which methodology cell fired, which judge passed it, and which prompt revision was live. Observability isn't a debugging luxury — it's the audit trail that lets a regulated business ship AI at all.
+
+The combined effect: deterministic precision where it matters, generative flexibility where it helps, and the receipts to back every decision in between.
+
+## What attendees take away
+
+The session lists three takeaways explicitly, in the order they appeared in the abstract:
+
+1. **How to scale trust in GenAI systems.** A practical pattern for combining deterministic logic and GenAI to produce reliable, auditable outcomes in regulated environments. The pattern is not specific to financial services — anywhere expert judgment has to be applied consistently, the same architecture applies.
+2. **How to operationalize AI quality at enterprise scale.** Using evaluation frameworks, LLM judges, and regression testing to continuously measure and improve AI output quality. The point is that "quality" is a measurable property, not a vibe.
+3. **How to move from experimentation to production AI.** A real-world example of taking a GenAI solution from concept to advisor-ready delivery while maintaining speed, governance, and brand integrity. The path isn't a launch event — it's a series of small commits behind a measurable quality bar.
+
+## Why this talk, why now
+
+The framing is deliberately not a product pitch. The talk is structured around lessons learned, with the Expert Insights product as the carrier — the audience walks away with the architecture pattern and the operational practices, applicable wherever they have to digitize institutional expertise. The product was the proof, not the point.
+
+It's also a snapshot of what a Principal-level front-end engineer's job looks like in 2026: not just the surface, but the system underneath the surface — the design system that delivered the UI, the methodology engine that decided the substance, and the testing platform that kept the trust intact.
+
+## Related material
+
+- [Case study: Expert Insights — AI platform leadership and responsible rollout](/case-studies/06-expert-insights)
+- [Case study: Design System + AI — the three-layer architecture](/case-studies/07-design-system-ai-architecture)
+- [Writing: agentic workflows architecture](/writing/agentic-workflows-architecture)
+- [Press: coverage of the Expert Insights launch](/press)

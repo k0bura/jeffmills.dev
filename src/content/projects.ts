@@ -27,19 +27,19 @@ export const PROJECTS: Project[] = [
     tags: ["Astro", "vintage computing", "personal site", "design language"],
   },
   {
-    slug: "axs",
-    title: "AXS, Advisor Experience System",
+    slug: "design-system-v2",
+    title: "DS-V2 — framework-agnostic enterprise design system",
     summary:
-      "The framework-agnostic enterprise design system I architected: Nx monorepo with axs-vue + axs-web-components + axs-automation tooling. Vue source compiles to standards-based custom elements; ships to Vue, Angular, AEM, and any HTML. Proprietary, code samples only.",
+      "The framework-agnostic enterprise design system I architected. Nx monorepo with a Vue 3 source layer that compiles to standards-based custom elements via defineCustomElement; ships to Vue, Angular, AEM, and any HTML. Proprietary; architectural overview only.",
     status: "proprietary",
     year: 2022,
     tags: ["design systems", "Web Components", "Vue 3", "Nx monorepo", "enterprise"],
   },
   {
-    slug: "faset",
-    title: "FASET, Enterprise Design System (Vue 2)",
+    slug: "design-system-v1",
+    title: "DS-V1 — predecessor enterprise design system (Vue 2)",
     summary:
-      "The precursor to AXS. 86 Vue 2 components compiled to custom elements via vue-custom-element, with MutationObserver-based lazy hydration. Proprietary, code samples only.",
+      "The predecessor to DS-V2. Around 86 Vue 2 components compiled to custom elements via vue-custom-element, with MutationObserver-based lazy hydration. Proprietary; architectural overview only.",
     status: "proprietary",
     year: 2019,
     tags: ["Vue 2", "Web Components", "design systems", "enterprise", "precursor"],
@@ -48,7 +48,7 @@ export const PROJECTS: Project[] = [
     slug: "skeletor",
     title: "Skeletor",
     summary:
-      "A front-end component framework I built at Delphic Digital (2014–2017) with native Web Components in 2016. The architectural seed that became AXS nine years later.",
+      "A front-end component framework I built at Delphic Digital (2014–2017) with native Web Components in 2016. The architectural seed that became the later enterprise systems nine years on.",
     status: "archived",
     year: 2016,
     tags: ["Web Components", "design systems", "agency", "framework"],

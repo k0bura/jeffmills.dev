@@ -1,9 +1,9 @@
 ---
 order: 7
-title: "AXS + AI: The Three-Layer Architecture"
+title: "Design System + AI: The Three-Layer Architecture"
 chapter: "Technical Deep Dive"
 period: "2024, present"
-summary: "How the AXS design system was extended into an AI-ready platform, IDE metadata at build time, an MCP server with 9 tools, and agentic workflows that enforce architecture from inside the IDE."
+summary: "How the DS-V2 design system was extended into an AI-ready platform, IDE metadata at build time, an MCP server with 9 tools, and agentic workflows that enforce architecture from inside the IDE."
 tags: ["MCP", "design systems", "Claude", "agentic workflows", "architecture"]
 ---
 
@@ -20,16 +20,16 @@ tags: ["MCP", "design systems", "Claude", "agentic workflows", "architecture"]
 
 ## The system
 
-AXS (Advisor Experience System) is Vanguard's front-end design system, a Web Component library (~84 components across two generations) built in Vue 3, compiled to standards-based custom elements, and consumed by internal product teams. It ships design tokens, SCSS, components, and framework adapters from a single Nx monorepo.
+DS-V2 is Vanguard's front-end design system, a Web Component library (~84 components across two generations) built in Vue 3, compiled to standards-based custom elements, and consumed by internal product teams. It ships design tokens, SCSS, components, and framework adapters from a single Nx monorepo.
 
-What follows is the architecture of how AXS becomes an AI platform, not "AI on top of AXS", but a layered system where each layer enables the next.
+What follows is the architecture of how DS-V2 becomes an AI platform, not "AI on top of DS-V2", but a layered system where each layer enables the next.
 
 ## The architecture
 
 <div
   class="diagram"
   role="img"
-  aria-label="Three-layer AXS AI architecture: Layer 1 generates IDE metadata at build time; Layer 2 exposes the design system through an MCP server with 9 tools; Layer 3 runs Claude Code skills that enforce architecture patterns for the AXS team itself."
+  aria-label="Three-layer DS-V2 AI architecture: Layer 1 generates IDE metadata at build time; Layer 2 exposes the design system through an MCP server with 9 tools; Layer 3 runs Claude Code skills that enforce architecture patterns for the DS-V2 team itself."
 >
   <div class="diagram-node is-stage">
     <div class="diagram-node-title">layer 1, IDE metadata</div>
@@ -38,26 +38,26 @@ What follows is the architecture of how AXS becomes an AI platform, not "AI on t
   <div class="diagram-arrow">&#9660;<br /><span class="diagram-payload">feeds</span></div>
   <div class="diagram-node is-stage">
     <div class="diagram-node-title">layer 2, MCP server</div>
-    <div class="diagram-node-body">9 tools<br />any AI assistant becomes AXS-aware</div>
+    <div class="diagram-node-body">9 tools<br />any AI assistant becomes design-system-aware</div>
   </div>
   <div class="diagram-arrow">&#9660;<br /><span class="diagram-payload">feeds</span></div>
   <div class="diagram-node is-stage">
     <div class="diagram-node-title">layer 3, Claude Code skills</div>
-    <div class="diagram-node-body">agentic workflows<br />for the AXS team itself</div>
+    <div class="diagram-node-body">agentic workflows<br />for the DS-V2 team itself</div>
   </div>
 </div>
 
 ## Layer 1, Passive IDE intelligence
 
-Two generated metadata files, `axs.web-types.json` (JetBrains schema) and `axs.html-data.json` (VS Code custom HTML data schema), are produced at every build by a custom Nx executor (`axs-automation:jweb-types`).
+Two generated metadata files, `ds-v2.web-types.json` (JetBrains schema) and `ds-v2.html-data.json` (VS Code custom HTML data schema), are produced at every build by a custom Nx executor (`ds-v2-automation:jweb-types`).
 
-**How it works.** The executor uses `vue-docgen-api` to parse every `.vue` file, converts camelCase props to kebab-case attributes, respects `@undocumented` JSDoc annotations to hide internal props, and reads optional `ComponentNameDoc.json` sidecar files for supplemental metadata. Both files are declared in `package.json` so any editor that installs the package automatically gets autocompletion for every AXS custom element, tag name, attribute, and slot.
+**How it works.** The executor uses `vue-docgen-api` to parse every `.vue` file, converts camelCase props to kebab-case attributes, respects `@undocumented` JSDoc annotations to hide internal props, and reads optional `ComponentNameDoc.json` sidecar files for supplemental metadata. Both files are declared in `package.json` so any editor that installs the package automatically gets autocompletion for every DS-V2 custom element, tag name, attribute, and slot.
 
 **The point.** Before any AI agent enters the picture, the authoritative component API is already machine-readable and editor-discoverable. This is the foundation every other layer depends on.
 
-## Layer 2, Active AI tooling via the `axs-mcp` MCP server
+## Layer 2, Active AI tooling via the `ds-v2-mcp` MCP server
 
-A dedicated library (`libs/axs-mcp/`) implements a Model Context Protocol server. It exposes **9 tools** that any MCP-capable AI assistant (Claude, Copilot, Cursor) can call at runtime to query the design system.
+A dedicated library (`libs/ds-v2-mcp/`) implements a Model Context Protocol server. It exposes **9 tools** that any MCP-capable AI assistant (Claude, Copilot, Cursor) can call at runtime to query the design system.
 
 | Tool | What it answers |
 | --- | --- |
@@ -72,26 +72,26 @@ A dedicated library (`libs/axs-mcp/`) implements a Model Context Protocol server
 | `get_typography` | Typography subset |
 | `get_layout` | Layout utilities |
 
-**Data pipeline.** The MCP server is entirely data-driven, it doesn't parse source code at runtime. Three build-time scripts run as part of `axs-mcp:build` and produce JSON data files in `dist/libs/axs-mcp/data/`. The `axs.web-types.json` from Layer 1 is copied into the same directory.
+**Data pipeline.** The MCP server is entirely data-driven, it doesn't parse source code at runtime. Three build-time scripts run as part of `ds-v2-mcp:build` and produce JSON data files in `dist/libs/ds-v2-mcp/data/`. The `ds-v2.web-types.json` from Layer 1 is copied into the same directory.
 
-- `generate-style-tokens.ts` directly parses `_axs-config.scss` with regex + balanced-paren extraction, resolving SCSS expressions to concrete values (e.g., `$axs-base-space-size * 4` → `"16px"`).
+- `generate-style-tokens.ts` directly parses `_ds-v2-config.scss` with regex + balanced-paren extraction, resolving SCSS expressions to concrete values (e.g., `$ds-v2-base-space-size * 4` → `"16px"`).
 - `generate-usage-docs.ts` parses V1 story files (`*.stories.ts`) and extracts `render()` function bodies using lightweight brace-counting parsing, no full AST dependency.
 - `generate-recipe-list.ts` scans recipe directories and emits a manifest; live source is fetched on-demand via `gh api` so it's always current.
 
 **Dependency chain:**
 
 ```text
-axs-components:do-generations  (jweb-types + vcustom-html)
-    →  axs-mcp:build  (generate-* scripts, copies web-types)
-        →  dist/libs/axs-mcp/data/  (4 JSON files)
-            →  axs-mcp StdioServerTransport  (serves 9 tools)
+ds-v2-components:do-generations  (jweb-types + vcustom-html)
+    →  ds-v2-mcp:build  (generate-* scripts, copies web-types)
+        →  dist/libs/ds-v2-mcp/data/  (4 JSON files)
+            →  ds-v2-mcp StdioServerTransport  (serves 9 tools)
 ```
 
-**What this unlocks.** An AI assistant working in an adopter codebase can, in a single conversation turn, ask for the `axs-button` API, get spacing tokens, retrieve a recipe, and assemble a complete, on-brand UI implementation without ever leaving the chat interface.
+**What this unlocks.** An AI assistant working in an adopter codebase can, in a single conversation turn, ask for the `ds-v2-button` API, get spacing tokens, retrieve a recipe, and assemble a complete, on-brand UI implementation without ever leaving the chat interface.
 
 ## Layer 3, Agentic workflows via Claude Code skills
 
-Three custom Claude Code skills in `.claude/skills/` define structured, multi-step AI workflows for the AXS team's own component development.
+Three custom Claude Code skills in `.claude/skills/` define structured, multi-step AI workflows for the DS-V2 team's own component development.
 
 ### `/build-v1`, V0→V1 component migration
 
@@ -124,11 +124,11 @@ The team invested heavily in writing docs explicitly for AI consumption, not jus
 
 The three layers compose into a coherent system:
 
-- **Layer 1** ensures every developer's editor understands AXS. The prerequisite for correct AI autocompletion in adopter codebases.
-- **Layer 2** turns the design system into a queryable knowledge base. Any AI assistant becomes AXS-aware with no fine-tuning, no RAG over raw source.
+- **Layer 1** ensures every developer's editor understands DS-V2. The prerequisite for correct AI autocompletion in adopter codebases.
+- **Layer 2** turns the design system into a queryable knowledge base. Any AI assistant becomes design-system-aware with no fine-tuning, no RAG over raw source.
 - **Layer 3** turns the AI into a capable contributor *to* the design system itself, not just a consumer of it.
 
-## Forward look: AXS V3
+## Forward look: the next iteration
 
 `docs/project.md` describes V3 as "a new Lit-based web component architecture and **AI-assisted interface development solutions** that take it beyond a simple component library." Beta targeted for Q3 2026.
 

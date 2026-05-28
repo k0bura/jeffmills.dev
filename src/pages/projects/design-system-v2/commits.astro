@@ -1,0 +1,263 @@
+---
+import Base from "../../../layouts/Base.astro";
+
+const TYPE_BREAKDOWN: { label: string; count: number; max: number }[] = [
+  { label: "feat", count: 38, max: 40 },
+  { label: "chore", count: 34, max: 40 },
+  { label: "fix", count: 24, max: 40 },
+  { label: "build", count: 11, max: 40 },
+  { label: "refactor", count: 9, max: 40 },
+  { label: "docs", count: 9, max: 40 },
+  { label: "ci", count: 5, max: 40 },
+  { label: "test", count: 3, max: 40 },
+  { label: "style", count: 3, max: 40 },
+];
+
+const bar = (n: number, max: number) => {
+  const width = Math.round((n / max) * 32);
+  return "█".repeat(width) + "·".repeat(32 - width);
+};
+
+const breakdownLines = TYPE_BREAKDOWN.map(
+  (t) => `${t.label.padEnd(9, " ")}  ${bar(t.count, t.max)}  ${t.count}`,
+).join("\n");
+---
+
+<Base
+  title="DS-V2 contribution profile, Jeff Mills"
+  description="Contribution profile across two years of platform-level work on the DS-V2 design-system monorepo. Conventional-commit type breakdown and a description of the highest-leverage changes."
+>
+  <p class="project-back"><a href="/projects/design-system-v2">&laquo; back to ds-v2</a></p>
+  <h1 class="page-title">ds-v2 &middot; contribution profile</h1>
+  <p class="project-meta">
+    <span class="project-year">2022-2024</span>
+    <span class="meta-sep">&middot;</span>
+    <span class="project-status">~160 commits</span>
+    <span class="meta-sep">&middot;</span>
+    <span>platform-level work</span>
+  </p>
+
+  <p class="page-lede">
+    Roughly 160 commits authored across two years of active platform work on
+    the DS-V2 monorepo. Below: the conventional-commit type breakdown, then a
+    description of the highest-leverage changes by category.
+  </p>
+
+  <aside class="callout">
+    <span class="callout-label">Architectural overview only</span>
+    <p>
+      Commit hashes, diffs, and per-commit metadata stay in the private
+      repository. The description below is by category, not by commit.
+      Happy to walk through specifics under NDA,
+      <a href="mailto:jeffy9@gmail.com">reach out</a>.
+    </p>
+  </aside>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">contribution profile</h2>
+  <p class="section-lede">
+    Conventional-commit type breakdown across the authored set.
+  </p>
+
+  <pre class="type-chart">{breakdownLines}</pre>
+
+  <p class="profile-note">
+    The shape tells a story: heavy on <code>feat</code> and
+    <code>chore</code> means the work was platform-level, not
+    ticket-by-ticket. Storybook integration, monorepo plumbing, release
+    tooling, lint/format hooks, the infrastructure decisions that
+    let the rest of the team move.
+  </p>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">highest-leverage changes, by category</h2>
+
+  <article class="commit-block">
+    <h3 class="commit-cat">foundation</h3>
+    <p class="commit-note">
+      <strong>Stood up the entire monorepo.</strong> Nx with Vue 3, Vite,
+      TypeScript, Storybook, and ESLint as the foundation the next two
+      years of work built on. Project-tagging conventions, the cacheable
+      task runner, all set up in the first week. Pre-Vite-everywhere,
+      pre-Nx-default-in-Vue-shops.
+    </p>
+  </article>
+
+  <hr class="jm-rule" />
+
+  <article class="commit-block">
+    <h3 class="commit-cat">storybook with vite</h3>
+    <p class="commit-note">
+      Storybook landed configured with the Vite builder when the default
+      everywhere else was still Webpack. The team got HMR-fast Storybook
+      from day one and never had to migrate later.
+    </p>
+  </article>
+
+  <hr class="jm-rule" />
+
+  <article class="commit-block">
+    <h3 class="commit-cat">lint and format hooks</h3>
+    <p class="commit-note">
+      Husky, lint-staged, Prettier, and ESLint wired into the commit
+      lifecycle for the whole monorepo. Code quality enforced at write
+      time, not in review, the most leveraged thing a platform
+      engineer can ship in the first month.
+    </p>
+  </article>
+
+  <hr class="jm-rule" />
+
+  <article class="commit-block">
+    <h3 class="commit-cat">release tooling</h3>
+    <p class="commit-note">
+      <code>@jscutlery/semver</code> wired into every library&rsquo;s
+      Nx project, with conventional-commit parsing and per-library tag
+      prefixes. Every CHANGELOG entry from that point forward is produced
+      by this pipeline. Versioning becomes a derivable property of the
+      commit history rather than a manual ceremony.
+    </p>
+  </article>
+
+  <hr class="jm-rule" />
+
+  <article class="commit-block">
+    <h3 class="commit-cat">css compositions</h3>
+    <p class="commit-note">
+      A one-line enable unlocked utility-first style primitives across the
+      entire design system. Small diffs that move large abstractions are
+      the senior signal in the type breakdown above, the
+      <code>feat</code> count includes a lot of work that fits in one
+      line.
+    </p>
+  </article>
+
+  <hr class="jm-rule" />
+
+  <p class="project-foot">
+    Back to <a href="/projects/design-system-v2">DS-V2 overview</a>
+    &middot; <a href="/projects/design-system-v2/components">Component-library overview</a>
+    &middot; <a href="/case-studies/02-building-the-design-system">Building the design system
+    (case study)</a>
+  </p>
+</Base>
+
+<style>
+  .project-back {
+    margin: 0 0 0.75rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0.4rem;
+  }
+
+  .project-meta {
+    margin: 0 0 1rem;
+    font-size: 0.85em;
+    color: var(--jm-color-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: baseline;
+  }
+
+  .project-meta .project-year {
+    color: var(--jm-color-fg);
+  }
+
+  .project-meta .project-status {
+    color: var(--jm-color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+  }
+
+  .meta-sep {
+    color: var(--jm-color-border);
+  }
+
+  .page-lede {
+    margin: 0 0 1rem;
+    color: var(--jm-color-fg);
+  }
+
+  .section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 2.25rem 0 0.5rem;
+  }
+
+  .section-lede {
+    margin: 0 0 0.75rem;
+    color: var(--jm-color-muted);
+    font-size: 0.95em;
+  }
+
+  .type-chart {
+    background: transparent;
+    border: 1px dashed var(--jm-color-border);
+    padding: 1rem 1.25rem;
+    margin: 0.5rem 0 0;
+    color: var(--jm-color-fg);
+    font-family: var(--jm-font-mono);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .profile-note {
+    margin: 1rem 0 0;
+    color: var(--jm-color-muted);
+    font-size: 0.95em;
+    line-height: 1.6;
+  }
+
+  .commit-block {
+    margin: 1.25rem 0 1rem;
+  }
+
+  .commit-cat {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--jm-color-accent);
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.4rem;
+  }
+
+  .commit-note {
+    margin: 0;
+    color: var(--jm-color-fg);
+    font-size: 0.95em;
+    line-height: 1.6;
+  }
+
+  .commit-note strong {
+    color: var(--jm-color-fg);
+    font-weight: 700;
+  }
+
+  code {
+    font-family: var(--jm-font-mono);
+    font-size: 0.9em;
+    background: #1a1a1a;
+    padding: 0.1em 0.35em;
+  }
+
+  .project-foot {
+    margin: 0;
+    color: var(--jm-color-muted);
+    font-size: 0.9em;
+  }
+</style>
