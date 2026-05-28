@@ -10,153 +10,71 @@ tags: ["AI", "GenAI", "platform", "governance", "responsible AI"]
 <aside class="callout">
   <span class="callout-label">Executive summary</span>
   <p>
-    I led Expert Insights as a scalable AI capability, defining a
-    consistent insight pattern, shaping the architecture (foundational LLM +
-    scalable API + prompt-embedded methodology and guardrails), and elevating
-    governance as a prerequisite for rollout, not a postscript. I helped
-    translate the responsible-AI mechanisms (&ldquo;AI judging AI&rdquo;,
-    before/after quality improvement) into board-level narrative so the
-    program could be understood, trusted, and scaled. Launched April 2026 to
-    110,000 financial advisors.
+    I led Expert Insights as a delivery and platform lead, the voice
+    arguing for it as a scalable AI capability rather than a one-off
+    GenAI feature. That meant insisting on a repeatable insight pattern
+    so output behaves like a product, treating responsible-AI work as a
+    gating dependency rather than a postscript, and translating the
+    quality and governance story into language a board could endorse.
+    Launched April 2026 to 110,000 financial advisors.
   </p>
 </aside>
 
 ## Context
 
-Vanguard needed to scale portfolio specialist-quality expertise beyond 1:1 engagements through a real-time AI-driven product that gave advisors reliable insights for complex portfolio construction. The product had to improve advisor productivity and client outcomes at scale.
-
-The constraint: this couldn't be a GenAI demo. It had to be credible as a scalable platform with a real rollout path, pilot → broader distribution, and with risk and governance treated as first-class requirements from day one. Regulated finance does not forgive ambiguity here.
+A regulated-finance firm scaling specialist-quality expertise into a real-time AI product for advisors. The constraint that shaped every decision: this couldn't be a demo. It had to be credible as a scalable platform with a real rollout path, treated as a regulated product from day one, with risk and governance as first-class requirements. Regulated finance does not forgive ambiguity here.
 
 ## My role
 
-I operated as delivery lead for Expert Insights, the primary voice shaping both the product narrative and the delivery plan. Introduced the team and product at the June Board Gallery Walk. Authored the core storytelling and architecture artifacts. Identified as Delivery Lead in BCAAS, April 2026.
+Delivery lead and primary voice on both the product narrative and the delivery plan. The work split roughly evenly between *what we were building* (the platform thinking) and *how we'd land it* (the responsible-AI storytelling and the governance choreography).
 
-## What I did
+## What I argued for
 
-### Standardized the insight contract, so the AI output could scale
+### Treat an AI insight like a product pattern, not a model output
 
-Defined a repeatable structure for what an "expert insight" *is*, making the model's output understandable, testable, and consistent:
+Argued from early in the program that the team needed to define what an "insight" *is* as a repeatable structure. Once the shape of an insight is fixed, teams can evaluate it, design around it, ship it consistently, and measure quality against a definition rather than a vibe. The alternative, letting model output be the product surface directly, doesn't scale and doesn't earn trust.
 
-- **What**, identify the observation.
-- **So what**, explain why it matters.
-- **Now what**, suggest actions.
+This was a leadership argument before it was a technical one. The team had to agree that probabilistic model output should be shaped into a stable contract before it ever touched an advisor.
 
-This turns probabilistic LLM output into a **stable product pattern**. Teams can evaluate it, design around it, and deploy it consistently. It also became the lens used in eval, every insight has the same three jobs, so quality has a definition.
+### Platform-first, not one-off prompts
 
-### Set platform-level architecture direction
+Pushed the team away from prompt-as-product framing toward platform thinking: a real architecture, a real API, a real rollout plan, governance treated as a first-class capability rather than an afterthought. Same posture as the design-system work in earlier chapters, design for the substrate, not the moment. The operative leadership move was insisting the program *be* a platform, not a clever feature; implementation lives in the private architecture.
 
-In ITSS FAS AI Expert Insights, the architecture for the pilot is framed at three layers:
+### Governance and risk as a gating dependency
 
-<div
-  class="diagram"
-  role="img"
-  aria-label="Expert Insights architecture. Three input streams (portfolio data, methodology context, structured prompts) feed a foundational LLM, which feeds a scalable platform API, which feeds downstream surfaces. A separate LLM-as-a-judge loop scores model output and refines the prompts."
->
-  <div class="diagram-row-label">inputs</div>
-  <div class="diagram-row">
-    <div class="diagram-node">
-      <div class="diagram-node-title">portfolio data</div>
-      <div class="diagram-node-body">structured account context</div>
-    </div>
-    <div class="diagram-node">
-      <div class="diagram-node-title">methodology</div>
-      <div class="diagram-node-body">guardrails, definitions, roles</div>
-    </div>
-    <div class="diagram-node">
-      <div class="diagram-node-title">prompts</div>
-      <div class="diagram-node-body">"what / so what / now what"</div>
-    </div>
-  </div>
-  <div class="diagram-fanlines">
-    <span>&#9660;</span><span>&#9660;</span><span>&#9660;</span>
-  </div>
+Didn't treat responsible-AI work as something to be retrofitted. Elevated it explicitly: governance and risk readiness are dependencies that gate rollout, not a documentation pass that happens after launch. Made the dependency visible at the right level of the org so it would be staffed and resourced ahead of the launch window, not chased through it.
 
-  <div class="diagram-node is-stage">
-    <div class="diagram-node-title">layer 1, foundational LLM</div>
-    <div class="diagram-node-body">model selection, evals, judges</div>
-  </div>
-  <div class="diagram-arrow">&#9660;</div>
-  <div class="diagram-node is-stage">
-    <div class="diagram-node-title">layer 2, scalable platform API</div>
-    <div class="diagram-node-body">streaming, versioning, observability</div>
-  </div>
-  <div class="diagram-arrow">&#9660;</div>
-  <div class="diagram-node is-stage">
-    <div class="diagram-node-title">layer 3, guardrails + methodology</div>
-    <div class="diagram-node-body">embedded in prompt; reinforced via judge</div>
-  </div>
-  <div class="diagram-fanlines">
-    <span>&#9660;</span><span>&#9660;</span><span>&#9660;</span>
-  </div>
-  <div class="diagram-row-label">surfaces</div>
-  <div class="diagram-row">
-    <div class="diagram-node">
-      <div class="diagram-node-title">dashboards</div>
-      <div class="diagram-node-body">internal tooling</div>
-    </div>
-    <div class="diagram-node">
-      <div class="diagram-node-title">advisor app</div>
-      <div class="diagram-node-body">streaming insight UI</div>
-    </div>
-    <div class="diagram-node">
-      <div class="diagram-node-title">downstream tools</div>
-      <div class="diagram-node-body">integrations</div>
-    </div>
-  </div>
+### Owned the responsible-AI story for the board
 
-  <p class="diagram-note">
-    A separate LLM-as-a-judge loop scores model output against the
-    methodology and feeds refinements back into the prompts.
-  </p>
-</div>
+Authored the board-ready narrative around responsible AI, not just the use case. The framing the team carried forward: this is not "running a calculation through ChatGPT," it's a system designed inside the firm's guardrails with quality measured by the firm's own standards. Translation work mattered as much as the technology, the audience might know nothing about AI, the story still had to do real work without losing the technical credibility that made it trustworthy in the first place.
 
-Not one-off prompting. A strategic enabler with a roadmap spanning production pilot through broader scaling phases.
+### Made one source of truth, then distributed it
 
-### Drove governance and risk readiness proactively
-
-Didn't treat governance as an afterthought. Elevated it as a dependency and made a specific ask:
-
-> We need active ITSS support on the AI risk/governance to support our rollout plan.
-
-The same governance posture got reinforced in direct internal messaging with leadership stakeholders, including specific content asks to make the governance dependency visible at the right level.
-
-### Led the responsible-AI storytelling for the board
-
-In the June Board Gallery Walk planning, the team aligned on a board-ready narrative explicitly focused on responsible AI, not just the use case. I contributed the framing that the board-level "hook" is that the team is **using AI to judge AI output** (judges + confidence bands) and that this is not "running a calculation through ChatGPT", it's working inside Vanguard's guardrails.
-
-The narrative had to land for an audience that might "know nothing about AI." Before/after quality framing, plain-language confidence framing, careful depth control. The work was as much about translation as it was about technology.
-
-### Enabled broad alignment by sharing a single source of truth
-
-Actively distributed the architecture pages, the ITSS deck, and the supporting video into the right channels so decisions could move at the speed of the program rather than the speed of the documentation hunt.
+Pulled the architecture, the program narrative, and the supporting briefings into a coherent set of artifacts and distributed them into the right channels. Decisions could then move at the speed of the program, not the speed of the documentation hunt.
 
 ## Constraints I navigated
 
-**Governance and risk approval as a gating dependency.** Elevated the need explicitly and pulled it forward into the plan so it never became the blocker.
+**Governance and risk approval as a gating dependency.** Pulled it forward into the plan explicitly so it never became the blocker.
 
-**Executive communication complexity.** Board may know nothing about AI. The narrative had to do real work, simplified visuals, before/after, careful depth, without losing the technical credibility that made it trustworthy in the first place.
+**Executive communication complexity.** A board audience that might know nothing about AI, paired with technical claims that had to remain credible. Simplified visuals, before-and-after framing, careful depth control, with the technical claims intact underneath.
 
-**Quality proof for probabilistic systems.** "How good is good enough" isn't implicit; it had to be shown. Baseline vs. experiment quality improvement, judge accuracy framing, confidence bands.
+**Quality proof for probabilistic systems.** "How good is good enough" isn't implicit; it has to be shown. The team built quality and confidence framing the firm's own reviewers could evaluate, not a chart imported from a vendor.
 
 ## Outcome
 
-- **Live in production with pilot.** Oct 2025.
-- **Pilot with Sales.** Kickoff Jan 2026.
-- **Direct to advisors and beyond.** Q1 2026.
-- **Launch day reach: 110,000 financial advisors.**
-- Product framed as enhancing, not replacing, advisor judgment, which is what made the rollout durable.
-
-The launch was covered in Barron's, The Daily Upside, InvestmentNews, Citywire, ThinkAdvisor, Financial Advisor Magazine, PLANADVISER, and WealthManagement.com. See [the press section](/press) for the full list.
+- **Launched April 2026 to 110,000 financial advisors.**
+- Framed publicly as enhancing, not replacing, advisor judgment, which is what made the rollout durable.
+- Covered in Barron's, The Daily Upside, InvestmentNews, Citywire, ThinkAdvisor, Financial Advisor Magazine, PLANADVISER, and WealthManagement.com. See [the press section](/press) for the full list.
 
 ## How earlier chapters showed up here
 
-The threads from previous chapters are the load-bearing structure of this one:
+The threads from previous chapters were the load-bearing structure of this one:
 
-- **Pattern standardization → scalable experience.** The "what / so what / now what" structure does the same job for AI output that DS-V2 component schemas do for UI, it makes the surface predictable.
-- **Platform-first design.** Foundational LLM + scalable API + prompt-embedded methodology. Same instinct as framework-agnostic DS-V2: design for the substrate, not the moment.
+- **Pattern standardization → scalable experience.** The same thinking that made DS-V2 components a stable contract made AI insights a stable contract.
+- **Platform-first design.** Same instinct as framework-agnostic DS-V2: design for the substrate, not the moment.
 - **Governance as product requirement.** Same posture as DS-V2 governance (Chapter 5): boundaries are not friction; they are what make the system durable.
 - **Executive-ready storytelling.** The same translation work that turned DS-V2 into a business platform turned Expert Insights into something a board could endorse.
 
 ## Why it matters
 
-This is the chapter where the platform discipline of the earlier years compounds. DS-V2 was the substrate. Expert Insights is the proof that the substrate scales into AI.
+This is the chapter where the platform discipline of the earlier years compounds. DS-V2 was the substrate. Expert Insights is the proof that the substrate scales into AI, and that the same leadership posture (standardise the surface, design for the substrate, treat governance as gating) generalises across domains.
