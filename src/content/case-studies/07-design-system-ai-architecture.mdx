@@ -24,6 +24,10 @@ DS-V2 is Vanguard's front-end design system, a Web Component library (~84 compon
 
 What follows is the architecture of how DS-V2 becomes an AI platform, not "AI on top of DS-V2", but a layered system where each layer enables the next.
 
+## My role
+
+I identified AI-readability as a vital capability for the future state of front-end development, scoped the three-layer architecture below, and directed the DS-V2 team in building it. The leadership argument I made: AI is moving from "a tool a developer uses" to "the substrate a developer ships against," so a design system that isn't directly readable by AI agents stops being a platform and starts being friction. Getting the metadata foundation, the MCP server, and the agentic-workflow tooling in place *before* the team needed them is what makes the next iteration of the system credible when it ships. The implementation, the MCP library, the build-time generators, the Claude Code skills, was built by my team under that direction.
+
 ## The architecture
 
 <div

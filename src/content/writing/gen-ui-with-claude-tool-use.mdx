@@ -132,7 +132,7 @@ By forcing all LLM output through tool schemas, the prototype got:
 
 The exercise proved something I'd been betting on for years: DS-V2's framework-agnostic primitive design is durable against paradigm shifts. The library was designed before generative AI was mainstream, but it was designed right, components as standalone primitives with constrained interfaces, not framework-coupled abstractions. That made it the perfect substrate for Gen UI work: the LLM could reason about components without knowing anything about how they were built.
 
-If DS-V2 had been a typical framework-bound component library, this prototype would have required more glue, more compromise, more code generation. Instead, it worked because the design system was already AI-friendly. The MCP server I later added to DS-V2 extends the same idea: expose component metadata so AI agents can compose with DS-V2 without needing to learn DS-V2's internals.
+If DS-V2 had been a typical framework-bound component library, this prototype would have required more glue, more compromise, more code generation. Instead, it worked because the design system was already AI-friendly. The MCP server my team later built for DS-V2 under my direction extends the same idea: expose component metadata so AI agents can compose with DS-V2 without needing to learn DS-V2's internals.
 
 ## Limits and open questions
 
