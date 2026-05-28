@@ -25,7 +25,7 @@ Pick one principle and hold it under all pressure:
 
 > The design system owns components. The CMS consumes them. The CMS owns nothing component-shaped.
 
-In our case the design system is DS-V2, the CMS is Adobe Experience Manager, and "consumes" means the components ship as standards-based custom elements that AEM templates declare directly.
+In our case the design system is Meridian, the CMS is Adobe Experience Manager, and "consumes" means the components ship as standards-based custom elements that AEM templates declare directly.
 
 ```html
 <!-- An AEM template -->
@@ -87,7 +87,7 @@ The architectural rule is the easy part. The work that actually has to happen:
 
 **Authoring discipline.** The AEM dialog has to map cleanly to component attributes. If a designer wants a card variant that doesn't exist in the design system, you don't fork the CMS template, you add the variant to the design system. That changes a workflow.
 
-**A clear ownership boundary.** DS-V2 owns the component. AEM owns the authoring experience and the slot content. Neither side touches the other's surface. Decisions about styling go to DS-V2; decisions about authoring ergonomics go to AEM. Mixing those produces fragmentation in under a quarter.
+**A clear ownership boundary.** Meridian owns the component. AEM owns the authoring experience and the slot content. Neither side touches the other's surface. Decisions about styling go to Meridian; decisions about authoring ergonomics go to AEM. Mixing those produces fragmentation in under a quarter.
 
 **Tokens have to pierce AEM.** Custom properties on the page root, set by the AEM theme layer, consumed by the design-system components. If you can't get tokens to flow into AEM-rendered pages, the pattern breaks.
 

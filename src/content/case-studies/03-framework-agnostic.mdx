@@ -3,14 +3,14 @@ order: 3
 title: "Framework-Agnostic Architecture: Future-Proofing the Front End"
 chapter: "Chapter 3"
 period: "2021-2023"
-summary: "Designing DS-V2 as a framework-agnostic system so it could support Angular, Vue, and AEM simultaneously, and outlast whatever framework comes next."
+summary: "Designing Meridian as a framework-agnostic system so it could support Angular, Vue, and AEM simultaneously, and outlast whatever framework comes next."
 tags: ["architecture", "web components", "cross-framework", "platform strategy"]
 ---
 
 <aside class="callout">
   <span class="callout-label">Executive summary</span>
   <p>
-    I helped architect DS-V2 as a framework-agnostic design system, enabling the
+    I helped architect Meridian as a framework-agnostic design system, enabling the
     same components to ship across Angular, Vue, and AEM. The decision
     decoupled Vanguard&rsquo;s front-end capability from any single framework
     and made it possible to adopt new technology incrementally, without ever
@@ -26,19 +26,19 @@ At the same time, the business needed consistency across all digital experiences
 
 ## My role
 
-I played a key role in defining and reinforcing a framework-agnostic architecture inside DS-V2. This was a strategic architectural decision more than a technical one, it shaped how teams *thought* about front-end systems, not just what they built. The goal was for DS-V2 to outlast any individual framework choice.
+I played a key role in defining and reinforcing a framework-agnostic architecture inside Meridian. This was a strategic architectural decision more than a technical one, it shaped how teams *thought* about front-end systems, not just what they built. The goal was for Meridian to outlast any individual framework choice.
 
 ## What I did
 
-**Designed DS-V2 as framework-agnostic.** Components are independent of application frameworks. The same component logic runs across Angular, Vue, and AEM through framework adapters and standards-based custom elements. The implementation is intentionally separated from the application's technical stack.
+**Designed Meridian as framework-agnostic.** Components are independent of application frameworks. The same component logic runs across Angular, Vue, and AEM through framework adapters and standards-based custom elements. The implementation is intentionally separated from the application's technical stack.
 
 <div
   class="diagram"
   role="img"
-  aria-label="DS-V2 code-agnostic distribution. A single Vue single-file component source compiles to two exports: a standards-based custom element and per-framework adapters. The same artifacts ship to Vue apps, Angular apps, AEM templates, Storybook, and any HTML page via CDN."
+  aria-label="Meridian code-agnostic distribution. A single Vue single-file component source compiles to two exports: a standards-based custom element and per-framework adapters. The same artifacts ship to Vue apps, Angular apps, AEM templates, Storybook, and any HTML page via CDN."
 >
   <div class="diagram-node is-stage">
-    <div class="diagram-node-title">DS-V2 component source</div>
+    <div class="diagram-node-title">Meridian component source</div>
     <div class="diagram-node-body">Vue single-file component</div>
   </div>
   <div class="diagram-arrow">&#9660;<br /><span class="diagram-payload">build pipeline</span></div>
@@ -106,4 +106,4 @@ This is the highest-leverage architectural decision in the whole sequence. It de
 
 From framework-driven development to **platform-driven development**.
 
-The same instinct shows up again in Chapter 6: when generative UI became the new substrate, DS-V2 was already ready for it because the architecture had never been tied to one stack to begin with.
+The same instinct shows up again in Chapter 6: when generative UI became the new substrate, Meridian was already ready for it because the architecture had never been tied to one stack to begin with.

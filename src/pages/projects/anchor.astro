@@ -3,11 +3,11 @@ import Base from "../../layouts/Base.astro";
 ---
 
 <Base
-  title="DS-V1 — Design System (Vue 2), Jeff Mills"
-  description="The enterprise design system I helped build before DS-V2. ~86 Vue 2 components compiled to custom elements; the codebase where framework-agnostic ideas were incubated under enterprise constraints."
+  title="Anchor — Design System (Vue 2), Jeff Mills"
+  description="The enterprise design system I helped build before Meridian. ~86 Vue 2 components compiled to custom elements; the codebase where framework-agnostic ideas were incubated under enterprise constraints."
 >
   <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
-  <h1 class="page-title">ds-v1 · design system</h1>
+  <h1 class="page-title">anchor · design system</h1>
   <p class="project-meta">
     <span class="project-year">2018-2022</span>
     <span class="meta-sep">&middot;</span>
@@ -19,7 +19,7 @@ import Base from "../../layouts/Base.astro";
   </p>
 
   <p class="page-lede">
-    DS-V1 was the design system that came before DS-V2. Three internal
+    Anchor was the design system that came before Meridian. Three internal
     packages: a main component package, a shared core runtime, and a
     second-generation UI library. Roughly 86 Vue 2 components compiled
     to native custom elements via <code>vue-custom-element</code>,
@@ -29,17 +29,23 @@ import Base from "../../layouts/Base.astro";
   </p>
 
   <p class="project-cta">
-    <a href="/projects/design-system-v1/components">Architectural overview of the component library &raquo;</a>
+    <a href="/projects/anchor/components">Architectural overview of the component library &raquo;</a>
   </p>
 
   <aside class="callout">
     <span class="callout-label">Architectural overview only</span>
     <p>
-      DS-V1 lives in a private internal repository. Source is not
+      Anchor lives in a private internal repository. Source is not
       reproduced on this site. The notes here describe the architecture
       and patterns; the implementation stays in the private repo. Happy
       to walk through the system in depth under NDA,
       <a href="mailto:jeffy9@gmail.com">reach out</a>.
+    </p>
+    <p>
+      &ldquo;Anchor&rdquo; is a placeholder name used on this site, the
+      real product name is internal Vanguard IP. The architecture, role,
+      and contributions described here are accurate; only the name is
+      anonymized.
     </p>
   </aside>
 
@@ -82,7 +88,7 @@ import Base from "../../layouts/Base.astro";
     installed as a Vue plugin. The pattern: a small set of utility plugins
     (viewport, key-code aliases, focus management), a shared event bus,
     a registered set of Vue filters, and a quiet version banner at boot.
-    Same architectural posture I would later port forward to DS-V2,
+    Same architectural posture I would later port forward to Meridian,
     different framework era.
   </p>
 
@@ -109,7 +115,7 @@ import Base from "../../layouts/Base.astro";
 
   <h2 class="section-title">the directives</h2>
   <p>
-    Some of the most-reused primitives in DS-V1 weren&rsquo;t components,
+    Some of the most-reused primitives in Anchor weren&rsquo;t components,
     they were custom Vue directives. Two notable examples:
   </p>
 
@@ -137,7 +143,7 @@ import Base from "../../layouts/Base.astro";
       allowed.</strong> Every dependency had to be vetted through internal
       security. That pushed the team toward small, standalone primitives
       instead of a kitchen-sink framework. Today&rsquo;s &ldquo;just
-      install Lit&rdquo; wasn&rsquo;t an option; DS-V1 had to ship its
+      install Lit&rdquo; wasn&rsquo;t an option; Anchor had to ship its
       own component runtime.
     </li>
     <li>
@@ -149,7 +155,7 @@ import Base from "../../layouts/Base.astro";
     <li>
       <strong>Multiple consuming frameworks (Vue, Angular, AEM/Java).</strong>
       The framework-agnostic web-component approach was the only way to
-      serve all three from one source. DS-V2 scaled this; DS-V1 proved
+      serve all three from one source. Meridian scaled this; Anchor proved
       it worked.
     </li>
     <li>
@@ -161,8 +167,8 @@ import Base from "../../layouts/Base.astro";
     <li>
       <strong>Brand color and tokens via Sass.</strong> CSS custom
       properties weren&rsquo;t broadly safe across all consumer browsers
-      DS-V1 had to support. Tokens lived in Sass and were inlined at
-      build time. DS-V2 later moved them to custom properties; DS-V1
+      Anchor had to support. Tokens lived in Sass and were inlined at
+      build time. Meridian later moved them to custom properties; Anchor
       was the constraint study.
     </li>
   </ul>
@@ -171,23 +177,23 @@ import Base from "../../layouts/Base.astro";
 
   <h2 class="section-title">what carried forward</h2>
   <p>
-    The most direct lineage from DS-V1 to DS-V2:
+    The most direct lineage from Anchor to Meridian:
   </p>
   <ul class="proof-list">
     <li>
       The <strong>Vue-source-to-Web-Component compilation</strong> approach.
-      DS-V1 used <code>vue-custom-element</code> on Vue 2; DS-V2 replaced
+      Anchor used <code>vue-custom-element</code> on Vue 2; Meridian replaced
       it with Vue 3&rsquo;s native <code>defineCustomElement</code>.
       Same architectural premise; framework-agnostic distribution from a
       single source.
     </li>
     <li>
       The <strong>directives</strong>: intersection, bounds, drawer, anchor
-      offsets, survived almost verbatim into the DS-V2 composables layer.
+      offsets, survived almost verbatim into the Meridian composables layer.
     </li>
     <li>
-      The <strong>monorepo / multiple packages</strong> shape. DS-V1 used
-      Yarn workspaces; DS-V2 uses Nx, but the partitioning logic is the
+      The <strong>monorepo / multiple packages</strong> shape. Anchor used
+      Yarn workspaces; Meridian uses Nx, but the partitioning logic is the
       same: a core runtime, a component library, framework-specific
       adapters.
     </li>
@@ -223,8 +229,8 @@ import Base from "../../layouts/Base.astro";
   <hr class="jm-rule" />
 
   <p class="project-foot">
-    More: <a href="/projects/design-system-v1/components">component-library overview &raquo;</a><br />
-    Related: <a href="/projects/design-system-v2">DS-V2</a>
+    More: <a href="/projects/anchor/components">component-library overview &raquo;</a><br />
+    Related: <a href="/projects/meridian">Meridian</a>
     (the successor) &middot; <a href="/projects/skeletor">Skeletor</a>
     (the agency-era precursor) &middot;
     <a href="/case-studies/02-building-the-design-system">Building the design system</a>

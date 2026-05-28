@@ -27,8 +27,8 @@ export const PROJECTS: Project[] = [
     tags: ["Astro", "vintage computing", "personal site", "design language"],
   },
   {
-    slug: "design-system-v2",
-    title: "DS-V2 — framework-agnostic enterprise design system",
+    slug: "meridian",
+    title: "Meridian — framework-agnostic enterprise design system",
     summary:
       "The framework-agnostic enterprise design system I architected. Nx monorepo with a Vue 3 source layer that compiles to standards-based custom elements via defineCustomElement; ships to Vue, Angular, AEM, and any HTML. Proprietary; architectural overview only.",
     status: "proprietary",
@@ -36,10 +36,10 @@ export const PROJECTS: Project[] = [
     tags: ["design systems", "Web Components", "Vue 3", "Nx monorepo", "enterprise"],
   },
   {
-    slug: "design-system-v1",
-    title: "DS-V1 — predecessor enterprise design system (Vue 2)",
+    slug: "anchor",
+    title: "Anchor — predecessor enterprise design system (Vue 2)",
     summary:
-      "The predecessor to DS-V2. Around 86 Vue 2 components compiled to custom elements via vue-custom-element, with MutationObserver-based lazy hydration. Proprietary; architectural overview only.",
+      "The predecessor to Meridian. Around 86 Vue 2 components compiled to custom elements via vue-custom-element, with MutationObserver-based lazy hydration. Proprietary; architectural overview only.",
     status: "proprietary",
     year: 2019,
     tags: ["Vue 2", "Web Components", "design systems", "enterprise", "precursor"],
