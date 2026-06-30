@@ -1,0 +1,70 @@
+---
+order: 9
+title: "Owning the Analytics Engine Beneath the GenAI Product"
+chapter: "Leadership Deep Dive"
+period: "2026"
+summary: "Leading the team to take on the real-time analytics engine our GenAI advisor experiences depend on, a priority shift that added production-grade, API-first platform scope without dropping the GenAI work it underpins."
+tags: ["API design", "platform", "analytics", "engineering leadership", "GenAI"]
+---
+
+<aside class="callout">
+  <span class="callout-label">Executive summary</span>
+  <p>
+    The GenAI advisor experiences my team was building depend on a
+    real-time analytics engine underneath them, without trustworthy,
+    governed analytics, the AI output isn't production-viable. When that
+    engine became the priority, I led the team to take it on as additional
+    scope: a deterministic, API-first analytics platform built to the
+    reliability and auditability a regulated environment demands. We
+    treated it as an engineering problem rather than a disruption, reused
+    the data and integration work from the AI side, and stood up
+    production-grade services without losing the GenAI work they support.
+  </p>
+</aside>
+
+## Context
+
+My team had been building generative-AI experiences for advisors. Those experiences are only as good as the analytics underneath them, the AI surfaces and explains results, but the numbers it reasons over have to come from somewhere deterministic, governed, and reliable. That analytics engine was a deep dependency of the GenAI work, and when delivering it became the enterprise priority, it landed as additional scope for the team rather than a replacement for what we were already doing.
+
+That foundation is a different discipline from the experience layer on top of it. Experimentation gives way to reliability, accuracy, and auditability. Experience-driven design gives way to platform and API design. The question moves from "what can the model do" to "what can the model, and every other consumer, depend on."
+
+## My role
+
+I led the reprioritization and expanded the team's scope to own the engine, not just consume it. The shift wasn't chaotic, it was intentional and structured: I made sure the team understood *why* it mattered (the GenAI product literally depends on it; advisor trust and regulatory alignment ride on it), broke the work into clear milestones, and actively managed the tradeoff between speed and correctness rather than letting it resolve itself, all while keeping the GenAI work it underpins alive.
+
+## How I approached it
+
+### Framed the engine as the foundation, not a detour
+
+I was explicit with the team that this wasn't a pivot away from the GenAI work, it was building the floor that work stands on. Engineers who understand they're building the dependency every downstream consumer will trust make different decisions than engineers who think they're prototyping, on validation, on error handling, on what "done" means.
+
+### Re-architected around API contracts
+
+The engine had to be something the GenAI product and other teams could build on, so I anchored the architecture on contracts:
+
+- Clean, versioned API contracts defined before implementation, not discovered after it.
+- Data pipelines aligned to the analytics inputs and outputs, with normalized schemas so every consumer got consistent data.
+- Observability and validation layers embedded in the design rather than bolted on later.
+- Low-latency APIs built for consumption at scale, with guardrails and validation on the analytic outputs.
+
+### Shifted the operating model
+
+A foundational dependency carries a higher bar than an experience surface. We introduced stricter SLAs and reliability expectations, and adopted production-grade testing, validation, and monitoring. The bar for "shipped" moved from "the demo works" to "the GenAI product, and everything else downstream, can rely on this at 3 a.m."
+
+### Reused the AI-era investment
+
+The prior GenAI work was not wasted, and I was deliberate about that. Data orchestration patterns carried forward. Model-integration experience informed the analytics pipelines. The experimentation mindset translated into iterative, validation-driven API design. Treating the AI work as transferable capability rather than a sunk cost is what let us absorb the new scope without a reset.
+
+## What it took from the team
+
+The same engineers who had been building generative workflows were designing normalized schemas and low-latency APIs within weeks, while keeping the GenAI work moving. That's the return on hiring for fundamentals over domain specialization: strong problem-solvers move across layers of the stack and still deliver at a high level. They didn't need to already know the analytics domain, they needed to know how to learn it fast and build carefully inside it, and they were motivated by solving the problem that mattered most rather than by staying attached to a particular layer.
+
+## Outcome
+
+- Delivered a production-ready analytics API that the GenAI product depends on, aligned to enterprise needs.
+- Enabled downstream consumers, the GenAI experiences and other advisor tools, with consistent, reliable, governed data.
+- Established foundational services that scale horizontally across use cases rather than serving a single product and stopping.
+
+## Why it matters
+
+This is the clearest example I have of deep engineering translating directly into business value. The architecture turned out to be transferable, the pipelines, modularity, and integration patterns from the GenAI systems carried straight into the engine beneath them and reduced friction at every step. But the deciding factor wasn't the code. It was that the team understood the engine *was* the product's foundation, not a side quest, and a team that understands why the unglamorous dependency matters will build it to last instead of treating it as plumbing.
