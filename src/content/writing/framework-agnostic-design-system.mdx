@@ -8,7 +8,7 @@ status: published
 <aside class="callout">
   <span class="callout-label">TL;DR</span>
 
-  Web components were an unfashionable bet in 2017. We made it anyway, because we knew we'd outlive at least one framework cycle. Two cycles later the architecture is the only reason the system can absorb generative UI, MCP, and a Vue-to-Lit refactor without burning to the ground. The trade-offs are real; the dividend is bigger.
+  Web components were an unfashionable bet in 2017. We made it anyway, because we knew we'd outlive at least one framework cycle. Two cycles later the architecture is the only reason the system can absorb generative UI, MCP, and a move from Vue to Lit for its next generation without burning to the ground. The trade-offs are real; the dividend is bigger.
 </aside>
 
 ## The bet
@@ -47,7 +47,7 @@ If you only have one framework and you're sure you'll only ever have one framewo
 
 What we got, without anticipating most of it:
 
-**Vue → Lit refactor in two months.** Because consumers depend on the custom element, not the Vue implementation, we could replace the internal framework without changing a line of consumer code. AI-assisted coding made the *speed* possible; the architecture made the *swap* possible at all.
+**A path from Vue to Lit.** Because consumers depend on the custom element, not the Vue implementation, the internal framework can be replaced without changing the contract consumers build against. The next generation of the system is authored in Lit for that reason: no framework runtime shipped inside a component library, direct access to the DOM for accessibility work, and styles shared across instances instead of copied into each one. AI-assisted coding makes the *speed* of a move like that realistic; the architecture is what makes the *swap* possible at all.
 
 **AEM integration as a thin client.** AEM templates declare `the button custom element`. The CMS doesn't import anything. It just declares the custom element and gets the same behavior as a Vue app, same component, same styles, same events. The thin-CMS pattern only works because the component is framework-agnostic.
 

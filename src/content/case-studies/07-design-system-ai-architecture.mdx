@@ -3,7 +3,7 @@ order: 7
 title: "Design System + AI: The Three-Layer Architecture"
 chapter: "Technical Deep Dive"
 period: "2024, present"
-summary: "How the Meridian design system was extended into an AI-ready platform, IDE metadata at build time, an MCP server with 9 tools, and agentic workflows that enforce architecture from inside the IDE."
+summary: "How the Meridian design system was extended into an AI-ready platform, IDE metadata at build time, an MCP server with 10 tools, and agentic workflows that enforce architecture from inside the IDE."
 tags: ["MCP", "design systems", "Claude", "agentic workflows", "architecture"]
 ---
 
@@ -33,7 +33,7 @@ I identified AI-readability as a vital capability for the future state of front-
 <div
   class="diagram"
   role="img"
-  aria-label="Three-layer Meridian AI architecture: Layer 1 generates IDE metadata at build time; Layer 2 exposes the design system through an MCP server with 9 tools; Layer 3 runs Claude Code skills that enforce architecture patterns for the Meridian team itself."
+  aria-label="Three-layer Meridian AI architecture: Layer 1 generates IDE metadata at build time; Layer 2 exposes the design system through an MCP server with 10 tools; Layer 3 runs Claude Code skills that enforce architecture patterns for the Meridian team itself."
 >
   <div class="diagram-node is-stage">
     <div class="diagram-node-title">layer 1, IDE metadata</div>
@@ -42,7 +42,7 @@ I identified AI-readability as a vital capability for the future state of front-
   <div class="diagram-arrow">&#9660;<br /><span class="diagram-payload">feeds</span></div>
   <div class="diagram-node is-stage">
     <div class="diagram-node-title">layer 2, MCP server</div>
-    <div class="diagram-node-body">9 tools<br />any AI assistant becomes design-system-aware</div>
+    <div class="diagram-node-body">10 tools<br />any AI assistant becomes design-system-aware</div>
   </div>
   <div class="diagram-arrow">&#9660;<br /><span class="diagram-payload">feeds</span></div>
   <div class="diagram-node is-stage">
@@ -61,7 +61,7 @@ Two generated metadata files, `meridian.web-types.json` (JetBrains schema) and `
 
 ## Layer 2, Active AI tooling via the `meridian-mcp` MCP server
 
-A dedicated library (`libs/meridian-mcp/`) implements a Model Context Protocol server. It exposes **9 tools** that any MCP-capable AI assistant (Claude, Copilot, Cursor) can call at runtime to query the design system.
+A dedicated library (`libs/meridian-mcp/`) implements a Model Context Protocol server. It exposes **10 tools** that any MCP-capable AI assistant (Claude, Copilot, Cursor) can call at runtime to query the design system.
 
 | Tool | What it answers |
 | --- | --- |
@@ -88,7 +88,7 @@ A dedicated library (`libs/meridian-mcp/`) implements a Model Context Protocol s
 meridian-components:do-generations  (jweb-types + vcustom-html)
     →  meridian-mcp:build  (generate-* scripts, copies web-types)
         →  dist/libs/meridian-mcp/data/  (4 JSON files)
-            →  meridian-mcp StdioServerTransport  (serves 9 tools)
+            →  meridian-mcp StdioServerTransport  (serves 10 tools)
 ```
 
 **What this unlocks.** An AI assistant working in an adopter codebase can, in a single conversation turn, ask for the `meridian-button` API, get spacing tokens, retrieve a recipe, and assemble a complete, on-brand UI implementation without ever leaving the chat interface.
@@ -134,9 +134,11 @@ The three layers compose into a coherent system:
 
 ## Forward look: the next iteration
 
-`docs/project.md` describes V3 as "a new Lit-based web component architecture and **AI-assisted interface development solutions** that take it beyond a simple component library." Beta targeted for Q3 2026.
+Since this was written, the MCP server has gone from an experiment to something other teams depend on. It ships through the firm's standard AI coding plugin, a product team outside mine used it daily while building a new application, and that team sent back improvements and helped write the agent rules it ships with. That is the adoption signal that matters for a tool like this: people who do not report to you choosing to use it and then making it better.
 
-The MCP server and agentic workflow infrastructure built for V1 are explicitly the prototype for what V3's AI integration will build on. This case study is the R&D foundation for the next major version of the system.
+The next generation of the system is a Lit-based web component architecture, gated on adoption of the current generation so consumers are never split across three. The MCP server and agentic workflows built for V1 are the prototype for what that generation's AI integration builds on.
+
+The same year also produced the other half of an AI-ready design system: the quality gates that let you trust what agents and humans both ship. That story is in [Quality Gates for a Distributed Design System](/case-studies/10-quality-gates-and-observability).
 
 ## The key insight
 

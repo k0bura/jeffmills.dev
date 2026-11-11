@@ -1,0 +1,101 @@
+---
+title: "Telemetry for a library you do not host"
+description: "A component library runs inside other teams' applications, so it has no page, no SDK, and no dataset of its own. How I decided what a design system should observe, what it must never capture, and how one span through the host's tracer answered the question that mattered."
+publishDate: 2026-11-10
+status: published
+---
+
+<aside class="callout">
+  <span class="callout-label">TL;DR</span>
+
+  A design system is neither an application nor a micro-frontend. It ships as a package and executes inside pages it does not own. That rules out the obvious approach of bundling an observability SDK. What works: treat build-time quality signals as the primary monitoring system, and at runtime send exactly one thing, the loaded version, through whatever tracer the host page already registered. No dependency, no configuration, nothing when the host has no tracing, and never any content.
+</aside>
+
+## A third shape
+
+Observability guidance usually describes two shapes. A standalone application owns its SDK: it initializes the provider, registers instrumentation, collects web vitals, and exports. A micro-frontend inherits from its host: it emits spans into the context the host established and never configures its own provider, because two providers double-count.
+
+A distributed component library is neither. It sits deeper than a micro-frontend. It may be loaded by a child that is itself nested, in an application the library team has never seen. It has no page, no deployment, and no dataset. When I was asked for "observability for the design system," the first job was to say that plainly, because most of the easy answers assume a shape the library does not have.
+
+## Start with what you already own
+
+The decisive constraint was mundane. The library was published to a package registry and nowhere else. The team owned no telemetry tenancy and ran no collector. An architecture that depended on runtime data would have been undeliverable on day one.
+
+So I inverted the ask. The monitoring system a library team can operate outright is the one built from signals it produces during its own build and release:
+
+- test results and coverage, per commit, published where consumers can see them
+- accessibility checks across every documented example
+- a diff of the public API surface (tag names, attributes, slots) on every pull request, as information for the reviewer
+
+None of that needs another team's roadmap, an access request, or a privacy review. It also answers the question consuming teams ask most often during an incident: is the library broken, or is our usage wrong? A published, versioned quality record is something they can point at. I wrote up the testing side separately in [testing a web component library](/writing/testing-a-web-component-library).
+
+The first runtime prerequisite turned out to be embarrassingly small. The library had no version identifier at runtime. Nothing on a page could report which version was executing. One build-time constant fixed that, and every later decision depended on it.
+
+## Why not bundle the SDK
+
+The standard browser telemetry package in a large organization is rarely small. The one I measured against had a fixed cost of roughly 200 KB, a large share of it attribute-name constants that did not tree-shake.
+
+For an application, that is a rounding error. For a library it is different in kind, because every consumer inherits the library's dependencies. Bundling it would charge that cost to every adopter, including the ones with telemetry turned off. A second copy on the page would also invite exactly the double initialization the host-owns-the-provider pattern exists to prevent.
+
+So the rule became absolute: the telemetry SDK is the host application's dependency and never the library's. Not even the API package. The library takes zero telemetry dependencies, and a test in the release gate fails if any published package declares or imports one.
+
+## One span, through the host's tracer
+
+With that settled, the runtime question narrowed to: what is the least the library can send that answers a question nobody can answer today?
+
+The question was "which applications run which versions." Without it, deprecations are guesses and incident response starts with archaeology.
+
+The answer is one span per page load. OpenTelemetry's API package registers a well-known global when a page sets up tracing, which means a library can find the host's tracer without importing anything:
+
+```js
+const GLOBAL_KEY = Symbol.for("opentelemetry.js.api.1");
+
+function hostTracer(name, version) {
+  const api = globalThis[GLOBAL_KEY];
+  const provider = api?.trace;
+  return provider?.getTracer?.(name, version) ?? null;
+}
+
+function reportLoad(version) {
+  try {
+    const tracer = hostTracer("my-design-system", version);
+    if (!tracer) return;
+    tracer.startSpan("library.load").end();
+  } catch {
+    // A host's tracer must never be able to break the host's page.
+  }
+}
+```
+
+The design rules around that small function are the actual work:
+
+- **Detect, do not require.** No tracer on the page means the library does nothing, silently. Nobody should add tracing for the library's sake.
+- **Ride existing columns.** The version travels as the tracer version, which tracing backends already store. Shared datasets are often at their custom-attribute limit, and an attribute that gets dropped is worse than none.
+- **Stay out of the way.** The span is sent after the page's load event, so it never competes with first render.
+- **It cannot throw into the host.** If the host's tracer throws, the library catches it and stops reporting.
+- **There is an off switch**, and a debug flag that logs exactly what was sent or why nothing was.
+- **Duplicates announce themselves.** If a second copy of the library loads on the same page, it sends its own span as a child of the first copy's. One trace then shows both versions, which makes the [registration race](/writing/custom-element-registration-race) visible for the first time.
+
+I originally wrote the runtime tier as opt-in. I reversed that to on-by-default before release. An opt-in signal about version adoption measures the teams that opt in, which is not the population you are worried about. Everything else about the design (no dependency, no content, silent without a tracer, an off switch) is what made on-by-default defensible.
+
+## What a component library must never capture
+
+A component library is uniquely tempted to capture the wrong things, because it sees everything: input values, slotted text, element ids, selectors, every interaction. Almost all of that is personal or confidential data in a regulated environment, and tracing platforms are usually classified as places that data must not go. Logged data also cannot be surgically removed.
+
+The rule I wrote down is one sentence:
+
+> The library emits counts, timings, and values from closed sets it defines itself. It never emits content, identifiers, or selectors.
+
+A tag name, a version string, an error code from an enumerated list: fine. Anything that originated in an adopter's markup or an end user's input: never. If a proposed metric needs a privacy exception, that is strong evidence the metric is wrong for a component library.
+
+## Who sees the data
+
+This is the trade nobody mentions up front. Spans sent through the host's tracer land in the host's dataset. The adopter sees them immediately, in dashboards they already use. The library team sees nothing unless it has query access across those datasets.
+
+I think that asymmetry is correct, and it is the reason an owned collector was a stated non-goal rather than a deferred phase. A library-owned collector would double-count against every host pipeline and put the design system team in the data-ownership path for other people's pages. The honest version of the architecture says: build-time signals are ours outright, runtime signals belong to the host, and a fleet view is an access question to settle with the platform owners, not something to engineer around.
+
+## Proving it somewhere safe first
+
+I did not prove the runtime tier inside the library. I proved it in an application I own that consumes the library the way any product team does. That app was the host: it set up tracing, tagged spans with the loaded version, sent web vitals, and fed a dashboard. Once the pattern held there, the library change was a small one, with a working reference to point adopters at.
+
+That sequence is the part I would repeat anywhere. A platform change that every consumer inherits should be tested by being a consumer first.

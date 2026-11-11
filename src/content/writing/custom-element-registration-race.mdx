@@ -1,0 +1,125 @@
+---
+title: "The custom element registration race"
+description: "Two copies of a web component library on one page do not conflict loudly. One of them silently wins, and with async scripts the winner can change between page loads. How the race works, how to see it, and what a library should do about it."
+publishDate: 2026-11-10
+status: published
+---
+
+<aside class="callout">
+  <span class="callout-label">TL;DR</span>
+
+  Custom element registration is global to the page and first-wins. Most libraries guard the call so a second copy does nothing instead of throwing, which means the losing copy is silent. On a page composed from independently deployed bundles, your `package.json` tells you what you downloaded, not what is running. With `async` scripts the winner is a network race, so a passing test is one sample from a random process.
+</aside>
+
+## The shape of the problem
+
+A design system built on web components gets its reach from one fact: a custom element works anywhere HTML does. The cost of that reach is one shared resource. Every custom element on a page is registered in a single global registry, and a tag name can be defined exactly once.
+
+Calling `customElements.define()` with a name that is already taken throws. In a page assembled from several large bundles, an uncaught throw in the middle of one bundle can take down everything after it. So nearly every library wraps the call:
+
+```js
+function define(name, ctor) {
+  if (!customElements.get(name)) {
+    customElements.define(name, ctor);
+  }
+}
+```
+
+That guard is reasonable. It is also the whole problem. It converts a loud crash into a silent skip. The second copy of the library gets no error, no warning, and no console output. Its components still render, using the first copy's implementation. Nothing on the page reports that two versions are present, or which one won.
+
+The registry offers no way out. You can define, get, and wait for a definition. You cannot unregister, redefine, version, or namespace. Definitions are only ever added.
+
+## Three consequences
+
+**Your manifest is not a statement about what runs.** An application can pin one version of a component library, ship it, and execute a different one, because a different bundle on the same page registered first.
+
+**Upgrading your own app cannot fix a defect if your app loses the race.** If the copy that wins belongs to another team's bundle, your upgrade changes bytes that never get used. The fix has to travel through whoever ships the winning copy, which turns an engineering problem into a scheduling one.
+
+**You cannot test your way to confidence inside one repository.** Type checks, unit tests, and a production build can all pass while the composed page is broken, because the failure is a property of the composition, not of any repository in it.
+
+Transitive copies are the ones that catch people. The winning copy is often a dependency of a dependency, bundled into a shared header or a widget, owned by a team that has no idea it is a registry owner.
+
+## Why you cannot predict the winner
+
+The common assumption is that load order is a fixed property of a page. It depends on how each script is loaded.
+
+| How the script loads | Execution order | Predictable? |
+| --- | --- | --- |
+| Classic, no attributes | Document order, blocking the parser | Yes, if you own the document |
+| `defer` | Document order, after parsing | Yes, if you own the document |
+| `type="module"` | Deferred by default, document order | Yes, if you own the document |
+| `async` | Whenever each fetch completes | No |
+| Dynamic `import()` | Whenever the promise settles | No |
+
+The `async` row is not an ambiguity in the spec. It is the design: async scripts run as soon as each one is ready, in no particular order.
+
+I wanted to see it rather than argue it, so I built the smallest page that could show it. Two stand-in copies of a library at different versions, both using the guard above, same origin, tiny files, a warm local server. With `async`, the copy listed second in the document won the first load. On reload of the byte-identical page, the other copy won. With `defer`, document order held every time.
+
+That result reframes a familiar argument. When behavior differs between a test environment and production, the instinct is to hunt for a configuration difference. Often there is none. They are two samples from a nondeterministic process, and anything that shifts fetch timing (cache state, CDN latency, bundle size, an unrelated app on the page getting slower) can change the outcome. "We tested it and it was fine" carries very little information about this failure.
+
+Notice the caveat in the table, too. Even the deterministic modes are deterministic with respect to document order on the composed page. On a micro-frontend page, no single team owns that document.
+
+## Seeing it on a live page
+
+No build tool can answer "which copy won," so the checks run in a browser.
+
+**Which tags are present, registered, and upgraded.** An unregistered custom element does not throw and does not look broken in the inspector. It just never upgrades.
+
+```js
+[...new Set([...document.querySelectorAll("*")].map((el) => el.localName))]
+  .filter((tag) => tag.includes("-"))
+  .map((tag) => ({
+    tag,
+    registered: Boolean(customElements.get(tag)),
+    upgraded: document.querySelector(tag).constructor !== HTMLElement,
+  }));
+```
+
+**Catch the losing registration in the act.** This is the one detail I had to learn the hard way. The guard calls `get()` before `define()`, so the losing copy never calls `define()` at all. Instrumenting `define()` shows you nothing. Instrument `get()`: a call that returns a hit, made from a script that is not the incumbent, is a registration about to be discarded.
+
+```js
+const registry = CustomElementRegistry.prototype;
+const originalGet = registry.get;
+const originalDefine = registry.define;
+const owners = new Map();
+
+const caller = () => (new Error().stack ?? "").split("\n")[3]?.trim() ?? "unknown";
+
+registry.define = function (name, ...rest) {
+  owners.set(name, caller());
+  return originalDefine.call(this, name, ...rest);
+};
+
+registry.get = function (name) {
+  const found = originalGet.call(this, name);
+  if (found) console.warn(`[race] <${name}> owned by ${owners.get(name)}; checked from ${caller()}`);
+  return found;
+};
+```
+
+It has to run before any library bundle, so inject it as the first script on the page (a local override in devtools works). Pasting it into the console after load is too late. The race is over.
+
+**Read the real order.** For async scripts, completion order is execution order, so resource timing sorted by `responseEnd` is a fair approximation. Run it several times. If the order moves, you have confirmed a race rather than a misconfiguration.
+
+## What a library should do
+
+The guard should stay. Throwing in someone else's page is worse. But silence is a choice, and a library can make a better one.
+
+1. **Ship a runtime version identifier.** If nothing on the page can say which version is executing, every investigation starts with fingerprinting minified bundles.
+2. **Compare versions on collision.** Stamp the version on what you register. When `get()` finds an incumbent, compare. Same version loaded twice is a warning about wasted bytes. Different versions is a warning that names both, because something will probably break.
+3. **Report duplicates through telemetry the host already has.** A second copy that announces itself turns an invisible failure into a line on a dashboard. I wrote about how to do that without bundling an SDK in [telemetry for a library you do not host](/writing/telemetry-for-a-library-you-dont-host).
+4. **Do not make every consumer a registry owner by default.** If a framework wrapper package quietly bundles the full runtime and the install guide loads it globally, every team that follows the guide joins the race.
+
+## What a page should do
+
+One rule removes the race by design instead of winning it by luck: exactly one application on a page registers the component library. The host owns registration. Everything else consumes what the host registered and treats the library as a peer dependency, not a bundled one. That also removes the duplicate payload, which on a page with four copies is not small.
+
+Consumers can lower their own exposure: pin exactly instead of using caret ranges, verify upgrades with a clean install, check the lockfile for transitive copies, and confirm a fix in a browser on the composed page, more than once.
+
+## The platform fix, and why it is not yet the answer
+
+Scoped custom element registries exist for exactly this. You create an isolated registry and attach it to a shadow root, and two libraries can define the same tag name without coordination. As of early 2026 they ship in Chromium-based browsers and Safari, per the [Chrome team's write-up](https://developer.chrome.com/blog/scoped-registries), but not yet everywhere. More decisively, scoped registries only help code that uses the scoped creation APIs. A host framework and third-party bundles that call the global registry will keep calling it. Treat it as where this is going, not as something a large existing page can adopt this quarter.
+
+## The part that is not technical
+
+On a composed page, every team involved can act reasonably inside its own scope and the page can still be wrong. The application team owns its app. Another team owns a shared package in between. The design system team owns the library. Nobody owns the question "which version actually executes on this page." The gap is between the scopes, and no control inside any one of them closes it. It needs a named owner and a page-level rule, which is a decision, not a patch.

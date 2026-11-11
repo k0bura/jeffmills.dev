@@ -1,0 +1,103 @@
+---
+title: "Testing a web component library: four kinds of test, one blocking gate"
+description: "What it took to put a design system under real tests: logic in Node, every Storybook story in a real browser, zero-tolerance visual baselines across two operating systems, and a rule that a test has to earn the right to block a release."
+publishDate: 2026-11-10
+status: published
+---
+
+<aside class="callout">
+  <span class="callout-label">TL;DR</span>
+
+  A shared component library's bugs are not one bug. They are the same bug in every application that upgrades. I put ours under four kinds of test: unit tests in Node for logic, render and interaction tests that run every Storybook story in real Chromium, and pixel-exact visual baselines. Only the unit tests block a release. The browser tests run on every push and publish their results, and they become blocking when they have proven they are stable. The most useful findings were the ways the tests themselves were lying.
+</aside>
+
+## The finding that started it
+
+When I went looking for the design system's quality gates, the important discovery was that there were none. A few spec files existed. A custom HTML reporter existed. The build pipeline installed, built, packaged, and published, and never ran a test or a linter. Everything needed for a gate was in the repository except the gate.
+
+The suite could not even run. Starting it burned a CPU core for hours with no output. The cause was the test runner sharing the build's config file, which imported monorepo plugins whose mere import kicked off project-graph work that never settled under the test runner. Because the failure happened at import time, feature-flagging the plugins' use did not help. A dedicated test config that imports none of them ran the same spec in under four seconds.
+
+That is worth saying because it is the usual shape of "we have no tests." It is rarely a decision. It is one unglamorous blocker that nobody had the afternoon to chase.
+
+## Draw the line where jsdom stops being honest
+
+The split I settled on:
+
+| Kind | What it checks | Runs in |
+| --- | --- | --- |
+| Unit | Shared utilities and composables: date masking, attribute syncing, keyboard navigation | Node, in seconds |
+| Story render | Every Storybook story renders without throwing | Real Chromium |
+| Story interaction | Stories with a scripted user who clicks, types, tabs, and presses Escape | Real Chromium |
+| Visual | A screenshot per component against an approved baseline | Real Chromium |
+
+The line falls where a simulated DOM stops telling the truth. Components in shadow DOM measure their own layout, manage focus, and respond to the keyboard. One range slider measured itself ten times during setup, and a simulated browser answers zero for every one of those. Testing it there proves nothing. Going the other way, putting date arithmetic in a browser adds seconds and buys nothing.
+
+Using stories as tests has a second payoff. The stories are the documentation consumers read. If every story is a test, the docs are tested.
+
+I made that opt-out rather than opt-in. Every story is a test unless it says otherwise. The earlier opt-in convention had covered fifteen stories. Opt-out covered several hundred on the first run.
+
+## Getting a real browser into CI
+
+This took more probing than code. In a locked-down build environment:
+
+- the test framework's own browser download was blocked at the network edge
+- the build image's packaged Chromium crashed ten seconds into every launch, logging nothing
+- a pinned Chrome for Testing build, fetched from its public bucket, worked
+
+Two traps on the way. A 403 from the bucket's root is not a block: the bucket refuses listing and serves objects. And never unpack a browser into the framework's managed browser directory if its own installer might run later, because a failed install cleans the directory.
+
+I wrapped the working recipe in one reusable CI step that reads the browser version from the test framework's own manifest, so a framework upgrade cannot leave CI driving a mismatched browser.
+
+## One page, shared state
+
+With per-file isolation on, the setup file that registers every component re-ran for each of a couple hundred story files: over a minute locally and most of ten in CI, for about a second and a half of actual testing. With isolation off, the whole suite took around twelve seconds.
+
+The cost is real and you have to design for it. Story files now share one page, so a story that leaves state outside its own canvas leaks into every later story. One fixture that left a dialog open produced ninety-odd errors across unrelated components. The rule for interaction tests became: leave no dialog open and no document-level listener behind.
+
+## Visual regression without a vendor
+
+Hosted visual testing would have meant vendor approval and component screenshots leaving the building, so I built it on what was already there: screenshot after render, compare with a pixel-diff library, commit baselines next to the stories.
+
+The interesting decisions:
+
+**Tolerance is zero.** Rendering is pixel-identical across launches on one machine. Any tolerance above zero is a place for a regression to hide.
+
+**Two baseline sets, one source of truth.** Developers work on Macs and CI renders on Linux, where fonts rasterize differently (about 2.5% of pixels on the same page). So there are two sets. The Mac set is the source of truth and is what reviewers see in a pull request. A CI job regenerates the Linux set automatically, and only for stories whose Mac baseline that branch actually changed. It never runs a blanket update, which would also accept regressions nobody reviewed.
+
+**Media components are excluded, not accommodated.** Audio and video players differed between identical runs. The fix is to mask the media element, never to loosen the tolerance until they pass.
+
+## The tests were lying, three times
+
+These are the findings I would put in front of anyone building this.
+
+**Every baseline was captured at 80% scale.** The browser page was smaller than the story viewport, so the test runner scaled the frame to fit. Every screenshot was a shrunken one. Worse, anything below the viewport's height was blank. One component's content sat four thousand pixels down and had never been in its own baseline. The test passed every time, comparing blank to blank. The fix grows the frame to the story's full height at full scale for each capture, then restores it.
+
+**A half-loaded image became a baseline.** The sync job renders everything at once, and a large hero image was captured with only its top strip drawn. That capture was committed as the reference. Now a capture waits for images, fonts, and finite animations, and if anything is still pending at the deadline it writes nothing and names what was pending.
+
+**A hook registered once looked like success.** With a shared page, the setup file is evaluated once. A cleanup hook registered at the top level applied to the first file only. Dozens of stories were tagged for visual checks, one baseline was written, and the run was green.
+
+None of these were caught by a failing test. They were caught by looking at the artifacts. I now have a standing rule for myself: look at what a test produced before wiring automation around it. The first HTML report I inspected turned out to embed no assertion messages, so a red build would not have been diagnosable from the page.
+
+## A test has to earn the right to block
+
+Only the unit tests are a hard gate. A failure, or coverage below its floor, stops release and publish. The floors sit just under current coverage and only ever move up.
+
+The browser tests run on every push and publish every result, but they do not block yet. A blocking test has to be trustworthy, because a flaky blocker teaches a team to ignore red. So I wrote promotion criteria and asked the team to agree to them:
+
+1. **Stability.** Thirty consecutive runs on the main branch with no failure that is not a real defect. A flaky test gets fixed or removed, never retried into green.
+2. **Speed.** The ninetieth-percentile CI run under five minutes.
+3. **A clean baseline.** Zero unhandled errors, with known defects tracked as tickets rather than asserted as expected behavior.
+
+The gate is wired at the release chokepoints rather than in front of everything. A red suite cannot produce a release or publish a package, while builds still run in parallel with tests, so pull request feedback is as fast as before.
+
+## Did it pay off
+
+On the first run. Render tests surfaced a gallery that threw on resize and fixtures that never removed their listeners. Interaction tests found a close button that fired its event twice, an Escape key that bypassed a configured confirmation, and a keyboard path that closed a dialog it should not have. A unit test on a widely used composable caught a bug with a large blast radius before it shipped.
+
+Bugs the tests found were fixed or ticketed. They were never written into a test as expected behavior.
+
+The result is published: a dashboard grouped by kind, then component, where every story test links to its live story with the interaction steps replayable, and a failed visual check opens a diff viewer. The reporting tool shipped with an analytics tag built in. The build strips it and refuses to publish if it ever comes back, because a quality dashboard for a library that ships no tracking should not track its readers.
+
+## What I would tell another team
+
+Start with the gate, not the coverage number. One blocking suite at the release chokepoint changes how a team works more than any amount of non-blocking testing. Then let everything else prove itself in public before it earns the right to block. And look at the artifacts. A green run tells you the tests agreed with themselves, which is not the same as the tests being right.

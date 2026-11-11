@@ -1,0 +1,89 @@
+---
+order: 10
+title: "Trust and Assurance in a Shipped Design System"
+chapter: "Hands-On Deep Dive"
+period: "2026"
+summary: "How I make a shared component library something other teams can trust: gates that block a bad release, tests that run in a real browser, evidence published with every version, and visibility into what is actually running. Built hands-on, then handed to the team."
+tags: ["testing", "observability", "design systems", "hands-on", "engineering leadership"]
+---
+
+<aside class="callout">
+  <span class="callout-label">Executive summary</span>
+  <p>
+    A design system runs inside other teams' applications, so its quality
+    is a promise made on their behalf. I treat that promise as something
+    to prove on every release, not something to assert. Over about two
+    months I built the assurance system for Meridian myself: a blocking
+    test gate, real-browser and visual regression tests for every
+    documented component, a published quality record, and version
+    telemetry that costs consumers nothing. I did it as a contributor in
+    the repository, through the same review as everyone else, and
+    designed each piece to be owned by the team afterward.
+  </p>
+</aside>
+
+## Context
+
+When a product team drops a design system component into its application, the library's code runs inside that application. A defect in the library is not one defect. It is the same defect in every application that upgrades.
+
+That changes what quality means. For an application, quality is whether the application works. For a shared library, quality is whether dozens of teams can upgrade without reading the diff, and whether they can tell quickly, when something goes wrong, if the cause is the library or their own usage. Both of those are questions of trust, and trust at that scale has to be built from evidence people can check for themselves.
+
+By this point Meridian was running inside a large number of independently deployed applications, several of which share pages. It had earned adoption on the strength of its architecture and its team. I wanted its assurance to be as deliberate as its design.
+
+## My role
+
+I lead the team that owns the design system. For this work I was also the engineer. I made that choice deliberately: the team was at capacity on committed delivery, the problem needed someone who could hold the whole system in their head for a few weeks, and assurance is the kind of platform work that sets the standard for everything built on top of it. I wanted to set that standard by example.
+
+## The four things consumers need to be able to trust
+
+I organized the work around what a consuming team actually relies on.
+
+### 1. A bad release cannot ship
+
+The first layer is a gate that blocks. I got the unit suite running in the pipeline, grew it from a couple of dozen tests to several hundred across the shared utilities and composables that every component leans on, and set coverage floors that only ever move up. The gate sits at the two release chokepoints, so a failing suite cannot produce a release or publish a package, while builds still run in parallel and pull request feedback stays fast.
+
+### 2. Components behave in a real browser
+
+Web components in shadow DOM measure their own layout, manage focus, and respond to the keyboard. A simulated DOM cannot check any of that honestly. So every Storybook story now runs as a test in real Chromium: render tests for every documented state, and interaction tests with a scripted user who clicks, types, tabs, and presses Escape. Because the stories are the documentation consumers read, the documentation is tested too.
+
+On top of that sits visual regression with zero tolerance: a pixel-exact baseline for each current-generation component, reviewed as an image in the pull request whenever it changes, with a second baseline set synced automatically for the build servers.
+
+The first runs found real defects in shipped components, including keyboard and accessibility behavior. Each one was fixed or ticketed. None was written into a test as expected behavior. The engineering detail, including the ways the tests themselves had to be made trustworthy, is in [testing a web component library](/writing/testing-a-web-component-library).
+
+### 3. The evidence is published
+
+Assurance that only the library team can see is not assurance for anyone else. Every release publishes a quality dashboard alongside the documentation: results grouped by kind and component, each story test linked to its live story with the interaction steps replayable, and a diff viewer for any visual change. A consuming team can look at exactly what was checked before they upgrade, and point at it during triage.
+
+### 4. Everyone can see what is actually running
+
+On a page composed from independently deployed applications, the version a team installed is not necessarily the version executing. Custom element registration is global and first-wins, so when two copies of a library meet on one page, one silently supplies every component for both. I studied that mechanism closely, built a minimal reproduction, and showed that with async loading the winner can change between loads of an identical page. The general write-up is [the custom element registration race](/writing/custom-element-registration-race).
+
+Two things came out of that analysis. The first is a page-level standard, developed with the architecture group: one application on a page registers the library, releases reach a test tier first, and rollback is one step. I brought the analysis and options and asked for review and a named owner, an architect verified the findings independently and built the standard, and my review added the test-first release path and the rollback. The second is version telemetry: one span per page load, sent through the host page's existing tracer, carrying the library version. It adds no dependency and needs no configuration, it stays silent when the host has no tracing, and it has an off switch. A second copy of the library on a page reports itself. The design reasoning is in [telemetry for a library you do not host](/writing/telemetry-for-a-library-you-dont-host).
+
+I proved that pattern first in an application I own that consumes the design system the way any product team does, then made the small change in the library with a working reference to point adopters at.
+
+## The principles underneath
+
+A few rules shaped every decision above.
+
+- **A test has to earn the right to block.** Only the unit suite is a hard gate today. Browser and visual tests run and publish on every push, and become blocking once they meet written criteria for stability and speed. A flaky blocker teaches a team to ignore red, which destroys the trust the gate exists to create.
+- **Never lower a floor to make a build pass.** Coverage floors ratchet upward. Visual tolerance is zero, and components that cannot render deterministically are excluded until they can, rather than accommodated with a looser threshold.
+- **The library never spends its consumers' budget.** No telemetry SDK, no added dependency, no configuration. A test in the release gate fails if a published package declares one.
+- **Counts and timings, never content.** A component library can see everything on a page. It should report almost none of it.
+- **Monitoring the library is the library team's job.** Consumers should not have to do anything to be covered.
+
+## How I kept it a team asset
+
+Doing the work myself only helps if it does not stay mine.
+
+- **Same review as everyone.** My pull requests went through the team's senior engineers, and I reverted one of my own changes when review showed the better call was to leave a deprecated path alone.
+- **Decisions live next to the code.** The architecture, the gate definitions, and the reasoning behind every "why not" are documents in the repository, written so the next person does not have to re-argue them.
+- **An onboarding guide whose examples run.** I wrote a walkthrough of the four kinds of test, with templates for directing an AI coding agent to write each one. Every example in it was executed as a real test before publishing.
+- **Promotion criteria agreed by the team.** I wrote the conditions under which browser tests become blocking and put them to the team rather than deciding alone.
+- **Follow-on work in the backlog, not in my head.** Trend history, per-story accessibility checks, and the remaining defects are tickets other people can pick up, and they have.
+
+## What it shows
+
+Trust in a platform is built the same way at every scale: make the promise specific, check it automatically, and show your work. The architecture chapters of this story are about designing a system that lasts. This one is about making sure that what ships from it deserves the confidence other teams place in it.
+
+It is also the clearest recent example of how I like to lead. I can still pick up a hard problem in a production codebase, find the actual mechanism, build the answer to a standard senior engineers will approve, and leave the team owning it. For a principal-level role that is the combination I think matters: judgment about what to build, and the hands to build it.
