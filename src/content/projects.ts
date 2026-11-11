@@ -12,7 +12,7 @@ export const PROJECTS: Project[] = [
     slug: "gen-ui-demo",
     title: "Gen UI Demo",
     summary:
-      "Two-stage Claude tool-use pipeline that picks components from a tiny web-component library, then arranges them into a layout. Svelte + Lit + Astro.",
+      "A Claude tool-use pipeline that fetches live data, composes UI from a web-component library, and enforces a design system's layout rules in code. The model never writes code. Astro + Svelte + Shoelace.",
     status: "live",
     year: 2026,
     tags: ["Claude", "tool use", "Svelte", "Lit", "design systems"],

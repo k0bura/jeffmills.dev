@@ -150,3 +150,15 @@ The prototype's job was to show that the architectural pattern works, not to shi
 The same pattern generalizes beyond Meridian. Any design system with structured component metadata and constrained props can be a Gen UI substrate. The MCP server work makes this practical: an AI coding agent can read the component schema directly, then either generate static UIs (this prototype's pattern) or scaffold component-based application code.
 
 The bigger question Gen UI raises: as the cost of generating UIs drops, what does it mean to design one? I don't think the answer is "no more designers." I think it's "designers who define the substrate that generators compose against." Which is exactly what design system designers have been doing all along, with the audience now shifting from human engineers to AI agents.
+
+## Postscript, November 2026
+
+I took this pattern a good deal further after writing the above, and rebuilt the public demo around what I learned. Three things changed my mind about what the hard part is.
+
+**Real data changes the first stage.** A model recalling facts and a model fetching them are different systems. The first stage is now a tool-calling loop over live data, and most of the design work is in the tools: return small, labelled, pre-rounded results, and send failures back as data with an instruction not to fill the gap from memory.
+
+**Two stages were one too few.** Choosing components and choosing layout left nobody responsible for structure. A middle stage now sets order, groups, and a role for each piece of text. It never picks a size.
+
+**A prompt is a request, not a guarantee.** The layout rules live in one spec file that generates the prompt text, the tool schema, the CSS, and the validators. Code between the model calls repairs the layout and sets type from the roles, so the rules hold when the prompt is ignored. That code is unit tested, which closes the "no evaluation harness" gap above for everything except the model itself.
+
+The details, the layout spec, and the remaining gaps are on the [Gen UI demo project page](/projects/gen-ui-demo).

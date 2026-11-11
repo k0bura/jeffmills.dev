@@ -7,7 +7,7 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
 
 <Base
   title="Gen UI Demo, Jeff Mills"
-  description="A two-stage Claude tool-use pipeline that composes UI from a tiny web-component library, without generating any code."
+  description="A Claude tool-use pipeline that fetches live data, composes UI from a web-component library, and enforces a design system's layout rules in code, without generating any code."
 >
   <p class="project-back"><a href="/projects">&laquo; all projects</a></p>
   <h1 class="page-title">gen ui demo</h1>
@@ -16,16 +16,17 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
     <span class="meta-sep">&middot;</span>
     <span class="project-status">live</span>
     <span class="meta-sep">&middot;</span>
-    <span>2-day prototype</span>
+    <span>v0.4</span>
     <span class="meta-sep">&middot;</span>
     <span>solo</span>
   </p>
 
   <p class="page-lede">
-    Two Claude tool-use calls in series. Stage 1 picks components from a
-    framework-agnostic web-component library and fills them with content.
-    Stage 2 arranges them into a layout. The renderer is plain Svelte. The
-    LLM never writes code.
+    Type a question. A chain of Claude tool-use calls fetches live data,
+    picks components from a framework-agnostic web-component library,
+    gives the content structure, and arranges it into a layout. Plain code
+    runs between the model calls and enforces the design rules. The
+    renderer is plain Svelte. The LLM never writes code.
   </p>
 
   <aside class="callout">
@@ -41,16 +42,33 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
   </aside>
 
   <aside class="callout">
-    <span class="callout-label">Why Shoelace</span>
+    <span class="callout-label">What changed in v0.4</span>
     <p>
-      Shoelace is the public stand-in for Meridian. Both are framework-agnostic
-      web-component libraries with declarative props, named slots, and a
-      <code>custom-elements.json</code> manifest describing every component
-      and its API surface. Anything this demo does on top of Shoelace
-      transfers to Meridian unchanged. The 30 components the LLM can choose from
-      are generated at build time by parsing the Shoelace manifest into
-      Anthropic tool specs, exactly the path a production system would take
-      to expose Meridian to a model.
+      The first version proved the idea in two days: two model calls, one
+      to pick components and one to lay them out. Taking the same idea
+      further at work taught me where a pipeline like that falls short of
+      something you would put in front of a user. This version is a
+      from-scratch public rebuild of those lessons: real data instead of
+      model recall, a design system's layout rules written down as data,
+      and deterministic code that holds those rules when a prompt is
+      ignored.
+    </p>
+  </aside>
+
+  <aside class="callout">
+    <span class="callout-label">Why Shoelace and Carbon</span>
+    <p>
+      Shoelace is the public stand-in for Meridian. Both are
+      framework-agnostic web-component libraries with declarative props,
+      named slots, and a <code>custom-elements.json</code> manifest
+      describing every component. The component tools the model can call
+      are generated from that manifest at build time. The layout rules
+      come from a second public source: IBM Carbon's grid, spacing scale,
+      and type tokens, which are documented openly and ship in a free
+      Figma Community kit. I evaluated moving the components to Carbon's
+      web components too, and kept Shoelace because its manifest is the
+      one rich enough to generate tool schemas from: resolved enums,
+      documented slots, real descriptions.
     </p>
   </aside>
 
@@ -67,7 +85,8 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
   <p class="cta-note">
     The demo runs as a standalone app at
     <code>{DEMO_URL.replace("https://", "")}</code>. Reviewers can clone
-    the repo and <code>npm run dev</code> in under a minute.
+    the repo and <code>npm run dev</code> in under a minute, with a mock
+    mode that needs no API key.
   </p>
 
   <hr class="jm-rule" />
@@ -77,226 +96,191 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
   <div
     class="diagram"
     role="img"
-    aria-label="Pipeline: user prompt feeds Stage 1 LLM which picks components and fills content; output is a JSON component list; this feeds Stage 2 LLM which decides layout; output is layout JSON; a Svelte renderer turns both into the final UI."
+    aria-label="Pipeline: the user prompt feeds a components stage that calls live data tools and emits components; a normalize pass cleans the markup; a structure stage sets order, groups and text roles; a layout stage picks row patterns; code repairs the layout and sets type; a Svelte renderer draws the final UI."
   >
     <div class="diagram-node">user prompt</div>
     <div class="diagram-arrow">&#9660;</div>
     <div class="diagram-node is-stage">
-      <div class="diagram-node-title">stage 1 LLM</div>
-      <div class="diagram-node-body">pick components<br />+ fill content</div>
+      <div class="diagram-node-title">components (LLM loop)</div>
+      <div class="diagram-node-body">call live data tools<br />+ emit components</div>
     </div>
     <div class="diagram-arrow">
-      &#9660;<br /><span class="diagram-payload">json component list</span>
+      &#9660;<br /><span class="diagram-payload">normalize (code)</span>
     </div>
     <div class="diagram-node is-stage">
-      <div class="diagram-node-title">stage 2 LLM</div>
-      <div class="diagram-node-body">decide layout</div>
+      <div class="diagram-node-title">structure + roles (LLM)</div>
+      <div class="diagram-node-body">order, groups, text roles<br />never sizes</div>
     </div>
     <div class="diagram-arrow">
-      &#9660;<br /><span class="diagram-payload">layout json</span>
+      &#9660;<br /><span class="diagram-payload">one summary line per component</span>
+    </div>
+    <div class="diagram-node is-stage">
+      <div class="diagram-node-title">layout (cheaper LLM)</div>
+      <div class="diagram-node-body">pick from six row patterns</div>
+    </div>
+    <div class="diagram-arrow">
+      &#9660;<br /><span class="diagram-payload">repair + typeset (code)</span>
     </div>
     <div class="diagram-node">
       <div class="diagram-node-title">svelte renderer</div>
       <div class="diagram-node-body">deterministic</div>
     </div>
     <div class="diagram-arrow">&#9660;</div>
-    <div class="diagram-node">final UI</div>
+    <div class="diagram-node">final UI + follow-up prompts</div>
   </div>
 
   <dl class="stage-list">
-    <dt>Stage 1, content + component selection</dt>
+    <dt>Stage 1, data and components</dt>
     <dd>
-      Sonnet- or Opus-tier model with one Anthropic tool definition per
-      Shoelace component (30 of them, generated from the manifest). The
-      model returns its choices as <code>tool_use</code> blocks: one tag
-      per call, with typed attributes, default-slot content, and named
-      slots. The app parses them into a flat array of
-      <code>ComponentInstance</code> objects. No JSX, HTML, or CSS ever
-      crosses the wire.
+      The only agentic stage. The model gets one flat list of tools of two
+      kinds. Data tools are executed: keyless public APIs for weather,
+      exchange rates, and encyclopedia summaries. Component tools are never
+      executed. The call is the output: the app records the tool input as a
+      component instance and replies "rendered" so the model carries on.
+      Around thirty component tools are generated from the Shoelace
+      manifest, plus hand-written chart and table tools. The first round
+      must call a tool, so the model cannot answer in prose.
     </dd>
 
-    <dt>Stage 2, layout decision</dt>
+    <dt>Stage 2, structure and roles</dt>
     <dd>
-      Haiku-tier model with a single <code>compose_layout</code> tool. Its
-      schema is a recursive grammar of seven layout primitives
-      (<code>ref</code>, <code>grid</code>, <code>stack</code>,
-      <code>row</code>, <code>section</code>, <code>tabs</code>,
-      <code>sidebar</code>, <code>divider</code>). Output is one layout tree
-      that references Stage 1 components by id.
+      A second model reorders and groups the components and marks a role on
+      every piece of text: card title, headline figure, body, caption. It
+      never chooses a size. If its answer is missing or malformed, stage
+      1's list passes through unchanged, and a rewrite that introduces a
+      number stage 1 did not produce is rejected for that component.
     </dd>
 
-    <dt>Stage 3, deterministic render</dt>
+    <dt>Stage 3, layout</dt>
     <dd>
-      A recursive Svelte component walks the layout tree and a sibling
-      renderer materializes each web component with its attributes and
-      slot HTML. Plain application code. No LLM involvement. Predictable,
-      testable, debuggable.
+      A cheaper model never sees the markup. It gets one summary line per
+      component (id, tag, group, a density summary, and a minimum width the
+      code computed) and must call a single layout tool whose pattern enum
+      is generated from the layout spec. A small, structural task is why
+      the cheaper model is enough.
+    </dd>
+
+    <dt>Code passes, between and after</dt>
+    <dd>
+      Normalization strips inline styles, invented classes, scripts, and
+      images that did not come from a tool result. Layout repair guarantees
+      every component appears exactly once, rows use one of the closed
+      patterns, nothing sits in a slot narrower than its minimum, and a
+      group stays together. Typesetting turns each role into a type style
+      and steps down a size ladder until the text fits its slot, with one
+      size shared across a group so cards in a row match.
+    </dd>
+
+    <dt>Follow-ups and memory</dt>
+    <dd>
+      A small final call suggests three next prompts and can never fail the
+      request. The server is stateless: the browser sends back each earlier
+      prompt with a short note of what was shown, and every turn fetches
+      its data again instead of trusting numbers from an earlier one.
     </dd>
   </dl>
 
   <hr class="jm-rule" />
 
-  <h2 class="section-title">stage 1 prompt: forcing decomposition</h2>
+  <h2 class="section-title">the layout spec: one file, four consumers</h2>
 
   <p>
-    The naive prompt produces a model that compresses everything into one
-    <code>sl-alert</code> with the whole answer as a giant content string.
-    That throws away every layout opportunity downstream. The fix is to make
-    decomposition the loudest rule in the system prompt and reinforce it on
-    every user turn.
+    A design system's layout rules usually live in a Figma file and in
+    designers' heads. To get a model to follow them you write them into a
+    prompt, and to guarantee them you write them again as code. Two copies
+    drift.
   </p>
 
-  <p>The system prompt opens with:</p>
-
-  <pre class="prompt-excerpt"><code>{`RULE #1 - DECOMPOSE THE ANSWER.
-
-The renderer treats every sl-card / sl-alert / sl-badge as a separate
-atom that the next stage can lay out in grids, rows, tabs, and sidebars.
-If you pack a multi-part answer into ONE component's content string, all
-of that layout capability is wasted and the page looks like a wall of text.
-
-Before you call any tool, COUNT the natural sections in your answer:
-  - A "2-week itinerary" has 14 sections (one per day) plus flights, tips.
-  - A "compare X, Y, Z" has 3 sections (one per option) plus a verdict.
-  - A "dashboard of metrics" has one component per metric.
-
-Then emit roughly that many components.`}</code></pre>
-
   <p>
-    The user-turn wrapper repeats the directive with even stronger
-    language and an explicit reminder that parallel tool use is supported,
-    so the model knows it can emit many <code>tool_use</code> blocks in a
-    single response. Combined with <code>temperature: 0.2</code>, this
-    turns a coin-flip behavior into a reliable one. Same prompt, same
-    model: 1 tool_use vs 19 tool_uses. Below 0.5 the model stops landing
-    on "one big summary alert" as a valid completion.
+    Here the rules are data. One spec file holds the grid, a closed set of
+    six row patterns, the narrowest slot each kind of component may
+    occupy, the grouping rules, and a table mapping text roles to type
+    styles with a size ladder for each. Four things are generated from it:
+    the prompt text, the layout tool's schema, the stylesheet, and the
+    validators the repair pass runs.
   </p>
 
-  <hr class="jm-rule" />
-
-  <h2 class="section-title">stage 2 prompt: forcing layout grouping</h2>
-
-  <p>
-    Stage 2 has the opposite problem. Given fifteen components, the default
-    behavior is to dump them all into a flat vertical stack: technically
-    correct, visually useless. The job here is to identify groupings (days
-    of a trip, metric tiles, comparison cards) and arrange them as grids,
-    rows, and sections rather than rows of one thing each.
-  </p>
-
-  <p>The system prompt is structured around that single rule:</p>
-
-  <pre class="prompt-excerpt"><code>{`RULE #1 - GROUP, DON'T STACK.
-
-A flat vertical list of 15+ components is almost always wrong. Read every
-component's header label and content preview before you decide anything.
-Look for:
-
-  - Series: items numbered/named in sequence ("Day 1", "Day 2", "Day 3")
-    -> arrange in a grid (2-4 columns).
-  - Categories: items sharing a topic (all Tokyo cards together)
-    -> nest in their own section.
-  - Metrics / tiles: small components (sl-progress-ring, sl-format-number)
-    -> group as a dashboard band.
-  - Primary + supporting: one big thing with small things around it
-    -> sidebar layout.`}</code></pre>
+  <pre class="prompt-excerpt"><code>{`rowPatterns: [
+  { id: "1-up",             tracks: [1] },
+  { id: "2-up",             tracks: [1, 1] },
+  { id: "2-up-wide-left",   tracks: [2, 1] },
+  { id: "2-up-wide-right",  tracks: [1, 2] },
+  { id: "3-up",             tracks: [1, 1, 1] },
+  { id: "4-up",             tracks: [1, 1, 1, 1] },
+]`}</code></pre>
 
   <p>
-    The prompt is followed by a worked example that draws the desired tree
-    shape for the test prompt ("2-week Japan itinerary"), and an explicit
-    anti-pattern showing the flat-stack output as wrong. The combination of
-    a hard rule plus a worked example plus a negative example reliably
-    produces nested layouts.
+    Change a number in the spec and the prompt and the enforcement change
+    together. The model is asked for the pattern, and the code guarantees
+    it. That split is the main thing I would carry into any production
+    version: a prompt is a request, and anything that must hold needs to
+    be checked by something that cannot be talked out of it.
   </p>
 
   <hr class="jm-rule" />
 
-  <h2 class="section-title">passing context between stages</h2>
+  <h2 class="section-title">roles, not sizes</h2>
 
   <p>
-    Stage 2 cannot do its job unless it sees the semantic signals Stage 1
-    embedded in each component. The first version of this pipeline sent
-    Stage 2 just the tag name and attributes:
+    Asking a model to pick font sizes produces pages where every card
+    makes its own decision. The model is good at knowing that a string is
+    a headline figure and bad at knowing whether it fits in a 240px slot.
+    So the model labels meaning and code does the fitting.
   </p>
 
-  <pre class="prompt-excerpt"><code>{`0. <sl-card>  variant="primary"
-1. <sl-card>  variant="primary"
-2. <sl-card>  variant="primary"
-...`}</code></pre>
+  <pre class="prompt-excerpt"><code>{`<span data-role="stat-value">1 USD = 0.92 EUR</span>
+<span data-role="caption">as of today</span>`}</code></pre>
 
   <p>
-    From the model's perspective, that's fifteen indistinguishable cards.
-    Of course it produces a flat stack. The fix was to include the most
-    grouping-relevant field: the <code>header</code> slot, which is where
-    Stage 1 puts the card's label.
-  </p>
-
-  <pre class="prompt-excerpt"><code>{`0. <sl-card>  header="Flight: PHL -> HND"  content="Outbound ANA NH9 dep PHL 12:35..."
-1. <sl-card>  header="Day 1 - Tokyo: Asakusa"  content="Morning at Senso-ji, afternoon..."
-2. <sl-card>  header="Day 2 - Shibuya & Harajuku"  content="..."
-...
-14. <sl-card>  header="Day 14 - Return to PHL"  content="..."`}</code></pre>
-
-  <p>
-    With those header labels, Stage 2 immediately recognizes "days 1-14
-    are a sequence" and grids them, and "the flight is its own thing"
-    and breaks it out. Same model, same prompt, dramatically different
-    output. The reference-card format is a tiny serialization step in
-    the Pages Function, but it's the load-bearing piece that lets the
-    two stages reason about the same content from different angles.
+    The typesetting pass computes each component's slot width from the
+    repaired layout, estimates the text's width at each step of that
+    role's ladder, and takes the largest size that fits. Three figures in
+    one row step down together, so the row reads as a set.
   </p>
 
   <hr class="jm-rule" />
 
-  <h2 class="section-title">rendering: getting svelte out of the way</h2>
+  <h2 class="section-title">data tools shaped for a model</h2>
+
+  <ul class="proof-list">
+    <li>
+      <strong>Small, flat, labelled, pre-rounded.</strong> A tool returns
+      what the page needs, not the raw API response. Arithmetic happens in
+      code, so the model does none.
+    </li>
+    <li>
+      <strong>Honest failure.</strong> An error goes back to the model as
+      data, with an instruction to say the data could not be retrieved and
+      not to fill the gap from memory. A tool that throws never fails the
+      run. Ask for the weather in a place that does not exist and you get a
+      warning on the page and everything else intact.
+    </li>
+    <li>
+      <strong>Caveats travel with the data.</strong> A result can carry a
+      note the model is told to pass on when it changes how a figure
+      should be read.
+    </li>
+    <li>
+      <strong>Bounded latency.</strong> Every call has an abort timeout and
+      a short cache, because one prompt often asks about the same thing
+      twice.
+    </li>
+  </ul>
+
+  <hr class="jm-rule" />
+
+  <h2 class="section-title">tested where it can be</h2>
 
   <p>
-    The renderer is two recursive Svelte components and one global
-    stylesheet. The interesting parts are where Svelte's defaults fight
-    the goal.
-  </p>
-
-  <p>
-    <strong>Slot HTML, not slot text.</strong> The LLM emits things like
-    <code>{`<sl-icon name="exclamation-triangle"></sl-icon>`}</code> into a
-    component's <code>icon</code> slot. If the renderer treats that as
-    text content the user sees escaped markup. <code>ComponentRenderer</code>
-    parses each slot value as HTML and appends the resulting nodes,
-    preserving the nested custom elements so they upgrade correctly.
-  </p>
-
-  <p>
-    <strong>Global layout primitives, not scoped CSS.</strong> Svelte's
-    scoped-CSS pass adds a class hash to every selector inside a component,
-    including the universal selector inside
-    <code>{`> * + *`}</code> spacing rules. Adjacent-sibling selectors
-    then only match children that carry the same hash, which excludes
-    every Shoelace element rendered in a different component. The
-    layout primitives (<code>.gen-stack</code>, <code>.gen-grid</code>,
-    <code>.gen-row</code>, <code>.gen-section</code>) live in a global
-    stylesheet so the lobotomized-owl pattern applies across every kind
-    of child element, framework-rendered or otherwise.
-  </p>
-
-  <p>
-    <strong>Recursive layout walker.</strong> The
-    <code>LayoutTree.svelte</code> component switches on
-    <code>node.kind</code> and recurses into itself for each container
-    type. <code>grid</code> sets
-    <code>grid-template-columns: repeat(N, 1fr)</code>;
-    <code>row</code> and <code>stack</code> use flexbox with a
-    <code>data-gap</code> attribute that maps to a named gap size from
-    the global stylesheet. The tree shape is purely declarative; styling
-    is purely CSS. No layout decisions live in JavaScript.
-  </p>
-
-  <p>
-    <strong>Content normalization.</strong> The LLM sometimes falls back
-    to <code>&lt;br&gt;&lt;br&gt;</code> for paragraph breaks even when the
-    prompt asks for semantic HTML. The renderer rewrites those into real
-    <code>&lt;p&gt;</code> blocks before injecting them, so the typography
-    CSS for cards and alerts has elements with sensible margins to style
-    rather than a wall of inline text.
+    Model output is not unit-testable. Everything around it is. The
+    normalize, repair, and typeset passes are pure functions, and the
+    orchestrator takes the model and the network as arguments, so the
+    whole pipeline runs under test with a scripted model. The suite has a
+    little over a hundred tests, including a property-style test that
+    feeds the repair pass hundreds of random layout trees and checks that
+    what comes out always validates against the spec. The page also has a
+    "what the pipeline did" panel that shows each repair the code made on
+    a live run.
   </p>
 
   <hr class="jm-rule" />
@@ -314,25 +298,43 @@ Look for:
       risks that block production use of free-form LLM output.
     </li>
     <li>
-      <strong>The manifest is the API surface.</strong> Because the 30 tool
-      definitions are generated from <code>custom-elements.json</code> at
-      build time, the design system stays the source of truth. Adding a
-      Shoelace component or attribute propagates to the LLM&rsquo;s tool
-      surface on the next build with zero handwritten glue.
+      <strong>The manifest is the API surface.</strong> Because the
+      component tools are generated from <code>custom-elements.json</code>
+      at build time, the design system stays the source of truth. The
+      quality of that manifest decides whether this works at all.
     </li>
     <li>
-      <strong>Stages need different prompts and different signals.</strong>
-      Stage 1 has to be pushed toward decomposition; Stage 2 has to be
-      pushed toward grouping and given the right semantic signals (slot
-      labels, not just tag names) to act on. Same tool-use API, two distinct
-      prompt-engineering problems.
+      <strong>Design rules belong in data, enforced in code.</strong> A
+      prompt gets you most of the way. The repair and typesetting passes
+      are what make the layout dependable.
+    </li>
+    <li>
+      <strong>Each stage needs only what its job requires.</strong> The
+      layout model sees summaries, not markup. The structure model sees
+      components, not history. Smaller inputs let cheaper models do the
+      work and make each stage easier to reason about.
     </li>
     <li>
       <strong>A well-designed design system is the substrate.</strong>
       Framework-agnostic web components with constrained props were the
       right shape for this years before generative UI was a real category.
-      The original prototype validated Meridian&rsquo;s architecture as durable
-      against the GenAI paradigm shift.
+    </li>
+  </ul>
+
+  <h2 class="section-title">known gaps</h2>
+  <ul class="proof-list">
+    <li>
+      <strong>No streaming.</strong> A prompt waits for several sequential
+      model calls, and the progress labels are timers.
+    </li>
+    <li>
+      <strong>The sanitizer is an allowlist scanner, not a parser.</strong>
+      It is enough for a demo that renders its own model's output. It is
+      not what I would ship in front of untrusted input.
+    </li>
+    <li>
+      <strong>Sizes are fitted to one canvas width</strong> and do not
+      re-fit on resize.
     </li>
   </ul>
 
@@ -342,29 +344,36 @@ Look for:
   <dl class="stack-list">
     <dt>Frontend</dt>
     <dd>
-      Astro, Svelte 5 (runes), Shoelace 2.x web components, Tailwind v4 for
-      tokens
+      Astro, Svelte 5 (runes), Shoelace 2.x web components, Chart.js,
+      Tailwind v4 for tokens
     </dd>
     <dt>Pipeline</dt>
     <dd>
-      Anthropic Messages API, two-stage tool use, prompt caching on
-      tools + system prompt, low-temperature stages for consistency
+      Anthropic Messages API, multi-stage tool use with a tool-calling
+      loop, prompt caching on tools, system prompt, and loop rounds
     </dd>
+    <dt>Layout rules</dt>
+    <dd>
+      One spec file based on IBM Carbon's grid, spacing, and type tokens,
+      generating prompt text, tool schema, CSS, and validators
+    </dd>
+    <dt>Data</dt>
+    <dd>Keyless public APIs for weather, exchange rates, and encyclopedia summaries</dd>
     <dt>Tool generation</dt>
     <dd>
       Build-time parser over Shoelace&rsquo;s <code>custom-elements.json</code>
       manifest, emitting one Anthropic tool spec per component
     </dd>
+    <dt>Tests</dt>
+    <dd>Vitest over the deterministic passes and the full pipeline with a scripted model</dd>
     <dt>Hosting</dt>
     <dd>Cloudflare Pages + Pages Functions, key in Pages env vars</dd>
-    <dt>Original prototype</dt>
-    <dd>Svelte, Node.js, AWS Bedrock with Claude tool use, Meridian components</dd>
   </dl>
 
   <hr class="jm-rule" />
 
   <p class="project-foot">
-    Full write-up: <a href="/writing/gen-ui-with-claude-tool-use">Generating UI Without Generating Code</a>
+    Write-ups: <a href="/writing/gen-ui-with-claude-tool-use">Generating UI Without Generating Code</a>
     &middot; <a href={DEMO_URL} target="_blank" rel="noopener">live demo</a>
     &middot; <a href={SOURCE_URL} target="_blank" rel="noopener">source</a>
   </p>
