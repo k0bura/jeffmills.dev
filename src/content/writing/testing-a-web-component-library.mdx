@@ -64,7 +64,7 @@ The interesting decisions:
 
 **Two baseline sets, one source of truth.** Developers work on Macs and CI renders on Linux, where fonts rasterize differently (about 2.5% of pixels on the same page). So there are two sets. The Mac set is the source of truth and is what reviewers see in a pull request. A CI job regenerates the Linux set automatically, and only for stories whose Mac baseline that branch actually changed. It never runs a blanket update, which would also accept regressions nobody reviewed.
 
-**Media components are excluded, not accommodated.** Audio and video players differed between identical runs. The fix is to mask the media element, never to loosen the tolerance until they pass.
+**Media components are excluded.** Audio and video players differed between identical runs. The fix is to mask the media element, never to loosen the tolerance until they pass.
 
 ## The tests were lying, three times
 

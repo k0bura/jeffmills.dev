@@ -35,7 +35,7 @@ import Base from "../../layouts/Base.astro";
   <aside class="callout">
     <span class="callout-label">Architectural overview only</span>
     <p>
-      Anchor lives in a private internal repository. Source is not
+      Anchor is in a private internal repository. Source is not
       reproduced on this site. The notes here describe the architecture
       and patterns; the implementation stays in the private repo. Happy
       to walk through the system in depth under NDA,
@@ -147,7 +147,7 @@ import Base from "../../layouts/Base.astro";
       own component runtime.
     </li>
     <li>
-      <strong>Node 18 + openssl-legacy-provider for Vue 2 builds.</strong>
+      <strong>Node 18 and openssl-legacy-provider for Vue 2 builds.</strong>
       The system had to keep shipping on a modern Node version while Vue 2
       kept aging. Real evidence of long-running enterprise discipline:
       patch the build, write the README, keep going.
@@ -219,9 +219,9 @@ import Base from "../../layouts/Base.astro";
     <dt>Distribution</dt>
     <dd>Private internal npm registry, three published packages</dd>
     <dt>Documentation</dt>
-    <dd>Storybook + custom hero-sandbox playground</dd>
+    <dd>Storybook and custom hero-sandbox playground</dd>
     <dt>Testing</dt>
-    <dd>Jest unit tests + TestCafe visual-regression baseline</dd>
+    <dd>Jest unit tests and TestCafe visual-regression baseline</dd>
     <dt>Monorepo</dt>
     <dd>Yarn workspaces across the internal scope</dd>
   </dl>

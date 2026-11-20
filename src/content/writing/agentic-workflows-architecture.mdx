@@ -36,12 +36,13 @@ Skills are not chat prompts. They're closer to a runbook the agent is required t
 
 On Meridian, migrating a V0 component to V1 involves a non-trivial discipline. The engineer is expected to:
 
-1. Read the architecture doc (`docs/project.md`) and understand the V0→V1 strategy.
+1. Read the architecture doc (`docs/project.md`) and understand the V0 to V1 strategy.
 2. Read the internal API index and find the right composables.
-3. Read the accessibility patterns for the component's category.
-4. Open the V0 source and understand what it currently does.
-5. Open a V1 reference component to understand the pattern.
-6. Then, and only then, start writing.
+3. Open the V0 source and understand what it currently does.
+4. Open a V1 reference component to understand the pattern.
+5. Then, and only then, start writing.
+
+The accessibility patterns are required reading as well. That rule is in the repo's agent instructions, which require them before work on form components, so the skill doesn't repeat it.
 
 This is a lot to remember. Engineers under deadline pressure skip steps. Pairing helps but doesn't scale. Code review catches issues after the work is done, which is the most expensive moment to catch them.
 
@@ -54,7 +55,6 @@ The skill encodes the discipline:
     read docs/project.md
     read docs/internal-api/INDEX.md
     read all referenced composable docs
-    read docs/a11y/INDEX.md for the component's category
 
   phase 2, analysis
     read v0 source
@@ -68,7 +68,6 @@ The skill encodes the discipline:
 
   phase 4, verification
     storybook story
-    a11y check
     visual regression baseline
 
   phase 5, handoff
@@ -76,7 +75,7 @@ The skill encodes the discipline:
     open questions
 ```
 
-The discipline that used to live in a senior engineer's head now runs *every time*. Skip-the-docs is no longer the default; reading them is. The agent literally cannot proceed to phase 3 without completing phase 1.
+The discipline that used to be in a senior engineer's head now runs *every time*. Skip-the-docs is no longer the default. Reading them is. The agent literally cannot proceed to phase 3 without completing phase 1.
 
 What this changed in practice:
 
@@ -135,7 +134,7 @@ A few things worth saying explicitly:
 
 ## The broader pattern
 
-The shape of the move is: take a thing that used to live in someone's head and put it in the system. Code review patterns become commit hooks. Architecture conventions become skills. Doc quality becomes a metric.
+The shape of the move is: take a thing that used to be in someone's head and put it in the system. Code review patterns become commit hooks. Architecture conventions become skills. Doc quality becomes a metric.
 
 Each one is a small step. Together they're how a team's standard gets enforced even when the people who set it aren't in the conversation.
 

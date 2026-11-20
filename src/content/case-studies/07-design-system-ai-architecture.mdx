@@ -3,7 +3,7 @@ order: 7
 title: "Design System + AI: The Three-Layer Architecture"
 chapter: "Technical Deep Dive"
 period: "2024, present"
-summary: "How the Meridian design system was extended into an AI-ready platform, IDE metadata at build time, an MCP server with 10 tools, and agentic workflows that enforce architecture from inside the IDE."
+summary: "How the Meridian design system became an AI-ready platform, with IDE metadata at build time, an MCP server with 10 tools, and agentic workflows that enforce architecture from inside the IDE."
 tags: ["MCP", "design systems", "Claude", "agentic workflows", "architecture"]
 ---
 
@@ -11,10 +11,10 @@ tags: ["MCP", "design systems", "Claude", "agentic workflows", "architecture"]
   <span class="callout-label">The closed loop</span>
   <p>
     The design system generates its own AI-readable documentation at build
-    time. That feeds external AI assistants via an MCP server, and internal
-    Claude Code skills via agentic workflows. Documentation quality is
-    measured by an automated AI audit. The system continuously improves its
-    own AI-readiness.
+    time. That documentation feeds external AI assistants through an MCP
+    server, and internal Claude Code skills through agentic workflows. An
+    automated AI audit measures documentation quality. The system
+    continuously improves its own AI-readiness.
   </p>
 </aside>
 
@@ -22,18 +22,18 @@ tags: ["MCP", "design systems", "Claude", "agentic workflows", "architecture"]
 
 Meridian is Vanguard's front-end design system, a Web Component library (~84 components across two generations) built in Vue 3, compiled to standards-based custom elements, and consumed by internal product teams. It ships design tokens, SCSS, components, and framework adapters from a single Nx monorepo.
 
-What follows is the architecture of how Meridian becomes an AI platform, not "AI on top of Meridian", but a layered system where each layer enables the next.
+What follows is the architecture that makes Meridian an AI platform. It is a layered system where each layer enables the next, and it is not "AI on top of Meridian".
 
 ## My role
 
-I identified AI-readability as a vital capability for the future state of front-end development, scoped the three-layer architecture below, and directed the Meridian team in building it. The leadership argument I made: AI is moving from "a tool a developer uses" to "the substrate a developer ships against," so a design system that isn't directly readable by AI agents stops being a platform and starts being friction. Getting the metadata foundation, the MCP server, and the agentic-workflow tooling in place *before* the team needed them is what makes the next iteration of the system credible when it ships. The implementation, the MCP library, the build-time generators, the Claude Code skills, was built by my team under that direction.
+I identified AI-readability as a vital capability for the future state of front-end development, scoped the three-layer architecture below, and directed the Meridian team in building it. The argument I made was that AI is moving from "a tool a developer uses" to "the substrate a developer ships against," so a design system that isn't directly readable by AI agents stops being a platform and starts being friction. Getting the metadata foundation, the MCP server, and the agentic-workflow tooling in place *before* the team needed them is what makes the next iteration of the system credible when it ships. My team built the implementation (the MCP library, the build-time generators, the Claude Code skills) under that direction.
 
 ## The architecture
 
 <div
   class="diagram"
   role="img"
-  aria-label="Three-layer Meridian AI architecture: Layer 1 generates IDE metadata at build time; Layer 2 exposes the design system through an MCP server with 10 tools; Layer 3 runs Claude Code skills that enforce architecture patterns for the Meridian team itself."
+  aria-label="Three-layer Meridian AI architecture. Layer 1 generates IDE metadata at build time. Layer 2 exposes the design system through an MCP server with 10 tools. Layer 3 runs Claude Code skills that enforce architecture patterns for the Meridian team itself."
 >
   <div class="diagram-node is-stage">
     <div class="diagram-node-title">layer 1, IDE metadata</div>
@@ -51,17 +51,17 @@ I identified AI-readability as a vital capability for the future state of front-
   </div>
 </div>
 
-## Layer 1, Passive IDE intelligence
+## Layer 1, IDE metadata
 
-Two generated metadata files, `meridian.web-types.json` (JetBrains schema) and `meridian.html-data.json` (VS Code custom HTML data schema), are produced at every build by a custom Nx executor (`meridian-automation:jweb-types`).
+Two generated metadata files come out of every build. `meridian.web-types.json` is the JetBrains schema and `meridian.html-data.json` is the VS Code custom HTML data schema. A custom Nx executor, `meridian-automation:jweb-types`, produces both.
 
 **How it works.** The executor uses `vue-docgen-api` to parse every `.vue` file, converts camelCase props to kebab-case attributes, respects `@undocumented` JSDoc annotations to hide internal props, and reads optional `ComponentNameDoc.json` sidecar files for supplemental metadata. Both files are declared in `package.json` so any editor that installs the package automatically gets autocompletion for every Meridian custom element, tag name, attribute, and slot.
 
-**The point.** Before any AI agent enters the picture, the authoritative component API is already machine-readable and editor-discoverable. This is the foundation every other layer depends on.
+**The point.** Before any AI agent enters the picture, the authoritative component API is already machine-readable and editor-discoverable. Every other layer depends on this foundation.
 
-## Layer 2, Active AI tooling via the `meridian-mcp` MCP server
+## Layer 2, the `meridian-mcp` server
 
-A dedicated library (`libs/meridian-mcp/`) implements a Model Context Protocol server. It exposes **10 tools** that any MCP-capable AI assistant (Claude, Copilot, Cursor) can call at runtime to query the design system.
+A dedicated library, `libs/meridian-mcp/`, implements a Model Context Protocol server. It exposes **10 tools** that any MCP-capable AI assistant, such as Claude, Copilot, or Cursor, can call at runtime to query the design system.
 
 | Tool | What it answers |
 | --- | --- |
@@ -76,13 +76,13 @@ A dedicated library (`libs/meridian-mcp/`) implements a Model Context Protocol s
 | `get_typography` | Typography subset |
 | `get_layout` | Layout utilities |
 
-**Data pipeline.** The MCP server is entirely data-driven, it doesn't parse source code at runtime. Three build-time scripts run as part of `meridian-mcp:build` and produce JSON data files in `dist/libs/meridian-mcp/data/`. The `meridian.web-types.json` from Layer 1 is copied into the same directory.
+**Data pipeline.** The MCP server is entirely data-driven and doesn't parse source code at runtime. Three build-time scripts run as part of `meridian-mcp:build` and produce JSON data files in `dist/libs/meridian-mcp/data/`. The `meridian.web-types.json` from Layer 1 is copied into the same directory.
 
-- `generate-style-tokens.ts` directly parses `_meridian-config.scss` with regex + balanced-paren extraction, resolving SCSS expressions to concrete values (e.g., `$meridian-base-space-size * 4` → `"16px"`).
-- `generate-usage-docs.ts` parses V1 story files (`*.stories.ts`) and extracts `render()` function bodies using lightweight brace-counting parsing, no full AST dependency.
-- `generate-recipe-list.ts` scans recipe directories and emits a manifest; live source is fetched on-demand via `gh api` so it's always current.
+- `generate-style-tokens.ts` directly parses `_meridian-config.scss` with regex and balanced-paren extraction, resolving SCSS expressions to concrete values (e.g., `$meridian-base-space-size * 4` becomes `"16px"`).
+- `generate-usage-docs.ts` parses V1 story files (`*.stories.ts`) and extracts `render()` function bodies using lightweight brace-counting parsing, with no full AST dependency.
+- `generate-recipe-list.ts` scans recipe directories and emits a manifest. Live source is fetched on demand via `gh api`, so it's always current.
 
-**Dependency chain:**
+Dependency chain:
 
 ```text
 meridian-components:do-generations  (jweb-types + vcustom-html)
@@ -93,55 +93,49 @@ meridian-components:do-generations  (jweb-types + vcustom-html)
 
 **What this unlocks.** An AI assistant working in an adopter codebase can, in a single conversation turn, ask for the `meridian-button` API, get spacing tokens, retrieve a recipe, and assemble a complete, on-brand UI implementation without ever leaving the chat interface.
 
-## Layer 3, Agentic workflows via Claude Code skills
+## Layer 3, Claude Code skills
 
 Three custom Claude Code skills in `.claude/skills/` define structured, multi-step AI workflows for the Meridian team's own component development.
 
-### `/build-v1`, V0→V1 component migration
+### `/build-v1`
 
-A 5-phase structured skill that orchestrates a full component migration. It mandates reading `docs/project.md`, `docs/internal-api/INDEX.md`, all relevant composable/directive docs, the V0 source, and a V1 reference component, *before* writing a single line of code.
+A 5-phase structured skill that orchestrates a full V0 to V1 component migration. It requires the agent to read `docs/project.md`, `docs/internal-api/INDEX.md`, all relevant composable/directive docs, the V0 source, and a V1 reference component, *before* writing a single line of code.
 
-This enforces the team's architecture patterns, slot-over-props philosophy, composable reuse, shadow DOM a11y patterns, even when the agent hasn't seen them before.
+This enforces the team's architecture patterns, slot-over-props philosophy, and composable reuse, even when the agent hasn't seen them before. The skill does not cover the shadow DOM a11y patterns. The repo's agent instructions cover them, and those instructions require reading them before work on form components.
 
-### `/test-docs`, Documentation quality auditing
+### `/test-docs`
 
-Simulates a fresh agent session following the exact discovery path (`CLAUDE.md` → `INDEX` → detailed docs) and scores coverage against an 8-item universal checklist plus conditional checks per component profile (Simple, Parent-Child, Overlay, etc.).
+This skill audits documentation quality. It simulates a fresh agent session that follows the exact discovery path of `CLAUDE.md`, then `INDEX`, then detailed docs. It scores coverage against an 8-item universal checklist plus conditional checks per component profile (Simple, Parent-Child, Overlay, etc.).
 
-Produces a Pass/Partial/Fail scorecard with a percentage. The team tracks doc quality as a measurable metric over time.
+It produces a Pass/Partial/Fail scorecard with a percentage. The team tracks doc quality as a measurable metric over time.
 
-### `/beta-tag`, Component lifecycle management
+### `/beta-tag`
 
-Handles the mechanics of moving a V1 component through beta, renames files, updates tag-name suffixes, updates story/MDX references, and adds/removes the Storybook beta badge. Encodes process knowledge that would otherwise live only in an engineer's head.
+This skill manages the component lifecycle. It handles the mechanics of moving a V1 component through beta: it renames files, updates tag-name suffixes, updates story/MDX references, and adds or removes the Storybook beta badge. It encodes process knowledge that would otherwise stay only in an engineer's head.
 
 ### Agent-facing documentation
 
-The team invested heavily in writing docs explicitly for AI consumption, not just for humans:
+The team put a lot of work into writing docs for AI agents as well as for humans:
 
-- `docs/project.md`, authoritative V0/V1/V3 strategy. Mandatory reading before any component work.
-- `docs/internal-api/INDEX.md`, a lookup table mapping "I need to do X" to the exact composable and doc file.
-- `docs/a11y/INDEX.md`, WCAG 2.2 AA patterns, mapping a11y needs to shadow DOM solutions used by the library.
-- Seven detailed internal API docs covering every composable, directive, and utility with import paths and real V1 examples.
+- `docs/project.md` is the authoritative V0/V1/V3 strategy and mandatory reading before any component work.
+- `docs/internal-api/INDEX.md` is a lookup table mapping "I need to do X" to the exact composable and doc file.
+- `docs/a11y/INDEX.md` holds WCAG 2.2 AA patterns, mapping a11y needs to the shadow DOM solutions the library uses.
+- Seven detailed internal API docs cover every composable, directive, and utility with import paths and real V1 examples.
 
-**What this unlocks.** `/build-v1` replaced ad-hoc AI-assisted component work with a repeatable, auditable process. `/test-docs` created a feedback loop, the team can now measure whether the docs are actually sufficient to guide an AI agent, and improve them iteratively.
+**What this unlocks.** `/build-v1` replaced ad-hoc AI-assisted component work with a repeatable, auditable process. `/test-docs` created a feedback loop. The team can now measure whether the docs are actually sufficient to guide an AI agent, and improve them step by step.
 
-## The through-line
+## How the layers fit
 
-The three layers compose into a coherent system:
+The layers build on each other:
 
-- **Layer 1** ensures every developer's editor understands Meridian. The prerequisite for correct AI autocompletion in adopter codebases.
-- **Layer 2** turns the design system into a queryable knowledge base. Any AI assistant becomes design-system-aware with no fine-tuning, no RAG over raw source.
-- **Layer 3** turns the AI into a capable contributor *to* the design system itself, not just a consumer of it.
+- **Layer 1** makes every developer's editor understand Meridian. It is the prerequisite for correct AI autocompletion in adopter codebases.
+- **Layer 2** turns the design system into a queryable knowledge base. Any AI assistant becomes design-system-aware with no fine-tuning and no RAG over raw source.
+- **Layer 3** makes the AI a contributor *to* the design system itself as well as a consumer of it.
 
-## Forward look: the next iteration
+## Next iteration
 
-Since this was written, the MCP server has gone from an experiment to something other teams depend on. It ships through the firm's standard AI coding plugin, a product team outside mine used it daily while building a new application, and that team sent back improvements and helped write the agent rules it ships with. That is the adoption signal that matters for a tool like this: people who do not report to you choosing to use it and then making it better.
+Since this was written, the MCP server has gone from an experiment to something other teams depend on. It ships through the firm's standard AI coding plugin. A product team outside mine used it daily while building a new application, and that team sent back improvements and helped write the agent rules it ships with. That is the adoption signal that matters for a tool like this: people who do not report to me choosing to use it and then making it better.
 
-The next generation of the system is a Lit-based web component architecture, gated on adoption of the current generation so consumers are never split across three. The MCP server and agentic workflows built for V1 are the prototype for what that generation's AI integration builds on.
+The next generation of the system is a Lit-based web component architecture. It is gated on adoption of the current generation so consumers are never split across three. The MCP server and agentic workflows built for V1 are the prototype for what that generation's AI integration builds on.
 
-The same year also produced the other half of an AI-ready design system: the quality gates that let you trust what agents and humans both ship. That story is in [Quality Gates for a Distributed Design System](/case-studies/10-quality-gates-and-observability).
-
-## The key insight
-
-The strongest angle here is **the closed loop**: the design system generates its own AI-readable documentation at build time, which feeds both external AI assistants (MCP) and internal AI agents (Claude Code skills), and the team measures documentation quality with an automated AI audit. The system continuously improves its own AI-readiness.
-
-This is what "AI-native by design" actually looks like at a system level, not a chat widget, not a copilot bolt-on, but the design system itself behaving as infrastructure for AI tooling.
+The same year also produced the other half of an AI-ready design system: the quality gates that let people trust what agents and humans both ship. That story is in [Quality Gates for a Distributed Design System](/case-studies/10-quality-gates-and-observability).

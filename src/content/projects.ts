@@ -12,7 +12,7 @@ export const PROJECTS: Project[] = [
     slug: "gen-ui-demo",
     title: "Gen UI Demo",
     summary:
-      "A Claude tool-use pipeline that fetches live data, composes UI from a web-component library, and enforces a design system's layout rules in code. The model never writes code. Astro + Svelte + Shoelace.",
+      "A Claude tool-use pipeline that fetches live data, composes UI from a web-component library, and enforces a design system's layout rules in code. The model never writes code. Astro, Svelte, and Shoelace.",
     status: "live",
     year: 2026,
     tags: ["Claude", "tool use", "Svelte", "Lit", "design systems"],
@@ -28,18 +28,18 @@ export const PROJECTS: Project[] = [
   },
   {
     slug: "meridian",
-    title: "Meridian — framework-agnostic enterprise design system",
+    title: "Meridian: framework-agnostic enterprise design system",
     summary:
-      "The framework-agnostic enterprise design system I architected. Nx monorepo with a Vue 3 source layer that compiles to standards-based custom elements via defineCustomElement; ships to Vue, Angular, AEM, and any HTML. Proprietary; architectural overview only.",
+      "The framework-agnostic enterprise design system I architected. Nx monorepo with a Vue 3 source layer that compiles to standards-based custom elements via defineCustomElement; ships to Vue, Angular, AEM, and any HTML. Proprietary. Architectural overview only.",
     status: "proprietary",
     year: 2022,
     tags: ["design systems", "Web Components", "Vue 3", "Nx monorepo", "enterprise"],
   },
   {
     slug: "anchor",
-    title: "Anchor — predecessor enterprise design system (Vue 2)",
+    title: "Anchor: predecessor enterprise design system (Vue 2)",
     summary:
-      "The predecessor to Meridian. Around 86 Vue 2 components compiled to custom elements via vue-custom-element, with MutationObserver-based lazy hydration. Proprietary; architectural overview only.",
+      "The predecessor to Meridian. Around 86 Vue 2 components compiled to custom elements via vue-custom-element, with MutationObserver-based lazy hydration. Proprietary. Architectural overview only.",
     status: "proprietary",
     year: 2019,
     tags: ["Vue 2", "Web Components", "design systems", "enterprise", "precursor"],

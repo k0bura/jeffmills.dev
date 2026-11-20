@@ -3,75 +3,61 @@ order: 4
 title: "Design System + CMS: Bridging Engineering and the Business"
 chapter: "Chapter 4"
 period: "2022-2023"
-summary: "Deploying Meridian components into Adobe Experience Manager so marketers and content creators could ship on-brand experiences without engineering bottlenecks."
+summary: "I led the integration of Meridian components into Adobe Experience Manager so marketers and content creators could ship on-brand experiences without waiting on engineering."
 tags: ["AEM", "design systems", "platform integration", "business enablement"]
 ---
 
 <aside class="callout">
   <span class="callout-label">Executive summary</span>
   <p>
-    I led the integration of Meridian with Adobe Experience Manager, extending the
-    front-end platform beyond engineering teams to enable marketers and
-    content creators directly. The architecture, Meridian owns components,
-    AEM consumes them as web components in templates, ensures one
-    visual layer across applications, marketing, and content, and turned Meridian
-    into a business platform with measurable impact.
+    I led the integration of Meridian with Adobe Experience Manager. It
+    extended the front-end platform beyond engineering teams to marketers and
+    content creators directly. Meridian owns the components and AEM consumes
+    them as web components in templates, so applications, marketing, and
+    content share one visual layer. That turned Meridian into a business
+    platform with measurable impact.
   </p>
 </aside>
 
 ## Context
 
-Even with a strong design system, a major gap remained. Meridian primarily served developers. Business users, marketing, content teams, relied on AEM. Engineers built reusable components; business users couldn't easily leverage them. The result: slower content delivery, inconsistent experiences, and continued reliance on engineering for execution that should have been self-service.
+Even with a strong design system, a major gap remained. Meridian primarily served developers. Business users (marketing and content teams) relied on AEM. Engineers built reusable components, but business users couldn't easily use them. The result was slower content delivery, inconsistent experiences, and continued reliance on engineering for work that should have been self-service.
 
-The front-end platform needed to connect to the business content ecosystem. Not as integration trivia, but as the next stage of the platform's value.
+The front-end platform needed to connect to the business content ecosystem as the next stage of its value.
 
 ## My role
 
-I played a key role in defining and implementing the Meridian → AEM integration. Designed the technical model, influenced how components are delivered inside AEM, and positioned Meridian as a business enablement platform rather than just a developer system.
+I led the Meridian-to-AEM integration. I designed the technical model, influenced how components are delivered inside AEM, and positioned Meridian as a business enablement platform rather than just a developer system.
 
 ## What I did
 
-**Established the integration model.**
+**Integration model.** I established it. The Meridian UI library is deployed into AEM, and AEM templates consume Meridian web components directly. The rule is that Meridian owns the components and AEM declares them in templates. AEM stays thin, and the design system stays the source of truth. Because AEM only declares the components, every touchpoint stays consistent.
 
-- Meridian UI library deployed into AEM.
-- AEM templates consume Meridian web components directly.
+**Business use of engineering assets.** I integrated Meridian components into AEM so marketers and content creators use pre-built components without needing custom engineering. The phrase that came out of the rollout was *put the design system at the fingertips of the business*.
 
-The rule: Meridian owns the components. AEM declares them in templates. AEM stays thin; the design system stays the source of truth. Consistency across every touchpoint by construction, not by review.
+**Consistency across channels.** The same Meridian components power applications, marketing pages, and content experiences. That is one visual layer, and it stays consistent across channels without a separate effort to enforce it.
 
-**Enabled business users to leverage engineering assets.** Meridian components integrated into AEM so marketers and content creators use pre-built components without needing custom engineering. The phrase that came out of the rollout: *put the design system at the fingertips of the business*.
+**Content delivery at scale.** Business teams build pages from reusable components and deliver content faster, without engineering bottlenecks.
 
-**Delivered consistent experiences across channels.** The same Meridian components power applications, marketing pages, and content experiences. One visual layer. Cross-channel consistency without a separate effort to enforce it.
-
-**Scaled content delivery through platformization.** Business teams build pages from reusable components and deliver content faster, without engineering bottlenecks.
-
-**Connected the design → engineering → content flow.** Meridian component library + Figma design system + AEM templates aligned to a single mental model. No re-interpretation between stages. No duplicate implementations of the same component for different audiences.
+**Design, engineering, and content flow.** I aligned the Meridian component library, the Figma design system, and the AEM templates to a single mental model. Nothing gets re-interpreted between stages, and no component has duplicate implementations for different audiences.
 
 ## Resistance
 
-**AEM architecture complexity.** AEM has its own component model and rendering constraints. Integrating a modern design system into AEM is non-trivial and required a clean abstraction strategy.
+**AEM architecture complexity.** AEM has its own component model and rendering constraints. Integrating a modern design system into AEM was hard and needed a clean abstraction.
 
-**Organizational boundaries.** Traditional model: engineering builds, marketing requests. Moving to marketing self-service via Meridian required trust, new workflows, and behavior change on multiple sides.
+**Organizational boundaries.** Engineering built and marketing requested. Moving to marketing self-service via Meridian took trust, new workflows, and behavior change on multiple sides.
 
 **Competing approaches.** Other groups explored different AEM component architectures. Without a clear shared direction, the experience would have fragmented across Vanguard.
 
 ## How I handled it
 
-Simplified the integration model into a single principle, *Meridian owns components, AEM consumes them*, and eliminated the ambiguity that usually kills cross-system integrations. Framed the work in business outcomes (speed to market, consistency, scalability) rather than technical elegance. Drove alignment through practical implementation, demos, walkthroughs, socialization, not just architecture diagrams.
+I simplified the integration model into a single principle, *Meridian owns components, AEM consumes them*, which removed the ambiguity that usually kills cross-system integrations. I framed the work in business outcomes (speed to market, consistency, scalability) instead of technical elegance. I drove alignment through practical implementation, demos, walkthroughs, and spreading the word.
 
 ## Outcome
 
-- **Business enablement at scale.** Marketing and content teams use Meridian components directly in AEM. Engineering dependency reduced for content work.
-- **Faster content delivery.** Reusable components → faster page creation. No more custom builds for templated content.
-- **Cross-channel consistency.** Same components across apps, AEM pages, and digital experiences. One visual layer, by construction.
-- **Stronger ROI from Meridian.** No longer a developer tool, a business platform with measurable impact.
-- **Foundation for future innovation.** This integration is what makes personalization at scale, AI-driven content generation, and dynamic component-driven experiences possible.
-
-## Why it matters
-
-This is where the work transcends engineering. Converting a design system into a business capability is what separates a library from a platform.
-
-- From engineering efficiency → to **enterprise enablement**.
-- Non-engineers can ship on-brand digital experiences.
-- The organization moves faster without scaling engineering cost linearly.
-
-The arc continues: the same component primitives that supported multi-framework apps in Chapter 3 now serve marketing and content. That compounding is the whole point of building framework-agnostic from the start.
+- **Business enablement at scale.** Marketing and content teams use Meridian components directly in AEM. Content work depends less on engineering.
+- **Faster content delivery.** Reusable components mean faster page creation, and templated content no longer needs custom builds. The organization moves faster without scaling engineering cost linearly.
+- **Cross-channel consistency.** Apps, AEM pages, and digital experiences use the same components. Non-engineers can ship on-brand digital experiences.
+- **Stronger ROI from Meridian.** Meridian is no longer a developer tool. It is a business platform with measurable impact.
+- **Foundation for future work.** This integration is what makes personalization at scale, AI-driven content generation, and dynamic component-driven experiences possible.
+- **Same primitives as Chapter 3.** The component primitives that supported multi-framework apps in Chapter 3 now serve marketing and content. That is the payoff of building framework-agnostic from the start.

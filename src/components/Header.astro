@@ -100,4 +100,27 @@ const isCurrent = (href: string) =>
     content: "> ";
     color: var(--jm-color-muted);
   }
+
+  @media (max-width: 48rem) {
+    .jm-header {
+      position: static;
+      margin: 0 -1rem 1rem;
+    }
+
+    .jm-header nav {
+      row-gap: 0.25rem;
+    }
+
+    .jm-header ul {
+      flex-wrap: wrap;
+      gap: 0 1.25rem;
+    }
+
+    /* 24px minimum tap target (WCAG 2.5.8) */
+    .jm-navlink,
+    .jm-brand {
+      display: inline-block;
+      padding-block: 0.35rem;
+    }
+  }
 </style>

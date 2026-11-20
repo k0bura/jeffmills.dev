@@ -1,0 +1,90 @@
+---
+order: 6.5
+title: "Accessibility at the Source"
+chapter: "Accessibility Deep Dive"
+period: "2022, present"
+summary: "A shared component library fixes an accessibility defect once for every product built on it, or ships the same defect into all of them. How my team paid down inherited debt and rebuilt to a WCAG 2.2 AA target, the tests I built to catch defects in the library before other teams build on them, and exactly what is and isn't verified yet."
+tags: ["accessibility", "WCAG", "design systems", "testing", "governance"]
+---
+
+<aside class="callout">
+  <span class="callout-label">Executive summary</span>
+  <p>
+    Critical accessibility defects past the policy deadline on
+    Vanguard&rsquo;s advisor site fell from 76 to 17 between February and
+    October 2024. That number covers the whole site, and my team&rsquo;s
+    components and CMS templates were one part of it. Meridian is the
+    component library under that site, so a defect in one component is a
+    defect on every page that uses it. We rebuilt the components to a WCAG
+    2.2 AA target, and I built the browser tests that catch keyboard and
+    focus defects in the library, before another team builds on them. It
+    isn&rsquo;t finished. This page says where it stands.
+  </p>
+</aside>
+
+## Context
+
+Meridian is a web component library. Product teams build on it in Angular and Vue, and marketers use it through AEM templates. Vanguard's policy requires WCAG Level A and AA for new and updated content. A central accessibility office reviews pages before they ship, logs each defect against a WCAG success criterion, and tracks it against a 30-day remediation deadline.
+
+The office reviews built pages. It doesn't review components. So a component defect was found only after another team had built a page with it. The defect got logged against their page, and it held up their release until my team shipped a fix. Those teams told us so in their retros.
+
+## Where we started
+
+The first generation of components (V0) was built under delivery pressure and carried defects over from the library before it. In 2023 a year-end platform migration deadline pushed most of the accessibility work out. That is where the debt came from. Critical defects past the deadline on the advisor site went from 26 in August 2023 to a peak of 76 in February 2024.
+
+I added Storybook's accessibility addon (axe) in the library's first month in 2022. Nobody relied on it, and in July 2025 it was switched off. It came back that October. A check that nobody depends on gets removed the first time it's in the way.
+
+## My role
+
+I'm the technical lead on the team that owns Meridian and its CMS integration. I was one of two people accountable to the accessibility office's monthly escalations. I didn't write the component fixes. The engineers on my team did. I did the triage, the sequencing, the rebuild plan, and later the test system.
+
+## What we did
+
+### Paid down the debt
+
+I triaged every escalation into the backlog and organized the 2024 remediation into four epics across components and CMS templates. That was 56 items. 46 shipped, 8 were descoped, and 2 were closed as won't fix or invalid. One component kept failing retest, so I stopped the patching and had the team refactor it. The accessibility office traced nine defects to Meridian components, and all nine are fixed.
+
+### Rebuilt to a target
+
+V0's accessibility defects are the stated reason V1 exists. V1 components target WCAG 2.2 AA from the first commit.
+
+The hardest part is specific to web components. A label in the page can't point at an input inside a shadow root, because ARIA ID references don't cross the shadow boundary. An engineer on my team worked out a "mirror span" pattern that reflects labels, hints, and errors into the shadow tree, so the control's accessible name and description resolve correctly and errors are announced. The team documented it with a WCAG success criteria mapping and a testing checklist. The repo's agent instructions require reading it before any AI-assisted work on form components.
+
+In 2025 we also started sending rebuilt components to the accessibility office for direct evaluation, three so far. They get reviewed before they show up inside someone else's page. The team has made about 285 accessibility commits since 2022.
+
+### Moved the checking into the library
+
+This part I built myself, with Claude as a coding assistant. Every Storybook story now runs as a test in real Chromium on every push. I wrote 39 interaction tests for the behavior people rely on: focus moving into and out of dialogs, keyboard selection, Escape, and status announcements. Keyboard behavior is accessibility behavior, so the tests check ARIA state and focus as well as rendering.
+
+The first run found five defects in components that had already shipped. One was a WCAG 2.1.1 (Keyboard) failure. If you pressed Enter on a button inside a sheet, the whole sheet closed. A click made from the keyboard reports its position as (0,0), and the sheet read that as a click on the backdrop. An engineer on the team fixed it two days later.
+
+The rest of the test system (the blocking unit gate, visual regression, and the published quality record) is in [Trust and Assurance in a Shipped Design System](/case-studies/10-quality-gates-and-observability).
+
+### Designed the axe gate
+
+The gate is an axe check on every story, scoped to the WCAG 2.2 AA rules. If I turned it on everywhere at once, it would fail on V0 right away and get switched off again. So it rolls out in four steps:
+
+1. Report only, and publish the list of violations.
+2. Snapshot the existing violations as a baseline allowlist.
+3. Block new violations.
+4. Shrink the allowlist as components move to V1. It can only get smaller.
+
+The size of the allowlist is then the migration metric. This gate is designed and in the backlog. It isn't running yet.
+
+## Where it stands
+
+- **Target:** V1 targets WCAG 2.2 AA. That is a design target. I don't claim conformance.
+- **Not independently verified:** no third-party audit or conformance report covers the library. The accessibility office evaluates pages and single components, and findings still come up in other teams' pages.
+- **Not enforced yet:** the browser and interaction tests run on every push, but they don't block a release. The axe gate is designed and queued.
+- **Legacy:** V0 components are still in production while the migration continues.
+- **Results so far:** the advisor site reached zero critical accessibility defects older than 90 days in fall 2026, a division result my team contributed to. Accessibility fixes shipped in about one of every five library releases over the past year (18 of 90).
+
+## Why it matters for public services
+
+Government services have the same structure with more at stake. Section 508 points at WCAG 2.0 AA and the ADA Title II web rule at WCAG 2.1 AA, and one design system usually sits under many services. Fix a component once and every service gets the fix. Ship a defect and every service gets that too.
+
+Three things I'd bring from this work:
+
+1. **Check the component where the defect starts.** Page review is needed, but for a shared component it comes too late.
+2. **Put the standard in tests and docs.** Then it holds when I'm not in the room.
+3. **Say exactly what has been verified.** "Targets AA" and "conforms to AA" are different claims, and the people who depend on a service should get the accurate one.

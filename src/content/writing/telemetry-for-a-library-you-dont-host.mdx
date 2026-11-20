@@ -1,6 +1,6 @@
 ---
 title: "Telemetry for a library you do not host"
-description: "A component library runs inside other teams' applications, so it has no page, no SDK, and no dataset of its own. How I decided what a design system should observe, what it must never capture, and how one span through the host's tracer answered the question that mattered."
+description: "A component library runs inside other teams' applications, so it has no page, SDK, or dataset of its own. How I decided what a design system should observe, what it must never capture, and how one span through the host's tracer answered the question that mattered."
 publishDate: 2026-11-10
 status: published
 ---
@@ -8,14 +8,14 @@ status: published
 <aside class="callout">
   <span class="callout-label">TL;DR</span>
 
-  A design system is neither an application nor a micro-frontend. It ships as a package and executes inside pages it does not own. That rules out the obvious approach of bundling an observability SDK. What works: treat build-time quality signals as the primary monitoring system, and at runtime send exactly one thing, the loaded version, through whatever tracer the host page already registered. No dependency, no configuration, nothing when the host has no tracing, and never any content.
+  A design system is neither an application nor a micro-frontend. It ships as a package and executes inside pages it does not own. That rules out the obvious approach of bundling an observability SDK. What works: treat build-time quality signals as the primary monitoring system, and at runtime send exactly one thing, the loaded version, through whatever tracer the host page already registered. It adds no dependency or configuration, sends nothing when the host has no tracing, and never includes content.
 </aside>
 
 ## A third shape
 
 Observability guidance usually describes two shapes. A standalone application owns its SDK: it initializes the provider, registers instrumentation, collects web vitals, and exports. A micro-frontend inherits from its host: it emits spans into the context the host established and never configures its own provider, because two providers double-count.
 
-A distributed component library is neither. It sits deeper than a micro-frontend. It may be loaded by a child that is itself nested, in an application the library team has never seen. It has no page, no deployment, and no dataset. When I was asked for "observability for the design system," the first job was to say that plainly, because most of the easy answers assume a shape the library does not have.
+A distributed component library is neither. It sits deeper than a micro-frontend. It may be loaded by a child that is itself nested, in an application the library team has never seen. It has no page, deployment, or dataset. When I was asked for "observability for the design system," the first job was to say that plainly, because most of the easy answers assume a shape the library does not have.
 
 ## Start with what you already own
 
@@ -76,7 +76,7 @@ The design rules around that small function are the actual work:
 - **There is an off switch**, and a debug flag that logs exactly what was sent or why nothing was.
 - **Duplicates announce themselves.** If a second copy of the library loads on the same page, it sends its own span as a child of the first copy's. One trace then shows both versions, which makes the [registration race](/writing/custom-element-registration-race) visible for the first time.
 
-I originally wrote the runtime tier as opt-in. I reversed that to on-by-default before release. An opt-in signal about version adoption measures the teams that opt in, which is not the population you are worried about. Everything else about the design (no dependency, no content, silent without a tracer, an off switch) is what made on-by-default defensible.
+I originally wrote the runtime tier as opt-in. I reversed that to on-by-default before release. An opt-in signal about version adoption measures the teams that opt in, which is not the population you are worried about. Everything else about the design (zero dependencies, zero content, silent without a tracer, an off switch) is what made on-by-default defensible.
 
 ## What a component library must never capture
 
@@ -92,7 +92,7 @@ A tag name, a version string, an error code from an enumerated list: fine. Anyth
 
 This is the trade nobody mentions up front. Spans sent through the host's tracer land in the host's dataset. The adopter sees them immediately, in dashboards they already use. The library team sees nothing unless it has query access across those datasets.
 
-I think that asymmetry is correct, and it is the reason an owned collector was a stated non-goal rather than a deferred phase. A library-owned collector would double-count against every host pipeline and put the design system team in the data-ownership path for other people's pages. The honest version of the architecture says: build-time signals are ours outright, runtime signals belong to the host, and a fleet view is an access question to settle with the platform owners, not something to engineer around.
+I think that asymmetry is correct, and it is the reason an owned collector was a stated non-goal rather than a deferred phase. A library-owned collector would double-count against every host pipeline and put the design system team in the data-ownership path for other people's pages. The honest version of the architecture says: build-time signals are ours outright, runtime signals belong to the host, and a fleet view is an access question to settle with the platform owners.
 
 ## Proving it somewhere safe first
 

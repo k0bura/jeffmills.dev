@@ -15,7 +15,7 @@ status: published
 
 You build a design system. Engineers love it. Adoption climbs. Then you walk over to the marketing org and they're hand-coding HTML in AEM templates because the design system was never wired up there.
 
-This is the most common failure mode of mature design systems: the components serve engineers; the CMS serves the business; neither side connects. Marketing emails engineering for every new page. Engineering becomes a bottleneck for content that should be self-service. The brand experience drifts in the gap.
+This is the most common failure mode of mature design systems: the components serve engineers, the CMS serves the business, and neither side connects. Marketing emails engineering for every new page. Engineering becomes a bottleneck for content that should be self-service. The brand experience drifts in the gap.
 
 The fix isn't more components. It's making the components the CMS already understands.
 
@@ -77,7 +77,7 @@ The component's *behavior* is in the custom element. The CMS is contributing str
 
 **Cross-channel consistency by construction.** The same the card custom element renders identically in an Angular app, a Vue app, and an AEM-published marketing page. There's no "marketing version" of the brand that drifts from the app version.
 
-**Brand updates that propagate.** Update a token in the design system, ship a new version of the design system package, redeploy. Every AEM page picks it up because the components are vendored, not reimplemented. The CMS doesn't need to know anything changed.
+**Brand updates that propagate.** Update a token in the design system, ship a new version of the design system package, redeploy. Every AEM page picks it up because the components are vendored. The CMS doesn't need to know anything changed.
 
 **Reduced AEM-specific engineering.** AEM components become so thin that adding a new one is mostly an authoring concern, define the dialog, point it at an existing custom element. Engineering writes one wrapper per design-system component, not one wrapper per page or feature.
 
@@ -87,7 +87,7 @@ The architectural rule is the easy part. The work that actually has to happen:
 
 **Authoring discipline.** The AEM dialog has to map cleanly to component attributes. If a designer wants a card variant that doesn't exist in the design system, you don't fork the CMS template, you add the variant to the design system. That changes a workflow.
 
-**A clear ownership boundary.** Meridian owns the component. AEM owns the authoring experience and the slot content. Neither side touches the other's surface. Decisions about styling go to Meridian; decisions about authoring ergonomics go to AEM. Mixing those produces fragmentation in under a quarter.
+**A clear ownership boundary.** Meridian owns the component. AEM owns the authoring experience and the slot content. Neither side touches the other's surface. Decisions about styling go to Meridian, and decisions about authoring ergonomics go to AEM. Mixing those produces fragmentation in under a quarter.
 
 **Tokens have to pierce AEM.** Custom properties on the page root, set by the AEM theme layer, consumed by the design-system components. If you can't get tokens to flow into AEM-rendered pages, the pattern breaks.
 
@@ -97,6 +97,6 @@ The architectural rule is the easy part. The work that actually has to happen:
 
 A design system is most valuable when the audience widest. The thin-CMS pattern extends the audience from engineers to anyone using the CMS, which is a much larger group at most companies. The same component primitives that supported multi-framework apps now serve marketing and content.
 
-The pattern is also forward-compatible. The custom-element substrate is what made Gen UI work for us; the same substrate is what makes AEM thin. Both downstream wins came from the same upstream architectural decision.
+The pattern is also forward-compatible. The custom-element substrate is what made Gen UI work for us. The same substrate is what makes AEM thin. Both downstream wins came from the same upstream architectural decision.
 
 The hardest part isn't the engineering. It's holding the ownership line consistently for years while individual exceptions pile up. Every exception is reasonable on its own. The cumulative cost of saying yes to all of them is the design system you used to have.

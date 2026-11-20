@@ -25,7 +25,7 @@ function define(name, ctor) {
 }
 ```
 
-That guard is reasonable. It is also the whole problem. It converts a loud crash into a silent skip. The second copy of the library gets no error, no warning, and no console output. Its components still render, using the first copy's implementation. Nothing on the page reports that two versions are present, or which one won.
+That guard is reasonable. It is also the whole problem. It converts a loud crash into a silent skip. The second copy of the library gets no error, warning, or console output. Its components still render, using the first copy's implementation. Nothing on the page reports that two versions are present, or which one won.
 
 The registry offers no way out. You can define, get, and wait for a definition. You cannot unregister, redefine, version, or namespace. Definitions are only ever added.
 
@@ -112,14 +112,14 @@ The guard should stay. Throwing in someone else's page is worse. But silence is 
 
 ## What a page should do
 
-One rule removes the race by design instead of winning it by luck: exactly one application on a page registers the component library. The host owns registration. Everything else consumes what the host registered and treats the library as a peer dependency, not a bundled one. That also removes the duplicate payload, which on a page with four copies is not small.
+One rule removes the race by design instead of winning it by luck: exactly one application on a page registers the component library. The host owns registration. Everything else consumes what the host registered and treats the library as a peer dependency. That also removes the duplicate payload, which on a page with four copies is not small.
 
 Consumers can lower their own exposure: pin exactly instead of using caret ranges, verify upgrades with a clean install, check the lockfile for transitive copies, and confirm a fix in a browser on the composed page, more than once.
 
 ## The platform fix, and why it is not yet the answer
 
-Scoped custom element registries exist for exactly this. You create an isolated registry and attach it to a shadow root, and two libraries can define the same tag name without coordination. As of early 2026 they ship in Chromium-based browsers and Safari, per the [Chrome team's write-up](https://developer.chrome.com/blog/scoped-registries), but not yet everywhere. More decisively, scoped registries only help code that uses the scoped creation APIs. A host framework and third-party bundles that call the global registry will keep calling it. Treat it as where this is going, not as something a large existing page can adopt this quarter.
+Scoped custom element registries exist for exactly this. You create an isolated registry and attach it to a shadow root, and two libraries can define the same tag name without coordination. As of early 2026 they ship in Chromium-based browsers and Safari, per the [Chrome team's write-up](https://developer.chrome.com/blog/scoped-registries), but not yet everywhere. More decisively, scoped registries only help code that uses the scoped creation APIs. A host framework and third-party bundles that call the global registry will keep calling it. Treat it as where this is going. A large existing page cannot adopt it this quarter.
 
 ## The part that is not technical
 
-On a composed page, every team involved can act reasonably inside its own scope and the page can still be wrong. The application team owns its app. Another team owns a shared package in between. The design system team owns the library. Nobody owns the question "which version actually executes on this page." The gap is between the scopes, and no control inside any one of them closes it. It needs a named owner and a page-level rule, which is a decision, not a patch.
+On a composed page, every team involved can act reasonably inside its own scope and the page can still be wrong. The application team owns its app. Another team owns a shared package in between. The design system team owns the library. Nobody owns the question "which version actually executes on this page." The gap is between the scopes, and no control inside any one of them closes it. It needs a named owner and a page-level rule, which is a decision.

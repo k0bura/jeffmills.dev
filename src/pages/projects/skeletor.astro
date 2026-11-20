@@ -327,7 +327,7 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
   <p>
     <strong>Skeletor.util.componentLoader</strong> scanned the DOM for
     <code>[data-component]</code> markers, grouped them by media-query
-    context, and used <code>on-media-query</code> to lazy-load + initialize
+    context, and used <code>on-media-query</code> to lazy-load and initialize
     the right components at the right breakpoint, including
     <code>destroy()</code> on the way out. AMD-based code splitting before
     tree-shaking was a default.
@@ -400,7 +400,7 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
   <ul class="proof-list">
     <li>
       <strong>Skeletor.sass.utilities / .helpers / .flexgrid</strong>
-, a Sass-driven token system: spacing primitives, button + input
+, a Sass-driven token system: spacing primitives, button and input
       mixins, flexbox grid. Tokens lived in stylesheets because CSS custom
       properties weren&rsquo;t broadly safe yet.
     </li>
@@ -438,7 +438,7 @@ setAccordionAttributes: function($this, $heading, $tab, $panel, i) {
     </li>
     <li>
       <strong>The instinct to build platforms, not features, is durable.</strong>
-      Skeletor was always a system, not a project. The reason the Meridian work
+      Skeletor was always a system. The reason the Meridian work
       worked at Vanguard is the same reason Skeletor worked at the agency:
       separate the substrate from the application code, and let it compound.
     </li>

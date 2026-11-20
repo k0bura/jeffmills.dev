@@ -1,88 +1,85 @@
 ---
 order: 6
-title: "Expert Insights: AI Platform Leadership + Responsible Rollout"
+title: "Expert Insights: AI Platform Direction and Responsible Rollout"
 chapter: "Chapter 6"
 period: "2025-2026"
-summary: "Leading Vanguard's AI-driven portfolio analysis product from architecture through internal launch to an advisor pilot and public announcement, and what I would force earlier next time."
+summary: "Setting the long-term technical direction for Vanguard's AI-driven portfolio analysis product, from architecture through internal launch to an advisor pilot and public announcement, with governance and risk review treated as a gate on rollout, and what I would force earlier next time."
 tags: ["AI", "GenAI", "platform", "governance", "responsible AI"]
 ---
 
 <aside class="callout">
   <span class="callout-label">Executive summary</span>
   <p>
-    I led Expert Insights as a delivery and platform lead, the voice
-    arguing for it as a scalable AI capability rather than a one-off
-    GenAI feature. That meant insisting on a repeatable insight pattern
-    so output behaves like a product, treating responsible-AI work as a
-    gating dependency rather than a postscript, and translating the
-    quality and governance story into language a board could endorse.
-    Live for internal analysts since late 2025, piloted with advisors in
-    spring 2026, and publicly announced in pilot that April.
+    Expert Insights has been live for internal analysts since late 2025. It
+    went to an advisor pilot in spring 2026 and was announced publicly that
+    April. I was the delivery lead and set the long-term technical
+    direction. The product has its own technical lead, and the build is
+    his and the team&rsquo;s work. I argued for
+    building it as a platform that other AI work could reuse, with a fixed
+    shape for what an insight is. I treated the responsible-AI work as
+    something that gates the rollout, and I wrote the version of that story
+    a board could endorse.
   </p>
 </aside>
 
 ## Context
 
-A regulated-finance firm scaling specialist-quality expertise into a real-time AI product for advisors. The constraint that shaped every decision: this couldn't be a demo. It had to be credible as a scalable platform with a real rollout path, treated as a regulated product from day one, with risk and governance as first-class requirements. Regulated finance does not forgive ambiguity here.
+Vanguard wanted to take specialist expertise and put it in a real-time AI product for advisors. This couldn't be a demo. It had to be a platform with a real rollout path, and it was treated as a regulated product from day one, with risk and governance as requirements. Regulated finance doesn't forgive ambiguity there.
 
 ## My role
 
-Delivery lead and primary voice on both the product narrative and the delivery plan. The work split roughly evenly between *what we were building* (the platform thinking) and *how we'd land it* (the responsible-AI storytelling and the governance choreography).
+I was the delivery lead, and the main voice on the product narrative and the delivery plan. I also set the long-term technical direction: what we needed to think about for scale, and where the platform should go. The product has its own technical lead. The architecture in detail and the code are his and the team's work, and I didn't write much of the code myself. About half of my work was what we were building (the platform thinking). The other half was how we'd land it (the responsible-AI story and getting governance lined up).
 
 ## What I argued for
 
-### Treat an AI insight like a product pattern, not a model output
+### A fixed shape for an insight
 
-Argued from early in the program that the team needed to define what an "insight" *is* as a repeatable structure. Once the shape of an insight is fixed, teams can evaluate it, design around it, ship it consistently, and measure quality against a definition rather than a vibe. The alternative, letting model output be the product surface directly, doesn't scale and doesn't earn trust.
+I argued early that the team needed to define what an "insight" *is* as a repeatable structure. Once the shape is fixed, a team can evaluate it, design around it, ship it consistently, and measure quality against a definition. If the model output is the product surface, none of that works, and nobody trusts it.
 
-This was a leadership argument before it was a technical one. The team had to agree that probabilistic model output should be shaped into a stable contract before it ever touched an advisor.
+I had to win that argument with people before it was a technical one. The team had to agree that probabilistic model output gets shaped into a stable contract before it touches an advisor.
 
-### Platform-first, not one-off prompts
+### A platform
 
-Pushed the team away from prompt-as-product framing toward platform thinking: a real architecture, a real API, a real rollout plan, governance treated as a first-class capability rather than an afterthought. Same posture as the design-system work in earlier chapters, design for the substrate, not the moment. The operative leadership move was insisting the program *be* a platform, not a clever feature; implementation lives in the private architecture.
+I pushed the team away from treating the prompt as the product. I wanted a real architecture, a real API, a real rollout plan, and governance built in as a capability. It's the same approach as the design-system work in the earlier chapters: build the layer underneath first. The implementation is in the private architecture, so I can't show it here.
 
-### Governance and risk as a gating dependency
+### Governance as a gate
 
-Didn't treat responsible-AI work as something to be retrofitted. Elevated it explicitly: governance and risk readiness are dependencies that gate rollout, not a documentation pass that happens after launch. Made the dependency visible at the right level of the org so it would be staffed and resourced ahead of the launch window, not chased through it.
+I didn't treat responsible-AI work as something to add after launch. Governance and risk readiness gate the rollout. I made that dependency visible high enough in the org that it got staffed and resourced ahead of the launch window.
 
-### Owned the responsible-AI story for the board
+### The responsible-AI story for the board
 
-Authored the board-ready narrative around responsible AI, not just the use case. The framing the team carried forward: this is not "running a calculation through ChatGPT," it's a system designed inside the firm's guardrails with quality measured by the firm's own standards. Translation work mattered as much as the technology, the audience might know nothing about AI, the story still had to do real work without losing the technical credibility that made it trustworthy in the first place.
+I wrote the board-ready narrative for responsible AI and for the use case. The framing the team carried forward was that this isn't "running a calculation through ChatGPT." It's a system designed inside the firm's guardrails, with quality measured by the firm's own standards. The audience might know nothing about AI, and the story still had to keep the technical credibility that made it trustworthy. That translation mattered as much as the technology.
 
-### Made one source of truth, then distributed it
+### One source of truth
 
-Pulled the architecture, the program narrative, and the supporting briefings into a coherent set of artifacts and distributed them into the right channels. Decisions could then move at the speed of the program, not the speed of the documentation hunt.
+I pulled the architecture, the program narrative, and the supporting briefings into one set of documents and got them into the right channels. After that, decisions moved at the speed of the program. Nobody had to hunt for a document.
 
-## Constraints I navigated
+## Constraints
 
-**Governance and risk approval as a gating dependency.** Pulled it forward into the plan explicitly so it never became the blocker.
+**Governance and risk approval gated the rollout.** I pulled it forward into the plan so it never became the blocker.
 
-**Executive communication complexity.** A board audience that might know nothing about AI, paired with technical claims that had to remain credible. Simplified visuals, before-and-after framing, careful depth control, with the technical claims intact underneath.
+**The board audience.** They might know nothing about AI, and the technical claims still had to hold. I used simple visuals, before-and-after framing, and careful control of depth, with the technical claims intact underneath.
 
-**Quality proof for probabilistic systems.** "How good is good enough" isn't implicit; it has to be shown. The team built quality and confidence framing the firm's own reviewers could evaluate, not a chart imported from a vendor.
+**Proving quality for a probabilistic system.** "How good is good enough" has to be shown. The team built quality and confidence framing that the firm's own reviewers could evaluate. It wasn't a chart from a vendor.
 
 ## Outcome
 
 - **Live for internal analysts since late 2025**, then piloted with advisors through the sales organization in spring 2026. The first pilot release shipped on schedule.
 - **Publicly announced in pilot in April 2026.**
-- Framed publicly as enhancing, not replacing, advisor judgment, which is what made the rollout durable.
+- Publicly it's framed as enhancing advisor judgment and not replacing it, which is what made the rollout last.
 - Covered in Barron's, The Daily Upside, InvestmentNews, Citywire, ThinkAdvisor, Financial Advisor Magazine, PLANADVISER, and WealthManagement.com. See [the press section](/press) for the full list.
 
 ## What I would do differently
 
 The broad advisor release did not land in the window I originally planned for. Product and methodology decisions that the next version depended on stayed open longer than the plan could absorb, and the date moved.
 
-I had flagged those open decisions early. What I did not do was force them. Reporting a blocker is not the same as getting it resolved: a status line that says "waiting on a decision" can stay true for a quarter. The move that works is asking for a named owner and a date, and resetting the plan in the open the moment either one slips. I used exactly that on the analytics engine later in the year ([the next leadership deep dive](/case-studies/09-analytics-engine-beneath-genai)), and it held. It belonged here a quarter sooner.
+I had flagged those open decisions early. What I did not do was force them. Reporting a blocker is not the same as getting it resolved. A status line that says "waiting on a decision" can stay true for a quarter. What works is asking for a named owner and a date, and resetting the plan in the open the moment either one slips. I used exactly that on the analytics engine later in the year ([the analytics engine case study](/case-studies/09-analytics-engine-beneath-genai)), and it held. It belonged here a quarter sooner.
 
 ## How earlier chapters showed up here
 
-The threads from previous chapters were the load-bearing structure of this one:
+Most of this came from the earlier chapters:
 
-- **Pattern standardization → scalable experience.** The same thinking that made Meridian components a stable contract made AI insights a stable contract.
-- **Platform-first design.** Same instinct as framework-agnostic Meridian: design for the substrate, not the moment.
-- **Governance as product requirement.** Same posture as Meridian governance (Chapter 5): boundaries are not friction; they are what make the system durable.
-- **Executive-ready storytelling.** The same translation work that turned Meridian into a business platform turned Expert Insights into something a board could endorse.
-
-## Why it matters
-
-This is the chapter where the platform discipline of the earlier years compounds. Meridian was the substrate. Expert Insights is the proof that the substrate scales into AI, and that the same leadership posture (standardise the surface, design for the substrate, treat governance as gating) generalises across domains.
+- **Standard patterns.** The thinking that made Meridian components a stable contract made AI insights a stable contract.
+- **Platform first.** Same as framework-agnostic Meridian: build the layer underneath.
+- **Governance as a requirement.** Same as Meridian governance (Chapter 5). Boundaries are what make the system last.
+- **Explaining it to executives.** The translation work that turned Meridian into a business platform is what got Expert Insights to something a board could endorse.

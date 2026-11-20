@@ -8,14 +8,14 @@ status: published
 <aside class="callout">
   <span class="callout-label">TL;DR</span>
 
-  The goal: show what Meridian could do as a substrate for generative UI. The constraint: at the time, AI-generated code was too risky for our production environments. The solution was a two-stage LLM pipeline where every model output was constrained, structured JSON, never code. A Svelte app rendered the result deterministically. The LLM composes; the application code executes.
+  The goal: show what Meridian could do as a substrate for generative UI. The constraint: at the time, AI-generated code was too risky for our production environments. The solution was a two-stage LLM pipeline where every model output was constrained, structured JSON, never code. A Svelte app rendered the result deterministically. The LLM composes, and the application code executes.
 </aside>
 
 ## The Problem
 
 When I built this, AI-generated code was off the table for our production environments. So the interesting question wasn't "can an LLM write a UI component?" That path led straight to maintenance and correctness nightmares. The interesting question was: can an LLM compose a UI from a known set of trusted components, without writing the code that renders them?
 
-If yes, the LLM stays in its safe lane (content generation, structured selection) while the application code keeps the deterministic guarantees that production needs. Meridian, built as framework-agnostic Web Components with well-defined props, was the right substrate. Each component is a known entity with a constrained interface; the LLM just needed to pick which ones to use and what to fill them with.
+If yes, the LLM stays in its safe lane (content generation, structured selection) while the application code keeps the deterministic guarantees that production needs. Meridian, built as framework-agnostic Web Components with well-defined props, was the right substrate. Each component is a known entity with a constrained interface. The LLM just needed to pick which ones to use and what to fill them with.
 
 ## The Architecture
 
@@ -24,7 +24,7 @@ App → LLM → App → LLM → App. Two LLM round-trips, each constrained by a 
 <div
   class="diagram"
   role="img"
-  aria-label="Pipeline: user prompt feeds Stage 1 LLM which picks components and fills content; output is a JSON component list; this feeds Stage 2 LLM which decides layout; output is layout JSON; a Svelte renderer turns both into the final UI."
+  aria-label="Pipeline: user prompt feeds Stage 1 LLM which picks components and fills content; output is a JSON component list; this feeds Stage 2 LLM which decides layout; output is layout JSON, and a Svelte renderer turns both into the final UI."
 >
   <div class="diagram-node">user prompt</div>
   <div class="diagram-arrow">▼</div>
@@ -50,13 +50,13 @@ App → LLM → App → LLM → App. Two LLM round-trips, each constrained by a 
   <div class="diagram-node">final UI</div>
 </div>
 
-### Stage 1: Content + component selection
+### Stage 1: Content and component selection
 
 **Input:** a user prompt (e.g., "Build a dashboard summarizing my Q3 portfolio").
 
 The LLM was given a tool schema describing Meridian components and their props. Its job: generate the content that answers the prompt, AND choose the Meridian components best suited to display that content. The output was a JSON array of component definitions, each filled with the right property values.
 
-What it never returned: code. Never JSX, never HTML, never CSS. The LLM didn't need to know how Meridian components were implemented; it just needed to know what they did and what props they took. The tool schema enforced this.
+What it never returned: code. Never JSX, never HTML, never CSS. The LLM didn't need to know how Meridian components were implemented. It just needed to know what they did and what props they took. The tool schema enforced this.
 
 ```typescript
 const componentTools = [
@@ -115,7 +115,7 @@ A Svelte template walked the layout JSON, rendered each Meridian component with 
 
 ## Why this approach works
 
-The architecture rests on a single insight: separation of composition from rendering.
+The architecture depends on a single insight: separation of composition from rendering.
 
 - The LLM's role is **composition**: which components, what content, what arrangement. All open-ended, all benefiting from intelligent reasoning.
 - The application's role is **rendering**: taking the composed structure and drawing it. Closed-form, deterministic, the kind of thing traditional app code is great at.
@@ -123,7 +123,7 @@ The architecture rests on a single insight: separation of composition from rende
 By forcing all LLM output through tool schemas, the prototype got:
 
 - **No code-correctness risk.** The LLM never writes code that runs.
-- **No injection risk.** Output is constrained JSON, not freeform text.
+- **No injection risk.** Output is constrained JSON.
 - **Predictable rendering.** Deterministic Svelte templates do the drawing.
 - **Easy debugging.** LLM responses are inspectable as data.
 - **Provable design system conformance.** Only Meridian components can be chosen.
@@ -136,14 +136,14 @@ If Meridian had been a typical framework-bound component library, this prototype
 
 ## Limits and open questions
 
-This was a two-day prototype, not a production system. The honest limits:
+This was a two-day prototype. The honest limits:
 
 - **No evaluation harness.** I knew it worked from manual inspection but didn't measure component selection quality or layout coherence systematically.
-- **No streaming.** The two LLM round-trips ran sequentially; the user waited for both before seeing anything.
-- **Limited component coverage.** The tool schema described a subset of Meridian; a full system would need automated schema generation from the library.
+- **No streaming.** The two LLM round-trips ran sequentially, and the user waited for both before seeing anything.
+- **Limited component coverage.** The tool schema described a subset of Meridian. A full system would need automated schema generation from the library.
 - **No interaction model.** Generated UIs were static. Adding event handlers or component-level state would be the next architectural decision.
 
-The prototype's job was to show that the architectural pattern works, not to ship it. That goal it accomplished, in two days, solo.
+The prototype's job was to show that the architectural pattern works. That goal it accomplished, in two days, solo.
 
 ## What's next
 
@@ -159,6 +159,6 @@ I took this pattern a good deal further after writing the above, and rebuilt the
 
 **Two stages were one too few.** Choosing components and choosing layout left nobody responsible for structure. A middle stage now sets order, groups, and a role for each piece of text. It never picks a size.
 
-**A prompt is a request, not a guarantee.** The layout rules live in one spec file that generates the prompt text, the tool schema, the CSS, and the validators. Code between the model calls repairs the layout and sets type from the roles, so the rules hold when the prompt is ignored. That code is unit tested, which closes the "no evaluation harness" gap above for everything except the model itself.
+**A prompt is a request, not a guarantee.** The layout rules are in one spec file that generates the prompt text, the tool schema, the CSS, and the validators. Code between the model calls repairs the layout and sets type from the roles, so the rules hold when the prompt is ignored. That code is unit tested, which closes the "no evaluation harness" gap above for everything except the model itself.
 
 The details, the layout spec, and the remaining gaps are on the [Gen UI demo project page](/projects/gen-ui-demo).

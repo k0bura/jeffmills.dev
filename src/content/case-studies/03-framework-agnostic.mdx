@@ -3,15 +3,15 @@ order: 3
 title: "Framework-Agnostic Architecture: Future-Proofing the Front End"
 chapter: "Chapter 3"
 period: "2021-2023"
-summary: "Designing Meridian as a framework-agnostic system so it could support Angular, Vue, and AEM simultaneously, and outlast whatever framework comes next."
+summary: "Designing Meridian as a framework-agnostic system so it could support Angular, Vue, and AEM simultaneously, outlast whatever framework comes next, and let teams modernize incrementally instead of rewriting."
 tags: ["architecture", "web components", "cross-framework", "platform strategy"]
 ---
 
 <aside class="callout">
   <span class="callout-label">Executive summary</span>
   <p>
-    I helped architect Meridian as a framework-agnostic design system, enabling the
-    same components to ship across Angular, Vue, and AEM. The decision
+    I helped architect Meridian as a framework-agnostic design system so the
+    same components ship across Angular, Vue, and AEM. The decision
     decoupled Vanguard&rsquo;s front-end capability from any single framework
     and made it possible to adopt new technology incrementally, without ever
     rewriting the design system.
@@ -20,17 +20,17 @@ tags: ["architecture", "web components", "cross-framework", "platform strategy"]
 
 ## Context
 
-As front-end development matured at FAS, a new failure mode emerged: success itself. Teams were now using Angular, Vue, and AEM in production. Framework-specific implementations risked lock-in, costly rewrites when standards changed, and fragmentation across platforms.
+As front-end development matured at FAS, success created a new problem. Teams were now using Angular, Vue, and AEM in production, and framework-specific implementations risked lock-in, costly rewrites when standards changed, and fragmentation across platforms.
 
-At the same time, the business needed consistency across all digital experiences and the ability to adapt quickly when the underlying technology shifted. These two goals, consistency *and* adaptability, usually pull in opposite directions.
+The business also needed consistency across all digital experiences and the ability to adapt quickly when the underlying technology shifted. Those two goals usually pull in opposite directions.
 
 ## My role
 
-I played a key role in defining and reinforcing a framework-agnostic architecture inside Meridian. This was a strategic architectural decision more than a technical one, it shaped how teams *thought* about front-end systems, not just what they built. The goal was for Meridian to outlast any individual framework choice.
+I played a key role in defining and reinforcing a framework-agnostic architecture inside Meridian. It was a strategic decision as much as a technical one, because it shaped how teams *thought* about front-end systems as well as what they built. The goal was for Meridian to outlast any individual framework choice. It is the highest-impact architectural decision in the whole sequence.
 
 ## What I did
 
-**Designed Meridian as framework-agnostic.** Components are independent of application frameworks. The same component logic runs across Angular, Vue, and AEM through framework adapters and standards-based custom elements. The implementation is intentionally separated from the application's technical stack.
+**Architecture.** I designed Meridian to be framework-agnostic. Components are independent of application frameworks. The same component logic runs across Angular, Vue, and AEM through framework adapters and standards-based custom elements. The implementation is deliberately separated from the application's technical stack.
 
 <div
   class="diagram"
@@ -47,7 +47,7 @@ I played a key role in defining and reinforcing a framework-agnostic architectur
   <div class="diagram-row">
     <div class="diagram-node is-stage">
       <div class="diagram-node-title">custom element</div>
-      <div class="diagram-node-body">standards-based<br />HTML / JS + global CSS</div>
+      <div class="diagram-node-body">standards-based<br />HTML / JS and global CSS</div>
     </div>
     <div class="diagram-node is-stage">
       <div class="diagram-node-title">framework adapters</div>
@@ -68,42 +68,34 @@ I played a key role in defining and reinforcing a framework-agnostic architectur
   </div>
 
   <p class="diagram-note">
-    One source. Two exports. Many consumers. Same component logic
-    everywhere.
+    One source produces two exports for many consumers, and the component
+    logic is the same everywhere.
   </p>
 </div>
 
-**Enabled cross-framework component reuse.** Same component, same props, same behavior, across stacks. Teams stopped reimplementing UI for each framework.
+**Reuse.** I enabled cross-framework component reuse. A component has the same props and behavior across stacks, and teams stopped reimplementing UI for each framework.
 
-**Future-proofed the platform.** Explicitly designed to avoid dependency on any single framework, and to adapt easily to new frameworks, security requirements, and platform shifts. The system is built to "quickly adapt and support any new or better frameworks", that's not a marketing line, it's the architectural premise.
+**Future-proofing.** I designed the platform to avoid dependency on any single framework and to adapt easily to new frameworks, security requirements, and platform shifts. The system is built to "quickly adapt and support any new or better frameworks". That line is the architectural premise of the system and it is not a marketing line.
 
-**Standardized developer experience across frameworks.** Shared component library, Storybook documentation, consistent APIs. One mental model regardless of which framework an engineer works in. Lower learning curve when moving between stacks.
+**Developer experience.** I standardized it across frameworks with a shared component library, Storybook documentation, and consistent APIs. Engineers have one mental model regardless of which framework they work in, and a lower learning curve when moving between stacks.
 
-**Defended the architecture in real-time decisions.** Pushed back on proposals to introduce framework-specific dependencies or external component ownership. Reinforced the discipline so it stayed true under delivery pressure.
+**Decisions.** I defended the architecture in real-time decisions. I pushed back on proposals to introduce framework-specific dependencies or external component ownership, and I reinforced the discipline so it held under delivery pressure.
 
 ## Resistance
 
-**Pressure toward framework-specific solutions.** Teams naturally want faster, local solutions tuned to their stack. The trade-off: short-term wins, long-term fragmentation.
+**Pressure toward framework-specific solutions.** In my experience, teams naturally want faster, local solutions tuned to their stack. Those give short-term wins and long-term fragmentation.
 
-**Competing architectural philosophies.** Recurring proposals to adopt alternative component frameworks or diverge from the agreed direction. Each one would have reintroduced inconsistency.
+**Competing architectural philosophies.** There were recurring proposals to adopt alternative component frameworks or diverge from the agreed direction. Each one would have reintroduced inconsistency.
 
 **Cross-framework complexity.** Building genuinely reusable components across Vue, Angular, and AEM is harder than building in any one stack. It demanded discipline, strong standards, and continuous alignment.
 
 ## How I handled it
 
-Optimized for long-term system health over short-term convenience. Anchored decisions in business flexibility, the framework-agnostic design means the organization is not locked into any technology choice and can evolve safely. Kept the architecture practical, not theoretical: real components, in real applications, proven at scale.
+I optimized for long-term system health over short-term convenience. I anchored decisions in business flexibility: the framework-agnostic design means the organization isn't locked into any technology choice and can evolve safely. I kept the architecture practical, with real components in real applications, proven at scale.
 
 ## Outcome
 
-- **Multi-framework support at scale.** Angular, Vue, AEM, all in real production systems.
-- **Reduced rework and duplication.** Components are reused across platforms; teams avoid rebuilding the same UI multiple times.
+- **Multi-framework support at scale.** Angular, Vue, and AEM all run in real production systems.
+- **Reduced rework and duplication.** Components are reused across platforms, and teams avoid rebuilding the same UI multiple times.
 - **Organizational flexibility.** Vanguard can adopt new frameworks without rewriting everything. Modernization is incremental.
-- **Platform evolution unlocked.** The same architectural decision is what makes web components, AI-driven development workflows, and the Gen UI work all possible.
-
-## Why it matters
-
-This is the highest-leverage architectural decision in the whole sequence. It decouples the organization's front-end capability from any single technology choice, which is what allows scale, longevity, and adaptability.
-
-From framework-driven development to **platform-driven development**.
-
-The same instinct shows up again in Chapter 6: when generative UI became the new substrate, Meridian was already ready for it because the architecture had never been tied to one stack to begin with.
+- **Platform evolution.** The same architectural decision makes web components, AI-driven development workflows, and the Gen UI work possible. It shows up again in Chapter 6: when generative UI became the new substrate, Meridian was already ready for it because the architecture had never been tied to one stack to begin with.

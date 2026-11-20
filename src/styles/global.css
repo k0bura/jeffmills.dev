@@ -20,7 +20,8 @@
   --jm-color-bg: #0e0e0e;
   --jm-color-fg: #e4e4e4;
   --jm-color-muted: #a89466;
-  --jm-color-dim: #665200;
+  /* 5.2:1 on bg, 4.7:1 on #1a1a1a. Was #665200 (2.55:1), which failed WCAG 1.4.3 for tag and caption text. */
+  --jm-color-dim: #988432;
   --jm-color-accent: #ffcc00;
   --jm-color-border: #332b00;
   --jm-color-ok: #88cc88;
@@ -80,13 +81,23 @@ a:hover {
   text-underline-offset: 3px;
 }
 
-a:focus-visible {
-  outline: 1px dashed var(--jm-color-accent);
-  outline-offset: 3px;
+/* Links inside running text are underlined: link and body colours differ by
+   only 1.17:1, so colour alone can't mark them (WCAG 1.4.1). */
+main :is(p, dd, td) a,
+main li > a:not(.row) {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--jm-color-muted);
+  text-underline-offset: 3px;
+}
+
+main :is(p, dd, td) a:hover,
+main li > a:not(.row):hover {
+  text-decoration-color: currentColor;
 }
 
 :focus-visible {
-  outline: 1px dashed var(--jm-color-accent);
+  outline: 2px dashed var(--jm-color-accent);
   outline-offset: 3px;
 }
 
@@ -128,6 +139,17 @@ pre code {
   max-width: var(--jm-max-width);
   margin: 0 auto;
   padding: 4.5rem 1rem 2rem;
+}
+
+/* Narrow screens: the header scrolls with the page so a wrapped nav can't
+   cover content, and nothing needs sideways scrolling (WCAG 1.4.10). */
+@media (max-width: 48rem) {
+  html {
+    scroll-padding-top: 1rem;
+  }
+  .jm-shell {
+    padding-top: 0;
+  }
 }
 
 .jm-rule {

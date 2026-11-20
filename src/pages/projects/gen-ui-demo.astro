@@ -165,7 +165,7 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
       Normalization strips inline styles, invented classes, scripts, and
       images that did not come from a tool result. Layout repair guarantees
       every component appears exactly once, rows use one of the closed
-      patterns, nothing sits in a slot narrower than its minimum, and a
+      patterns, nothing goes in a slot narrower than its minimum, and a
       group stays together. Typesetting turns each role into a type style
       and steps down a size ladder until the text fits its slot, with one
       size shared across a group so cards in a row match.
@@ -185,7 +185,7 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
   <h2 class="section-title">the layout spec: one file, four consumers</h2>
 
   <p>
-    A design system's layout rules usually live in a Figma file and in
+    A design system's layout rules usually exist in a Figma file and in
     designers' heads. To get a model to follow them you write them into a
     prompt, and to guarantee them you write them again as code. Two copies
     drift.
@@ -245,7 +245,7 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
   <ul class="proof-list">
     <li>
       <strong>Small, flat, labelled, pre-rounded.</strong> A tool returns
-      what the page needs, not the raw API response. Arithmetic happens in
+      only what the page needs. Arithmetic happens in
       code, so the model does none.
     </li>
     <li>
@@ -310,8 +310,8 @@ const SOURCE_URL = "https://github.com/k0bura/gen-ui-demo";
     </li>
     <li>
       <strong>Each stage needs only what its job requires.</strong> The
-      layout model sees summaries, not markup. The structure model sees
-      components, not history. Smaller inputs let cheaper models do the
+      layout model sees only summaries. The structure model sees only
+      components. Smaller inputs let cheaper models do the
       work and make each stage easier to reason about.
     </li>
     <li>
